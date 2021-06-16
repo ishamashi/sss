@@ -1,0 +1,1 @@
+/* Ajax Action GLOBAL here */
