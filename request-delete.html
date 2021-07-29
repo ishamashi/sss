@@ -125,10 +125,10 @@
 				<div class="page-sidebar-inner">
 					<ul class="menu accordion-menu">
 						<li class="nav-heading"><span>Navigation</span></li>
-						<li class="active" data-lv="index"><a href="index.html"><span class="menu-icon icon-speedometer"></span><p>Overview</p></a></li>
+						<li  data-lv="index"><a href="index.html"><span class="menu-icon icon-speedometer"></span><p>Overview</p></a></li>
 						<li data-lv="ooh-database"><a href="ooh-database.html"><span class="menu-icon icon-pointer"></span><p>OOH Database</p></a></li>
 						<li data-lv="optimization"><a href="optimization.html"><span class="menu-icon icon-globe-alt"></span><p>Optimization</p></a></li>
-						<li data-lv="master-industry"><a href="#"><span class="menu-icon icon-equalizer"></span><p>Master Data</p></a>
+						<li class="active" data-lv="master-industry"><a href="#"><span class="menu-icon icon-equalizer"></span><p>Master Data</p></a>
 							<ul>
 								<li data-lv="master-industry"><a href="master-industry.html"><span class="menu-icon icon-equalizer"></span><p>Master Industry</p></a></li>
 								<li data-lv="master-advertiser"><a href="master-advertiser.html"><span class="menu-icon icon-equalizer"></span><p>Master Advertiser</p></a></li>
@@ -136,7 +136,7 @@
 								<li data-lv="ooh-canvasing"><a href="ooh-canvasing.html"><span class="menu-icon icon-equalizer"></span><p>OOH Canvasing</p></a></li>
 								<li data-lv="master-kodeproduk"><a href="master-kodeproduk.html"><span class="menu-icon icon-handbag"></span><p>Master Kode Produk</p></a></li>
 								<li data-lv="master-user"><a href="master-user.html"><span class="menu-icon icon-equalizer"></span><p>Master Users</p></a></li>
-								<li data-lv="request-delete"><a href="request-delete.html"><span class="menu-icon icon-trash"></span><p>Request Delete</p></a></li>
+								<li class="active" data-lv="request-delete"><a href="request-delete.html"><span class="menu-icon icon-trash"></span><p>Request Delete</p></a></li>
 							</ul>
 						</li>
 					</ul>
@@ -150,14 +150,19 @@
 								<div class="panel panel-white">
 									<div class="panel-body">
 										<div class="row">
+											<h3>Pencarian</h3>
 											<div class="col-md-2">
 												<select class="form-control" id="province">
 													<option value="">All Province</option>
 												</select>
 											</div>
 											<div class="col-md-2">
-												<select class="form-control" id="city">
-													<option value="">All City</option>
+												<select class="form-control" id="industry"   title="All Industry">
+													<option value="">All Industry</option>
+												</select>
+											</div>
+											<div class="col-md-2">
+												<select class="form-control" id="owner" multiple title="Select Owner"> 
 												</select>
 											</div>
 											<div class="col-md-3">
@@ -166,23 +171,7 @@
 														<option value="">All Type</option>
 													</select>
 												</div>
-												<div class="col-md-6">
-													<select class="form-control" id="industry"   title="All Industry">
-														<option value="">All Industry</option>
-													</select>
-												</div>
-											</div>
-											<div class="col-md-2" style="margin-top: 0px;padding-right: 5px;">
-												<div class="input-group">
-													<input type="text" class="form-control date-picker" aria-describedby="basic-addon2" placeholder="From" id="fromDate">
-													<span class="input-group-addon" id="basic-addon2"><span class="menu-icon icon-calendar"></span></span>
-												</div>
-											</div>
-											<div class="col-md-2" style="margin-top: 0px;padding-left: 5px;">
-												<div class="input-group">
-													<input type="text" class="form-control date-picker" aria-describedby="basic-addon2" placeholder="To" id="toDate">
-													<span class="input-group-addon" id="basic-addon2"><span class="menu-icon icon-calendar"></span></span>
-												</div>
+												
 											</div>
 											<div class="col-md-1" style="margin-top: 0px;padding-left: 5px;">
 												<button type="button" class="btn btn-info btn-rounded" style="border-radius: 5px;margin-top: 1px;" id="search">Search</button>
@@ -277,109 +266,81 @@
 					</div>
 				</div>
 				<div id="main-wrapper" class="container">
-					<div class="row">
-						<div class="col-md-12">
-							Last updated at <span id="lastupdate"></span>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-lg-3 col-md-6">
-							<div class="panel info-box panel-white">
-								<div class="panel-body" style="padding: 15px;">
-									<div class="info-box-stats">
-										<span class="info-box-title">Total OOH</span>
-										<h4>&nbsp;</h4>
-										<p><span id="total_ooh">NA</span> <span style="font-size: 65%;">OOH</span></p>
-									</div>
-									<div class="info-box-icon">
-										<i class="icon-pin"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6">
-							<div class="panel info-box panel-white">
-								<div class="panel-body" style="padding: 15px;">
-									<div class="info-box-stats">
-										<span class="info-box-title">Top Industry</span>
-										<h4 id="top_industry">NA</h4>
-										<p><span id="top_industry_count">NA</span> <span style="font-size: 65%;">OOH</span> <span style="font-size: 75%;">(<span id="top_industry_percent">NA</span>%)</span></p>
-									</div>
-									<div class="info-box-icon">
-										<i class="icon-briefcase"></i>
+					<div class="form-horizontal">
+						<div class="panel panel-default tabs">
+							<ul class="nav nav-tabs" role="tablist">
+								<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">Request</a></li>
+								<li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">Archive</a></li>
+							</ul>
+							<div class="panel-body tab-content">
+								<div class="tab-pane active" id="tab-cont">
+									<div class="col-md-12">
+										<div class="panel panel-default" style="padding: 10px;">
+											<div class="panel-body panel-body-table">
+												<table id="mstuser" style="border-bottom: 1px solid #E5E5E5;"
+													class="table table-bordered table-striped">
+													<thead>
+														<tr>
+															<th class="text-center" width="40">No</th>
+															<th class="text-center">Canvassing Number</th>
+															<th class="text-center">District</th>
+															<th class="text-center">Site Number</th>
+															<th class="text-center">Alamat</th>
+															<th class="text-center">Requester</th>
+															<th class="text-center">Timestamp</th>
+															<th class="text-center">Action</th>
+														</tr>
+													</thead>
+												</table>
+											</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6">
-							<div class="panel info-box panel-white">
-								<div class="panel-body" style="padding: 15px;">
-									<div class="info-box-stats">
-										<span class="info-box-title">Top Advertiser</span>
-										<h4 id="top_advertiser">NA</h4>
-										<p><span id="top_advertiser_count">NA</span> <span style="font-size: 65%;">OOH</span> <span style="font-size: 75%;">(<span id="top_advertiser_percent">NA</span>%)</span></p>
+								<div class="tab-pane" id="tab-cmp">
+									<div class="col-md-12" style="padding: 10px 0px;">
+										<div class="col-md-10"></div>
+										<div class="col-md-2">
+											<button class="btn btn-info btn-block" id="addCompany" type="text"><span
+													class="fa fa-plus"></span> &nbsp; <b> ADD COMPANY </b></button>
+										</div>
 									</div>
-									<div class="info-box-icon">
-										<i class="icon-volume-2"></i>
+									<div class="col-md-12">
+										<div class="panel panel-default" style="padding: 10px;">
+											<div class="panel-body panel-body-table">
+												<table id="mstcompany" class="table table-bordered table-striped">
+													<thead>
+														<tr>
+															<th class="text-center" width="40">No</th>
+															<th class="text-center">Company Name</th>
+															<th class="text-center">Company Desc</th>
+															<th class="text-center">Company Email</th>
+															<th class="text-center">Company Advertiser</th>
+															<th class="text-center">Actions</th>
+														</tr>
+													</thead>
+												</table>
+											</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6">
-							<div class="panel info-box panel-white">
-								<div class="panel-body" style="padding: 15px;">
-									<div class="info-box-stats">
-										<span class="info-box-title">Top District</span>
-										<h4 id="top_district">NA</h4>
-										<p><span id="top_district_count">NA</span> <span style="font-size: 65%;">OOH</span> <span style="font-size: 75%;">(<span id="top_district_percent">NA</span>%)</span></p>
-									</div>
-									<div class="info-box-icon">
-										<i class="icon-flag"></i>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div><!-- Row -->
-					<div class="row">
-						<div class="col-md-6 col-sm-12">
-							<div class="panel panel-white">
-								<div class="panel-heading">SOV by Industry</div>
-								<div class="panel-body">
-									<div id="sov_by_industry" style="height: 300px;"></div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6 col-sm-12">
-							<div class="panel panel-white">
-								<div class="panel-heading">SOV by Advertiser</div>
-								<div class="panel-body">
-									<div id="sov_by_advertiser" style="height: 300px;"></div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6 col-sm-12">
-							<div class="panel panel-white">
-								<div class="panel-heading">SOV by OOH Type</div>
-								<div class="panel-body">
-									<div id="sov_by_oohtype" style="height: 300px;"></div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6 col-sm-12">
-							<div class="panel panel-white">
-								<div class="panel-heading">SOV by Kecamatan</div>
-								<div class="panel-body">
-									<div style="height: 300px;">
-										<table class="table" id="sov_by_city">
-											<thead>
-												<tr>
-													<th style="width:180px;">Area</th>
-													<th>SOV(%)</th>
-													<th>Total OOH</th>
-													<th>Top Advertiser</th>
-												</tr>
-											</thead>
-										</table>
+								<div class="tab-pane" id="tab-lvl">
+									<div class="col-md-12">
+										<div class="panel panel-default" style="padding: 10px;">
+											<div class="panel-body panel-body-table">
+												<table id="mstlevel" class="table table-bordered table-striped"
+													style="width: 100%">
+													<thead>
+														<tr>
+															<th class="text-center" width="40">No</th>
+															<th class="text-center">Level Name</th>
+															<th class="text-center">Level Display</th>
+															<th class="text-center">Level Sub Display</th>
+															<th class="text-center">Level Desc</th>
+														</tr>
+													</thead>
+												</table>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -483,7 +444,7 @@
 		<script src="assets/plugins/nestable/jquery.nestable.js"></script>
 
 		<script src="assets/js/pam.js"></script>
-		<script src="assets/js/pages/index.js"></script>
+		<script src="assets/js/pages/request-delete.js"></script>
 		<script src="assets/js/load-common.js"></script>
 
 		<!-- Lib Controller JS -->
