@@ -87,7 +87,7 @@ function getArchieveDelete() {
 					"7": v[6],
 					"8": v[9]==1?'Approve':'Reject',
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
-					"9": v[5]=='A'?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>':'-'
+					"9": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>':'-'
 				};
 				dattab.push(perdata);
 				no++;
