@@ -1,6 +1,6 @@
 // ----- base url -----   
 
-var APIURL    = "http://192.168.20.135:8000/v1_test/";
+var APIURL    = "http://103.78.81.228:8000/v1/";
 
 var ERP_HOST = 'http://103.78.81.227/prisma/'; 
 var APP_HOST = '192.168.20.135';
