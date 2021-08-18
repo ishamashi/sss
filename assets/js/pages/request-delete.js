@@ -44,14 +44,15 @@ function getRequestDelete(is_search) {
 					"4": v[4]==highlight?'<font color="red">'+v[2]+'</font>':v[2], 
 					"5": v[4]==highlight?'<font color="red">'+v[5]+'</font>':v[5], 
 					"6": v[4]==highlight?'<font color="red">'+v[7]+'</font>':v[7], 
-					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6], 
-					"8": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\')"><span class="fa fa-check" ></span></button>' +
+					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6],
+					"8": v[4]==highlight?'<font color="red">'+v[8]+'</font>':v[8],  
+					"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\')"><span class="fa fa-check" ></span></button>' +
 						'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\')"><span class="fa fa-times"></span></button>'
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8"}]
+			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8"}, { data: "9"},]
 			setTableContent('#request_del', colome, dattab);
 
 		},
@@ -87,14 +88,15 @@ function getArchieveDelete() {
 					"5": v[4]==highlight?'<font color="red">'+v[5]+'</font>':v[5],
 					"6": v[4]==highlight?'<font color="red">'+v[7]+'</font>':v[7],
 					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6],
-					"8": v[9]==1?'Approve':'Reject',
+					"8": v[4]==highlight?'<font color="red">'+v[13]+'</font>':v[13],
+					"9": v[9]==1?'Approve':'Reject',
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
-					"9": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>':'-'
+					"10": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>':'-'
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" },  { data: "8" }, { data: "9" }]
+			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" },  { data: "8" }, { data: "9" }, { data: "10" }]
 			setTableContent('#archieve_del', colome, dattab);
 
 		},
