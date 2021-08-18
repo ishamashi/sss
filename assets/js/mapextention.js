@@ -385,6 +385,15 @@ function create_ooh(jsonData, iconstat, eventWindow){
 				4 : iconBase + 'icon-ss-4.png', 
 				5 : iconBase + 'icon-ss-5.png', 
 			} 
+		},
+		0: {
+			icon: {
+				1 : iconBase + 'icon-deleted-1.png', 
+				2 : iconBase + 'icon-deleted-2.png', 
+				3 : iconBase + 'icon-deleted-3.png', 
+				4 : iconBase + 'icon-deleted-4.png', 
+				5 : iconBase + 'icon-deleted-5.png', 
+			} 
 		}
 	};
 
