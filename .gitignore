@@ -50,3 +50,4 @@ Thumbs.db
 
 #config
 assets/js/lib.js
+/assets/js/lib.js
