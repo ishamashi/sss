@@ -199,6 +199,7 @@ function getData() {
       if(typeof data != 'object'){ data = $.parseJSON(data); }
       setData(data);
       loading(false);
+      console.log('testing',data);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       errorHandler(jqXHR);
@@ -244,11 +245,12 @@ function setData(data) {
       "latitude" : v.latitude, 
       "longitude" : v.longitude, 
       "name" : v.address,
-      "color" : '#226ee8',
-      "type" : v.ooh_type,
+      "color" : '#FF0000',
+      "type" : v.otyp_icon=='icon-deleted'?0:v.ooh_type,
       "status" : v.ooh_status,
     }
     pointdata.push(perpoint);
+    console.log('testing',perdata);
   });
 
   setTableContent(datane);

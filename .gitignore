@@ -48,4 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+#config
+assets/js/lib.js
 /assets/js/lib.js
