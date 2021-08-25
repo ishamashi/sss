@@ -46,8 +46,8 @@ function getRequestDelete(is_search) {
 					"6": v[4]==highlight?'<font color="red">'+v[7]+'</font>':v[7], 
 					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6],
 					"8": v[4]==highlight?'<font color="red">'+v[8]+'</font>':v[8],  
-					"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\')"><span class="fa fa-check" ></span></button>' +
-						'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\')"><span class="fa fa-times"></span></button>'
+					"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\', \'' + v[6] + '\')"><span class="fa fa-check" ></span></button>' +
+						'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\', \'' + v[6] + '\')"><span class="fa fa-times"></span></button>'
 				};
 				dattab.push(perdata);
 				no++;
@@ -91,7 +91,7 @@ function getArchieveDelete() {
 					"8": v[4]==highlight?'<font color="red">'+v[13]+'</font>':v[13],
 					"9": v[9]==1?'Approve':'Reject',
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
-					"10": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>':'-'
+					"10": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\', \'' + v[6] + '\')"><span class="fa fa-history" ></span></button>':'-'
 				};
 				dattab.push(perdata);
 				no++;
@@ -112,7 +112,7 @@ function getArchieveDelete() {
 	});
 }
 
-function approval(oid, type) {
+function approval(oid, type,createat) {
 	if (type == 'r') {
 		var teks = 'Menolak';
 	} else {
@@ -147,7 +147,7 @@ function rollback(oid, type) {
 	});
 }
 
-function confirmed(oid, type) {
+function confirmed(oid, type,createat) {
 	$.ajax({
 		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
