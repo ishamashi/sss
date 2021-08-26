@@ -148,8 +148,9 @@ function rollback(oid, type,createat) {
 }
 
 function confirmed(oid, type,createat) {
+	var created_at = createat.replace(" ", "+");
 	$.ajax({
-		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid+"&createdat="+createat,
+		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid+"&createdat="+created_at,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		data : {'action' : type, 'oid' : oid},
 		type: "POST",
@@ -200,8 +201,9 @@ function confirmed(oid, type,createat) {
 
 
 function confirmedArchieve(oid, type,createat) {
+	var created_at = createat.replace(" ", "+");
 	$.ajax({
-		url: APIURL + "data/archivedel?action="+type+"&oid="+oid+"&createdat="+createat,
+		url: APIURL + "data/archivedel?action="+type+"&oid="+oid+"&createdat="+created_at,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		data : {'action' : type, 'oid' : oid},
 		type: "POST",
