@@ -127,12 +127,12 @@ function approval(oid, type,createat) {
 		confirmButtonColor: "#ec6c62"
 	}).then(function (isConfirm) {
 		if (isConfirm.value) {
-			confirmed(oid, type)
+			confirmed(oid, type, createat)
 		}
 	});
 }
 
-function rollback(oid, type) {
+function rollback(oid, type,createat) {
 	swal({
 		title: "Warning",
 		html: "Apakah anda yakin untuk mengembalikan data ini ke request ?",
@@ -142,14 +142,14 @@ function rollback(oid, type) {
 		confirmButtonColor: "#ec6c62"
 	}).then(function (isConfirm) {
 		if (isConfirm.value) {
-			confirmedArchieve(oid, type)
+			confirmedArchieve(oid, type,createat)
 		}
 	});
 }
 
 function confirmed(oid, type,createat) {
 	$.ajax({
-		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid+"&createdat='"+createat+"'",
+		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid+"&createdat="+createat,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		data : {'action' : type, 'oid' : oid},
 		type: "POST",
@@ -201,7 +201,7 @@ function confirmed(oid, type,createat) {
 
 function confirmedArchieve(oid, type,createat) {
 	$.ajax({
-		url: APIURL + "data/archivedel?action="+type+"&oid="+oid+"&createdat='"+createat+"'",
+		url: APIURL + "data/archivedel?action="+type+"&oid="+oid+"&createdat="+createat,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		data : {'action' : type, 'oid' : oid},
 		type: "POST",
