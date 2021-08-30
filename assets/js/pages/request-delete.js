@@ -81,17 +81,17 @@ function getArchieveDelete() {
 			var no = 1;
 			$.each(data.data, function (k, v) {
 				perdata = {
-					"1": v[4]==highlight?'<font color="red">'+no+'</font>':no, 
-					"2": v[4]==highlight?'<font color="red">'+v[1]+'</font>':v[1], 
-					"3": v[4]==highlight?'<font color="red">'+v[3]+'</font>':v[3],
-					"4": v[4]==highlight?'<font color="red">'+v[2]+'</font>':v[2],
-					"5": v[4]==highlight?'<font color="red">'+v[5]+'</font>':v[5],
-					"6": v[4]==highlight?'<font color="red">'+v[7]+'</font>':v[7],
-					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6],
-					"8": v[4]==highlight?'<font color="red">'+v[13]+'</font>':v[13],
-					"9": v[9]==1?'Approve':'Reject',
+					"1": v['owner']==highlight?'<font color="red">'+no+'</font>':no, 
+					"2": v['owner']==highlight?'<font color="red">'+v['no_cnv']+'</font>':v['no_cnv'], 
+					"3": v['owner']==highlight?'<font color="red">'+v['district']+'</font>':v['district'],
+					"4": v['owner']==highlight?'<font color="red">'+v['no_site']+'</font>':v['no_site'],
+					"5": v['owner']==highlight?'<font color="red">'+v['address']+'</font>':v['address'],
+					"6": v['owner']==highlight?'<font color="red">'+v['detail_status']['requester ']+'</font>':v['detail_status']['requester '],
+					"7": v['owner']==highlight?'<font color="red">'+v['detail_status']['tgl_pengajuan']+'</font>':v['detail_status']['tgl_pengajuan'],
+					"8": v['owner']==highlight?'<font color="red">'+v['archive_date']+'</font>':v['archive_date'],
+					"9": v['owner']==highlight?'<font color="red">'+v['detail_status']['status']+'</font>':v['detail_status']['status'],
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
-					"10": v[8]<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\', \'' + v[6] + '\')"><span class="fa fa-history" ></span></button>':'-'
+					"10": v['rollback_interval']<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-history" ></span></button>':'-'
 				};
 				dattab.push(perdata);
 				no++;
