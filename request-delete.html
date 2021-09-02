@@ -60,6 +60,7 @@
 			padding-right: 0px;
 			padding-left: 0px;
 		}
+
 		.titik_prisma {
 			background-color: lightgoldenrodyellow;
 			color: red;
@@ -201,6 +202,23 @@
 			<div class="page-title">
 				<div class="container" style="margin-bottom: -20px;">
 					<div class="row">
+						<!-- modal -->
+						<div class="modal fade history_archieve" tabindex="-1" role="dialog"
+							aria-labelledby="myLargeModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-lg" style="width: 80%;">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal"
+											aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h3 class="modal-title" id="myLargeModalLabel">History Request Delete</h3>
+									</div>
+									<div class="modal-body" id="data_history">
+									</div>
+									<div class="modal-footer">
+									</div>
+								</div>
+							</div>
+						</div>
 						<div class="col-md-12">
 							<div class="panel panel-white">
 								<div class="panel-body">
@@ -288,6 +306,7 @@
 														<th class="text-center">Waktu Request</th>
 														<th class="text-center">Waktu Archived</th>
 														<th class="text-center">Status</th>
+														<th class="text-center">history</th>
 														<th class="text-center">Action</th>
 													</tr>
 												</thead>

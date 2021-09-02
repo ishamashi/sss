@@ -91,12 +91,13 @@ function getArchieveDelete() {
 					"8": v['owner']==highlight?'<font color="red">'+v['archive_date']+'</font>':v['archive_date'],
 					"9": v['owner']==highlight?'<font color="red">'+v['detail_status']['status']+'</font>':v['detail_status']['status'],
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
-					"10": v['rollback_interval']<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-history" ></span></button>':'-'
+					"10": '<button class="btn btn-success btn-rounded" data-toggle="modal" data-target=".history_archieve" title="History" onclick="history(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-search" ></span></button>',
+					"11": v['rollback_interval']<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-history" ></span></button>':'-',
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" },  { data: "8" }, { data: "9" }, { data: "10" }]
+			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" },  { data: "8" }, { data: "9" }, { data: "10" }, {data: "11"}]
 			setTableContent('#archieve_del', colome, dattab);
 
 		},
@@ -227,6 +228,42 @@ function confirmedArchieve(oid, type,createat) {
 			}
 			getArchieveDelete();
 			getRequestDelete();
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			if (jqXHR.status != 500) {
+				var strjson = JSON.parse(jqXHR.responseText);
+				swal({
+					title: "Error",
+					text: strjson.processMessage,
+					type: "error",
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Close"
+				});
+			} else {
+				swal({
+					title: "Error",
+					text: "Internal Server Error",
+					type: "error",
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Close"
+				}, function () {
+					// location.reload();
+				});
+			}
+		}
+	});
+}
+
+function history(oid) {
+	$.ajax({
+		url: APIURL + "data/archivedel?old_data="+"&history=t"+"&oid="+oid,
+		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+		type: "POST",
+		success: function (data, textStatus, jqXHR) {
+			// alert(data);
+			var result = data.data;
+			$("#print_ooh").append(result);
+
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			if (jqXHR.status != 500) {
