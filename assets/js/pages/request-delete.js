@@ -258,11 +258,22 @@ function history(oid) {
 	$.ajax({
 		url: APIURL + "data/archivedel?old_data="+"&history=t"+"&oid="+oid,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-		type: "POST",
-		success: function (data, textStatus, jqXHR) {
-			// alert(data);
-			var result = data.data;
-			$("#print_ooh").append(result);
+		type: "GET",
+		dataType: "json",
+		success: function (data) {
+			var dattab = [];
+			var no = 1;
+			$.each(data.data, function (k, v) {
+				perdata = {
+					"1": no, 
+					"2": v['tgl_pengajuan'], 
+					"3": v['status'],
+				};
+				dattab.push(perdata);
+				no++;
+			});
+			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }]
+			setTableContent('#history_archieve_data', colome, dattab);
 
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
