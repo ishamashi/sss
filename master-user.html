@@ -69,7 +69,9 @@
 
 		.stats-info ul li {
 			padding: 7px 0;
-		}
+		} thead input {
+        width: 100%;
+    }
 	</style>
 
 
@@ -330,18 +332,15 @@
 								<div class="col-md-12">
 									<div class="panel panel-default" style="padding: 10px;">
 										<div class="panel-body panel-body-table">
-											<table id="mstuser" style="border-bottom: 1px solid #E5E5E5;"
-												class="table table-bordered table-striped">
+											<table id="example" class="display" style="width:100%">
 												<thead>
 													<tr>
-														<th class="text-center" width="40">No</th>
-														<th class="text-center">User Name</th>
-														<th class="text-center">User Login</th>
-														<th class="text-center">Email</th>
-														<th class="text-center">Level</th>
-														<th class="text-center">Company</th>
-														<th class="text-center">Status</th>
-														<th class="text-center">Action</th>
+														<th width='10%' class="kolom">No</th>
+														<th width='20%' class="kolom">Fullname</th>
+														<th width='20%' class="kolom">Email</th>
+														<th width='25%' class="kolom">Company</th>
+														<th width='20%' class="kolom">Status</th>
+														<th width='5%' class=""></th>
 													</tr>
 												</thead>
 											</table>
@@ -411,7 +410,6 @@
 	<script type="text/javascript">
 		loginReq(token);
 	</script>
-
 
 	<!-- Modal -->
 	<div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">

@@ -24,6 +24,7 @@ $(function () {
 
     filterListUser();
     filterListLevel();
+    UserClient();
 
     $('select').selectpicker();
 
@@ -777,7 +778,7 @@ function addClient(id, pardat) {
 
     if (true) {
         var dathtml = '<div class="col-md-12">'
-            + '<h4 style="text-align:left"> <span class="fa fa-plus"></span> ' + (id != "" ? "EDIT" : "ADD") + ' DATA CLIENT</h4>'
+            + '<h4 style="text-align:left"> <span class="fa fa-plus"></span> ' + (id != "" ? "EDIT" : "PENDAFTARAN") + ' KLIEN BARU</h4>'
             + '<p> Please check the input before save </p> <hr>'
             + '<form id="formadduser">'
             + '<input type="hidden" name="user_id" value="' + id + '" />';
@@ -1009,3 +1010,73 @@ function addClient(id, pardat) {
     });
 }
 
+// User Client
+function UserClient() {
+
+    $.ajax({
+        cache: false,
+        type: 'GET',
+        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        url: APIURL + 'user/clientmanage',
+        dataType: 'json',
+        success: function (data) {
+            var dattab = [];
+            var no = 1;
+            $.each(data.data, function (k, v) {
+                perdata = {
+                    "1": no,
+                    "2": v['user_name'],
+                    "3": v['user_email'],
+                    "4": v['level_name'],
+                    "5": v['user_status'],
+                    "6": '<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
+                };
+                dattab.push(perdata);
+                no++;
+            });
+            var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }]
+            // setTableContent('#example', colome, dattab);
+            $('#example thead tr').clone(true).addClass('filters').appendTo( '#example thead' );
+            var table = $('#example').DataTable({
+                columns: colome,
+                lengthChange: false,
+                data: dattab,
+                orderCellsTop: true,
+                fixedHeader: true
+            });
+
+            table.columns().eq(0).each(function(colIdx) {
+                var cell = $('.filters .kolom').eq($(table.column(colIdx).header()).index());
+                console.log(cell);
+                var title = $(cell).text();
+                $(cell).html( '<input type="text" class="form-control" placeholder="Cari '+title+'" />' );
+         
+                $('input', $('.filters th').eq($(table.column(colIdx).header()).index()) ).off('keyup change').on('keyup change', function (e) {
+                    e.stopPropagation();
+                    $(this).attr('title', $(this).val());
+                        var regexr = '({search})'; //$(this).parents('th').find('select').val();
+                        table
+                            .column(colIdx)
+                            .search((this.value != "") ? regexr.replace('{search}', '((('+this.value+')))') : "", this.value != "", this.value == "")
+                            .draw();
+                     
+                });
+     
+                $('select', $('.filters th').eq($(table.column(colIdx).header()).index()) ).off('change').on('change', function () {
+                    $(this).parents('th').find('input').trigger('change');
+                });
+            });
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status != 500) {
+                if (jqXHR.status == 400) {
+                    window.location = "logout.html";
+                }
+                var strjson = JSON.parse(jqXHR.responseText);
+            } else {
+            }
+        }
+    });
+}
