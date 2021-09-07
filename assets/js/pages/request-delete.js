@@ -15,15 +15,14 @@ $('#search').on('click', function () {
 
 function getRequestDelete(is_search) {
 	var highlight = 'PRISMA';
-	if(is_search)
-	{
+	if (is_search) {
 		var area = $("#province").val();
 		// var area = 3217;
 		var industry = $("#industry").val();
 		var owner = $("#owner").val();
 		var type = $("#type").val();
 		var parameter = 'data/reqtodel?area=' + area + '&owner=' + owner + '&type=' + type + '&industry=' + industry;
-	}else{
+	} else {
 		var parameter = 'data/reqtodel';
 	}
 
@@ -36,24 +35,42 @@ function getRequestDelete(is_search) {
 		success: function (data) {
 			var dattab = [];
 			var no = 1;
+			let data_tersimpan = [];
 			$.each(data.data, function (k, v) {
-				perdata = {
-					"1": v[4]==highlight?'<font color="red">'+no+'</font>':no, 
-					"2": v[4]==highlight?'<font color="red">'+v[1]+'</font>':v[1], 
-					"3": v[4]==highlight?'<font color="red">'+v[3]+'</font>':v[3], 
-					"4": v[4]==highlight?'<font color="red">'+v[2]+'</font>':v[2], 
-					"5": v[4]==highlight?'<font color="red">'+v[5]+'</font>':v[5], 
-					"6": v[4]==highlight?'<font color="red">'+v[7]+'</font>':v[7], 
-					"7": v[4]==highlight?'<font color="red">'+v[6]+'</font>':v[6],
-					"8": v[4]==highlight?'<font color="red">'+v[8]+'</font>':v[8],  
-					"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\', \'' + v[6] + '\')"><span class="fa fa-check" ></span></button>' +
-						'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\', \'' + v[6] + '\')"><span class="fa fa-times"></span></button>'
-				};
-				dattab.push(perdata);
-				no++;
+				if (data_tersimpan.find(c => c.nomor_id === v[0])) {
+					// console.log('test', data_tersimpan.find(c => c.nomor_id === 1222));
+					console.log('data ', v[1],'tidak bisa di lanjut');
+				} else {
+					data_tersimpan.push({
+						nomor_id: v[0],
+						canvas: v[1]
+					});
+					console.log('data baru');
+					// const result = simpan.find( ({nomor_id}) => nomor_id === v[0]);
+					// perdata2 = {
+					// 	"nomor_id" : v[0]
+					// }
+					// simpan.push(result);
+					// console.log('hasil',simpan);
+					perdata = {
+						"1": v[4] == highlight ? '<font color="red">' + no + '</font>' : no,
+						"2": v[4] == highlight ? '<font color="red">' + v[1] + '</font>' : v[1],
+						"3": v[4] == highlight ? '<font color="red">' + v[3] + '</font>' : v[3],
+						"4": v[4] == highlight ? '<font color="red">' + v[2] + '</font>' : v[2],
+						"5": v[4] == highlight ? '<font color="red">' + v[5] + '</font>' : v[5],
+						"6": v[4] == highlight ? '<font color="red">' + v[7] + '</font>' : v[7],
+						"7": v[4] == highlight ? '<font color="red">' + v[6] + '</font>' : v[6],
+						"8": v[4] == highlight ? '<font color="red">' + v[8] + '</font>' : v[8],
+						"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\', \'' + v[6] + '\')"><span class="fa fa-check" ></span></button>' +
+							'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\', \'' + v[6] + '\')"><span class="fa fa-times"></span></button>'
+					};
+					dattab.push(perdata);
+					no++;
+				}
 			});
-			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8"}, { data: "9"},]
+			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }, { data: "9" },]
 			setTableContent('#request_del', colome, dattab);
+			console.log('data_tersimpan',data_tersimpan)
 
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
@@ -81,23 +98,23 @@ function getArchieveDelete() {
 			var no = 1;
 			$.each(data.data, function (k, v) {
 				perdata = {
-					"1": v['owner']==highlight?'<font color="red">'+no+'</font>':no, 
-					"2": v['owner']==highlight?'<font color="red">'+v['no_cnv']+'</font>':v['no_cnv'], 
-					"3": v['owner']==highlight?'<font color="red">'+v['district']+'</font>':v['district'],
-					"4": v['owner']==highlight?'<font color="red">'+v['no_site']+'</font>':v['no_site'],
-					"5": v['owner']==highlight?'<font color="red">'+v['address']+'</font>':v['address'],
-					"6": v['owner']==highlight?'<font color="red">'+v['detail_status']['requester ']+'</font>':v['detail_status']['requester '],
-					"7": v['owner']==highlight?'<font color="red">'+v['detail_status']['tgl_pengajuan']+'</font>':v['detail_status']['tgl_pengajuan'],
-					"8": v['owner']==highlight?'<font color="red">'+v['archive_date']+'</font>':v['archive_date'],
-					"9": v['owner']==highlight?'<font color="red">'+v['detail_status']['status']+'</font>':v['detail_status']['status'],
+					"1": v['owner'] == highlight ? '<font color="red">' + no + '</font>' : no,
+					"2": v['owner'] == highlight ? '<font color="red">' + v['no_cnv'] + '</font>' : v['no_cnv'],
+					"3": v['owner'] == highlight ? '<font color="red">' + v['district'] + '</font>' : v['district'],
+					"4": v['owner'] == highlight ? '<font color="red">' + v['no_site'] + '</font>' : v['no_site'],
+					"5": v['owner'] == highlight ? '<font color="red">' + v['address'] + '</font>' : v['address'],
+					"6": v['owner'] == highlight ? '<font color="red">' + v['detail_status']['requester '] + '</font>' : v['detail_status']['requester '],
+					"7": v['owner'] == highlight ? '<font color="red">' + v['detail_status']['tgl_pengajuan'] + '</font>' : v['detail_status']['tgl_pengajuan'],
+					"8": v['owner'] == highlight ? '<font color="red">' + v['archive_date'] + '</font>' : v['archive_date'],
+					"9": v['owner'] == highlight ? '<font color="red">' + v['detail_status']['status'] + '</font>' : v['detail_status']['status'],
 					// "9": '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v[0] + '\', \'true\')"><span class="fa fa-history" ></span></button>'
 					"10": '<button class="btn btn-success btn-rounded" data-toggle="modal" data-target=".history_archieve" title="History" onclick="history(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-search" ></span></button>',
-					"11": v['rollback_interval']<=3600?'<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-history" ></span></button>':'-',
+					"11": v['rollback_interval'] <= 3600 ? '<button class="btn btn-success btn-rounded" title="Rollback" onclick="rollback(\'' + v['ooh_id'] + '\', \'true\', \'' + v['detail_status']['tgl_pengajuan'] + '\')"><span class="fa fa-history" ></span></button>' : '-',
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" },  { data: "8" }, { data: "9" }, { data: "10" }, {data: "11"}]
+			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }, { data: "9" }, { data: "10" }, { data: "11" }]
 			setTableContent('#archieve_del', colome, dattab);
 
 		},
@@ -113,7 +130,7 @@ function getArchieveDelete() {
 	});
 }
 
-function approval(oid, type,createat) {
+function approval(oid, type, createat) {
 	if (type == 'r') {
 		var teks = 'Menolak';
 	} else {
@@ -133,7 +150,7 @@ function approval(oid, type,createat) {
 	});
 }
 
-function rollback(oid, type,createat) {
+function rollback(oid, type, createat) {
 	swal({
 		title: "Warning",
 		html: "Apakah anda yakin untuk mengembalikan data ini ke request ?",
@@ -143,21 +160,21 @@ function rollback(oid, type,createat) {
 		confirmButtonColor: "#ec6c62"
 	}).then(function (isConfirm) {
 		if (isConfirm.value) {
-			confirmedArchieve(oid, type,createat)
+			confirmedArchieve(oid, type, createat)
 		}
 	});
 }
 
-function confirmed(oid, type,createat) {
+function confirmed(oid, type, createat) {
 	var created_at = createat.replace(" ", "+");
 	$.ajax({
-		url: APIURL + "data/reqtodel?action="+type+"&oid="+oid+"&createdat="+created_at,
+		url: APIURL + "data/reqtodel?action=" + type + "&oid=" + oid + "&createdat=" + created_at,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-		data : {'action' : type, 'oid' : oid},
+		data: { 'action': type, 'oid': oid },
 		type: "POST",
 		success: function (data, textStatus, jqXHR) {
 			var result = data.data;
-			if (result==1) {
+			if (result == 1) {
 				swal({
 					title: "Success!",
 					text: "Data Submitted",
@@ -201,17 +218,17 @@ function confirmed(oid, type,createat) {
 }
 
 
-function confirmedArchieve(oid, type,createat) {
+function confirmedArchieve(oid, type, createat) {
 	var created_at = createat.replace(" ", "+");
 	$.ajax({
-		url: APIURL + "data/archivedel?action="+type+"&oid="+oid+"&createdat="+created_at,
+		url: APIURL + "data/archivedel?action=" + type + "&oid=" + oid + "&createdat=" + created_at,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-		data : {'action' : type, 'oid' : oid},
+		data: { 'action': type, 'oid': oid },
 		type: "POST",
 		success: function (data, textStatus, jqXHR) {
 			// alert(data);
 			var result = data.data;
-			if (result==1) {
+			if (result == 1) {
 				swal({
 					title: "Success!",
 					text: "Data Submitted",
@@ -256,7 +273,7 @@ function confirmedArchieve(oid, type,createat) {
 
 function history(oid) {
 	$.ajax({
-		url: APIURL + "data/archivedel?old_data="+"&history=t"+"&oid="+oid,
+		url: APIURL + "data/archivedel?old_data=" + "&history=t" + "&oid=" + oid,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		type: "GET",
 		dataType: "json",
@@ -265,14 +282,14 @@ function history(oid) {
 			var no = 1;
 			$.each(data.data, function (k, v) {
 				perdata = {
-					"1": no, 
-					"2": v['tgl_pengajuan'], 
+					"1": no,
+					"2": v['tgl_pengajuan'],
 					"3": v['status'],
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1"}, { data: "2"}, { data: "3" }]
+			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }]
 			setTableContent('#history_archieve_data', colome, dattab);
 
 		},
