@@ -284,7 +284,7 @@ function history(oid) {
 				perdata = {
 					"1": no,
 					"2": v['tgl_pengajuan'],
-					"3": v['status'],
+					"3": v['status']===null?'Hapus Manual':v['status'],
 				};
 				dattab.push(perdata);
 				no++;
