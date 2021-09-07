@@ -290,7 +290,9 @@ function addUser(id, pardat) {
                 var optionsAsString = "";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>";
+                    v[1] === 'PRISMA ADS' ?
+                        optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>"
+                        : '';
                 });
                 $('#user_company').find('option').remove();
                 $('#user_company').append(optionsAsString);
@@ -318,7 +320,9 @@ function addUser(id, pardat) {
                 var optionsAsString = "";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[6] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>";
+                    v[1] != 'CLIENT' ?
+                        optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>"
+                        : '';
                 });
                 $('#user_level').find('option').remove();
                 $('#user_level').append(optionsAsString);
@@ -782,8 +786,8 @@ function addClient(id, pardat) {
             + '<hr style="margin-bottom:1px">'
             + '<form id="formadduser">'
             + '<input type="hidden" name="user_id" value="' + id + '" />';
-            
-            dathtml += '<div class="row">'
+
+        dathtml += '<div class="row">'
             + '<div class="col-md-12">'
             + '<div class="form-horizontal">'
             + '<div class="panel-body form-group-separated">'
@@ -792,25 +796,25 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Nama Perusahaan</b></label>'
-            + '<select class="form-control select" id="user_company" name="user_company"></select> '
+            + '<select class="form-control" style="text-align:left" id="user_company2" name="user_company"></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Nama Lengkap Client</b></label>'
-            + '<input type="text" id="user_name" name="user_name" class="form-control" value="' + (id != "" && pardat ? pardat[2] : "") + '" />'
+            + '<select class="form-control" style="text-align:left" id="user_client" name="user_client"></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Email Client</b></label>'
-            + '<input type="text" id="user_email" name="user_email" class="form-control" value="' + (id != "" && pardat ? pardat[4] : "") + '" />'
+            + '<input type="text" id="user_email" name="user_email" class="form-control" value="" readonly />'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Alamat Perusahaan</b></label>'
-            + '<textarea name="user_address" id="user_address" class="form-control" rows="2">' + (id != "" && pardat ? pardat[3] : "") + '</textarea>'
+            + '<textarea name="user_address" id="user_address" class="form-control" rows="2" readonly></textarea>'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
@@ -871,6 +875,8 @@ function addClient(id, pardat) {
             showConfirmButton: false
         });
 
+        $('#user_client').prop('disabled', 'disabled');
+
         $.ajax({
             cache: false,
             type: 'GET',
@@ -882,12 +888,47 @@ function addClient(id, pardat) {
                 var optionsAsString = "";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>";
+                    optionsAsString += "<option " + ste + " value='" + v[5] + "'>" + v[1] + "</option>";
                 });
-                $('#user_company').find('option').remove();
-                $('#user_company').append(optionsAsString);
+                $('#user_company2').find('option').remove();
+                $('#user_company2').append(optionsAsString);
                 // $('.select').selectpicker('refresh');
                 // $("$user_company").select2('refresh');
+
+                $('#user_company2').on('change', function () {
+                    $("#user_email").val('');
+                    $("#user_address").val('');
+                    $.ajax({
+                        cache: false,
+                        type: 'GET',
+                        data: {},
+                        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+                        url: APIURL + 'data/filterindustry',
+                        dataType: 'json',
+                        success: function (data) {
+                            // $('#user_client option:first').prop('selected',true);
+                            $('#user_client').append('<option>coba</option>');
+                            if (typeof data != 'object') { data = $.parseJSON(data); }
+                            var optionsAsString = "";
+                            $.each(data.data, function (k, v) {
+                                var ste = pardat[9] == v[0] ? 'SELECTED' : '';
+                                optionsAsString += "<option " + ste + " value='" + v[0] + "|"+ v[1] + "'>" + v[1] + "</option>";
+                            });
+                            $('#user_client').find('option').remove();
+                            $('#user_client').append(optionsAsString);
+                            $('#user_client').prop('disabled', false);
+
+                            // Menu mengambil nilai klien
+                            $('#user_client').on('change', function () {
+                                var str = $(this).val();
+                                var email = str.split("|")[0];
+                                var address = str.split("|")[1];
+                                $("#user_email").val(email);
+                                $("#user_address").val(address);
+                            });
+                        }
+                    });
+                });
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 if (jqXHR.status != 500) {
@@ -897,53 +938,6 @@ function addClient(id, pardat) {
                     var strjson = JSON.parse(jqXHR.responseText);
                 } else {
                 }
-            }
-        });
-
-        $.ajax({
-            cache: false,
-            type: 'GET',
-            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-            url: APIURL + 'user/company',
-            dataType: 'json',
-            success: function (data) {
-                if (typeof data != 'object') { data = $.parseJSON(data); }
-                var optionsAsString = "";
-                $.each(data.data, function (k, v) {
-                    var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>";
-                });
-                $('#user_company').find('option').remove();
-                $('#user_company').append(optionsAsString);
-                $('.select').selectpicker('refresh');
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status != 500) {
-                    if (jqXHR.status == 400) {
-                        window.location = "logout.html";
-                    }
-                    var strjson = JSON.parse(jqXHR.responseText);
-                } else {
-                }
-            }
-        });
-
-        $.ajax({
-            cache: false,
-            type: 'GET',
-            data: {},
-            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-            url: APIURL + 'data/filterindustry',
-            dataType: 'json',
-            success: function (data) {
-                if (typeof data != 'object') { data = $.parseJSON(data); }
-                var optionsAsString = "";
-                $.each(data.data, function (k, v) {
-                    var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[0] + "'>" + v[1] + "</option>";
-                });
-                $('#user_industry').find('option').remove();
-                $('#user_industry').append(optionsAsString);
             }
         });
 
@@ -1010,12 +1004,16 @@ function addClient(id, pardat) {
         placeholder: '-- Pilih Industri Yang Bisa Di Pilih --'
     });
 
-    $("#user_company").select2({
+    $("#user_company2").select2({
         placeholder: '-- Pilih Nama Perusahaan --'
     });
 
     $("#user_provinsi").select2({
         placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
+    });
+
+    $("#user_client").select2({
+        placeholder: '-- Silahkan Pilih Klien --',
     });
 }
 
@@ -1037,7 +1035,7 @@ function UserClient() {
                     "2": v['user_name'],
                     "3": v['user_email'],
                     "4": v['company_name'],
-                    "5": v['user_status'] == 'A'?'Aktif':'Non Aktif',
+                    "5": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
                     "6": '<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
                 };
@@ -1046,7 +1044,7 @@ function UserClient() {
             });
             var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }]
             // setTableContent('#example', colome, dattab);
-            $('#example thead tr').clone(true).addClass('filters').appendTo( '#example thead' );
+            $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
             var table = $('#example').DataTable({
                 columns: colome,
                 lengthChange: false,
@@ -1055,24 +1053,24 @@ function UserClient() {
                 fixedHeader: true
             });
 
-            table.columns().eq(0).each(function(colIdx) {
+            table.columns().eq(0).each(function (colIdx) {
                 var cell = $('.filters .kolom').eq($(table.column(colIdx).header()).index());
                 console.log(cell);
                 var title = $(cell).text();
-                $(cell).html( '<input type="text" class="form-control" placeholder="Cari '+title+'" />' );
-         
-                $('input', $('.filters th').eq($(table.column(colIdx).header()).index()) ).off('keyup change').on('keyup change', function (e) {
+                $(cell).html('<input type="text" class="form-control" placeholder="Cari ' + title + '" />');
+
+                $('input', $('.filters th').eq($(table.column(colIdx).header()).index())).off('keyup change').on('keyup change', function (e) {
                     e.stopPropagation();
                     $(this).attr('title', $(this).val());
-                        var regexr = '({search})'; //$(this).parents('th').find('select').val();
-                        table
-                            .column(colIdx)
-                            .search((this.value != "") ? regexr.replace('{search}', '((('+this.value+')))') : "", this.value != "", this.value == "")
-                            .draw();
-                     
+                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
+                    table
+                        .column(colIdx)
+                        .search((this.value != "") ? regexr.replace('{search}', '(((' + this.value + ')))') : "", this.value != "", this.value == "")
+                        .draw();
+
                 });
-     
-                $('select', $('.filters th').eq($(table.column(colIdx).header()).index()) ).off('change').on('change', function () {
+
+                $('select', $('.filters th').eq($(table.column(colIdx).header()).index())).off('change').on('change', function () {
                     $(this).parents('th').find('input').trigger('change');
                 });
             });
@@ -1088,4 +1086,68 @@ function UserClient() {
             }
         }
     });
+}
+
+function saveClien() {
+    var form = $("#formadduser")[0];
+    var data = new FormData(form);
+    var indname = $('#user_login').val();
+    var usremail = $('#user_email').val();
+    if (indname || usremail) {
+        $.ajax({
+            url: APIURL + "user/usermanage",
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            type: "POST",
+            enctype: 'multipart/form-data',
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data, textStatus, jqXHR) {
+                var result = data.data;
+                if (result) {
+                    swal({
+                        title: "Success!",
+                        text: "Data Saved",
+                        type: "success",
+                        confirmButtonText: "OK"
+                    });
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: "Duplicate User Login or Email !",
+                        type: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+                UserClient();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status != 500) {
+                    var strjson = JSON.parse(jqXHR.responseText);
+                    swal({
+                        title: "Error",
+                        text: strjson.processMessage,
+                        type: "error",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Close"
+                    });
+                } else {
+                    swal({
+                        title: "Error",
+                        text: "Internal Server Error",
+                        type: "error",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Close"
+                    }, function () {
+                        // location.reload();
+                    });
+                }
+            }
+        });
+    } else {
+        $('#user_name').first().focus();
+    }
 }

@@ -284,12 +284,13 @@ function history(oid) {
 				perdata = {
 					"1": no,
 					"2": v['tgl_pengajuan'],
-					"3": v['status']===null?'Hapus Manual':v['status'],
+					"3": v['tgl_archive'],
+					"4": v['status']===null?'Hapus Manual':v['status'],
 				};
 				dattab.push(perdata);
 				no++;
 			});
-			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }]
+			var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }]
 			setTableContent('#history_archieve_data', colome, dattab);
 
 		},
