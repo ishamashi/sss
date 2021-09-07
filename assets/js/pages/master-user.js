@@ -779,63 +779,73 @@ function addClient(id, pardat) {
     if (true) {
         var dathtml = '<div class="col-md-12">'
             + '<h4 style="text-align:left"> <span class="fa fa-plus"></span> ' + (id != "" ? "EDIT" : "PENDAFTARAN") + ' KLIEN BARU</h4>'
-            + '<p> Please check the input before save </p> <hr>'
+            + '<hr style="margin-bottom:1px">'
             + '<form id="formadduser">'
             + '<input type="hidden" name="user_id" value="' + id + '" />';
-
-        dathtml += '<div class="row">'
+            
+            dathtml += '<div class="row">'
             + '<div class="col-md-12">'
             + '<div class="form-horizontal">'
             + '<div class="panel-body form-group-separated">'
+            + '<h2 align="left">Profil</h2>'
+            + '<br>'
             + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Full Name</label>'
             + '<div class="col-md-9 col-xs-7">'
-            + '<input type="text" id="user_name" name="user_name" class="form-control" value="' + (id != "" && pardat ? pardat[2] : "") + '" />'
-            + '</div>'
-            + '</div>'
-            + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Email</label>'
-            + '<div class="col-md-9 col-xs-7">'
-            + '<input type="text" id="user_email" name="user_email" class="form-control" value="' + (id != "" && pardat ? pardat[4] : "") + '" />'
-            + '</div>'
-            + '</div>'
-            + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Company</label>'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Nama Perusahaan</b></label>'
             + '<select class="form-control select" id="user_company" name="user_company"></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Address</label>'
             + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Nama Lengkap Client</b></label>'
+            + '<input type="text" id="user_name" name="user_name" class="form-control" value="' + (id != "" && pardat ? pardat[2] : "") + '" />'
+            + '</div>'
+            + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Email Client</b></label>'
+            + '<input type="text" id="user_email" name="user_email" class="form-control" value="' + (id != "" && pardat ? pardat[4] : "") + '" />'
+            + '</div>'
+            + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Alamat Perusahaan</b></label>'
             + '<textarea name="user_address" id="user_address" class="form-control" rows="2">' + (id != "" && pardat ? pardat[3] : "") + '</textarea>'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Provinsi</label>'
             + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Status</b></label>'
+            + '<br>'
+            + '</div>'
+            + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="pull-left">'
+            + '<input type="radio" class="form-check-input" value="aktif" name="status" checked><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="tidak_aktif" name="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+            + '<br>'
+            + '<h2 align="left">Layanan</h2>'
+            + '<br>'
+            + '<div class="form-group">'
+            + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Akses Provinsi</b></label>'
             + '<select class="form-control" id="user_provinsi" name="user_provinsi" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Industry</label>'
             + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Akses Industri</b></label>'
             + '<select class="form-control" id="user_industry" name="user_industry" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Masa Langganan (Bulan)</label>'
             + '<div class="col-md-9 col-xs-7">'
+            + '<label class="pull-left"><b>Masa Layanan</b></label>'
             + '<input type="text" id="lama_langganan" name="lama_langganan" class="form-control" value="' + (id != "" && pardat ? pardat[2] : "") + '" />'
-            + '</div>'
-            + '</div>'
-            + '<div class="form-group">'
-            + '<label class="col-md-3 col-xs-5 control-label">Status</label>'
-            + '<div class="col-md-9 col-xs-7">'
-            + '<select class="form-control select" id="user_status" name="user_status">'
-            + '<option value="A" >ACTIVE</option>'
-            + '<option value="I">INACTIVE</option>'
-            + '</select> '
             + '</div>'
             + '</div>'
             + '</div>'
@@ -846,7 +856,6 @@ function addClient(id, pardat) {
         dathtml += '</form>'
             + '</div>'
             + '<div class="col-md-12">'
-            + '<div class="col-md-8"></div>'
             + '<div class="col-md-2">'
             + '<button type="button" class="btn btn-warning" id="resetFormUser"> Reset</button>'
             + '</div>'
@@ -998,15 +1007,15 @@ function addClient(id, pardat) {
 
     }
     $("#user_industry").select2({
-        placeholder: '-- Silahkan Pilih Industry --'
+        placeholder: '-- Pilih Industri Yang Bisa Di Pilih --'
     });
 
     $("#user_company").select2({
-        placeholder: '-- Silahkan Pilih Company --'
+        placeholder: '-- Pilih Nama Perusahaan --'
     });
 
     $("#user_provinsi").select2({
-        placeholder: '-- Silahkan Pilih Provinsi --',
+        placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
     });
 }
 
@@ -1027,8 +1036,8 @@ function UserClient() {
                     "1": no,
                     "2": v['user_name'],
                     "3": v['user_email'],
-                    "4": v['level_name'],
-                    "5": v['user_status'],
+                    "4": v['company_name'],
+                    "5": v['user_status'] == 'A'?'Aktif':'Non Aktif',
                     "6": '<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
                 };
