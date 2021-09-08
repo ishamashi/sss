@@ -418,6 +418,10 @@ function resetFormUser() {
     document.getElementById("formadduser").reset();
 }
 
+function resetFormClient() {
+    document.getElementById("formaddclient").reset();
+}
+
 function saveUser() {
     var form = $("#formadduser")[0];
     var data = new FormData(form);
@@ -784,7 +788,7 @@ function addClient(id, pardat) {
         var dathtml = '<div class="col-md-12">'
             + '<h4 style="text-align:left"> <span class="fa fa-plus"></span> ' + (id != "" ? "EDIT" : "PENDAFTARAN") + ' KLIEN BARU</h4>'
             + '<hr style="margin-bottom:1px">'
-            + '<form id="formadduser">'
+            + '<form id="formaddclient">'
             + '<input type="hidden" name="user_id" value="' + id + '" />';
 
         dathtml += '<div class="row">'
@@ -794,37 +798,37 @@ function addClient(id, pardat) {
             + '<h2 align="left">Profil</h2>'
             + '<br>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Nama Perusahaan</b></label>'
             + '<select class="form-control" style="text-align:left" id="user_company2" name="user_company"></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Nama Lengkap Client</b></label>'
             + '<select class="form-control" style="text-align:left" id="user_client" name="user_client"></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Email Client</b></label>'
             + '<input type="text" id="user_email" name="user_email" class="form-control" value="" readonly />'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Alamat Perusahaan</b></label>'
             + '<textarea name="user_address" id="user_address" class="form-control" rows="2" readonly></textarea>'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Status</b></label>'
             + '<br>'
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<div class="pull-left">'
             + '<input type="radio" class="form-check-input" value="aktif" name="status" checked><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
             + '<input type="radio" class="form-check-input" value="tidak_aktif" name="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
@@ -835,22 +839,26 @@ function addClient(id, pardat) {
             + '<h2 align="left">Layanan</h2>'
             + '<br>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Provinsi</b></label>'
             + '<select class="form-control" id="user_provinsi" name="user_provinsi" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
-            + '<div class="col-md-9 col-xs-7">'
+            + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Industri</b></label>'
             + '<select class="form-control" id="user_industry" name="user_industry" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
-            + '<label class="pull-left"><b>Masa Layanan</b></label>'
-            + '<input type="text" id="lama_langganan" name="lama_langganan" class="form-control" value="' + (id != "" && pardat ? pardat[2] : "") + '" />'
+            + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
+            + '<br>'
+            + '<input type="text" class="form-control date-picker" aria-describedby="basic-addon2" placeholder="Tangagl Mulai Layanan" id="masa_layanan">'
             + '</div>'
+            + '<div class="col-md-3 col-xs-7">'
+            + '<label class="pull-left"><b>Durasi</b></label>'
+            + '<input type="number" class="form-control" aria-describedby="basic-addon2" placeholder="Bulan" id="bulan_layanan">'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -861,18 +869,24 @@ function addClient(id, pardat) {
             + '</div>'
             + '<div class="col-md-12">'
             + '<div class="col-md-2">'
-            + '<button type="button" class="btn btn-warning" id="resetFormUser"> Reset</button>'
+            + '<button type="button" class="btn btn-warning pull-left" id="resetFormClient"> Reset</button>'
             + '</div>'
             + '<div class="col-md-2">'
-            + '<button type="button" class="btn btn-success" id="saveClien"><span class="fa fa-save"></span> Save</button>'
+            + '<button type="button" class="btn btn-success pull-left" id="saveClient"><span class="fa fa-save"></span> Save</button>'
             + '</div>';
         +'</div>';
         swal({
             html: dathtml,
-            width: 750,
+            width: 500,
             showCloseButton: true,
             showCancelButton: false,
-            showConfirmButton: false
+            showConfirmButton: false,
+            onOpen: function () {
+                $('#masa_layanan').datepicker({
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
+                });
+            }
         });
 
         $('#user_client').prop('disabled', 'disabled');
@@ -885,7 +899,7 @@ function addClient(id, pardat) {
             dataType: 'json',
             success: function (data) {
                 if (typeof data != 'object') { data = $.parseJSON(data); }
-                var optionsAsString = "";
+                var optionsAsString = "<option></option>";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
                     optionsAsString += "<option " + ste + " value='" + v[5] + "'>" + v[1] + "</option>";
@@ -898,21 +912,21 @@ function addClient(id, pardat) {
                 $('#user_company2').on('change', function () {
                     $("#user_email").val('');
                     $("#user_address").val('');
+                    $('#user_client').val(null).trigger('change');
                     $.ajax({
                         cache: false,
                         type: 'GET',
                         data: {},
                         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-                        url: APIURL + 'data/filterindustry',
+                        url: APIURL + 'user/clientmanage?id_k=' + $(this).val(),
                         dataType: 'json',
                         success: function (data) {
-                            // $('#user_client option:first').prop('selected',true);
-                            $('#user_client').append('<option>coba</option>');
                             if (typeof data != 'object') { data = $.parseJSON(data); }
-                            var optionsAsString = "";
+                            var optionsAsString = "<option></option>";
                             $.each(data.data, function (k, v) {
-                                var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                                optionsAsString += "<option " + ste + " value='" + v[0] + "|"+ v[1] + "'>" + v[1] + "</option>";
+                                // alert(v['nama_pic']);
+
+                                optionsAsString += "<option value='" + v['email_pic'] + "|" + v['alamat_klien'] + "'>" + v['nama_pic'] + "</option>";
                             });
                             $('#user_client').find('option').remove();
                             $('#user_client').append(optionsAsString);
@@ -921,11 +935,30 @@ function addClient(id, pardat) {
                             // Menu mengambil nilai klien
                             $('#user_client').on('change', function () {
                                 var str = $(this).val();
-                                var email = str.split("|")[0];
-                                var address = str.split("|")[1];
-                                $("#user_email").val(email);
-                                $("#user_address").val(address);
+                                if (str != '' && str!=null) {
+                                    console.log(str);
+                                    var email = str.split("|")[0];
+                                    var address = str.split("|")[1];
+                                    $("#user_email").val(email);
+                                    $("#user_address").val(address);
+                                }
                             });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            if (jqXHR.status != 500) {
+                                var strjson = JSON.parse(jqXHR.responseText);
+                                swal({
+                                    title: "Error",
+                                    text: strjson.processMessage,
+                                    type: "error",
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "Close"
+                                });
+                            } else {
+                                $('#user_client').prop('disabled', true);
+                                $('#user_client').find('option').remove();
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini');
+                            }
                         }
                     });
                 });
@@ -989,14 +1022,19 @@ function addClient(id, pardat) {
             $("#user_status").val(pardat[5]);
         }
 
-        $('#saveUser').click(function (e) {
+        $('#saveClient').click(function (e) {
             e.preventDefault();
-            saveUser();
+            alert('klien');
+            // saveUser();
         });
 
-        $('#resetFormUser').click(function (e) {
+        $('#resetFormClient').click(function (e) {
             e.preventDefault();
-            resetFormUser();
+            resetFormClient();
+            $('#user_industry').val(null).trigger('change');
+            $('#user_company2').val(null).trigger('change');
+            $('#user_provinsi').val(null).trigger('change');
+            $('#user_client').val(null).trigger('change');
         });
 
     }
@@ -1013,7 +1051,8 @@ function addClient(id, pardat) {
     });
 
     $("#user_client").select2({
-        placeholder: '-- Silahkan Pilih Klien --',
+        placeholder: "-- Silahkan Pilih Klien --",
+        allowClear: true
     });
 }
 
@@ -1151,3 +1190,11 @@ function saveClien() {
         $('#user_name').first().focus();
     }
 }
+
+// $('#fromDate').datepicker({
+//     orientation: "top auto",
+//     autoclose: true,
+// }).on("changeDate", function (selected) {
+//     var minDate = new Date(selected.date.valueOf());
+//     $('#toDate').datepicker('setStartDate', minDate);
+// });
