@@ -426,17 +426,18 @@ function setDataDetail(data) {
       prismaphoto = ERP_HOST + 'assets/img/'+theData.no_site+'.jpg';       
 
       var localset = 'assets/images/ooh-pictures/'+v1.image_night;
+      // var localset = IMAGE_HOST+'image/'+v1.image_night;
 
       tbcontent += '<li class="row cntne cntne-'+v1.content_id+'"><div class="col-md-4">Campaign</div><div class="col-md-8 text-primary ">'+v1.campaign_title+'</div></li>';
       tbcontent += '<li class="row cntne cntne-'+v1.content_id+'"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">'+v1.ind_name+'</div></li>';
       tbcontent += '<li class="row cntne cntne-'+v1.content_id+'"><div class="col-md-4">Sub Industry</div><div class="col-md-8 text-primary ">'+v1.subind_name+'</div></li>';
       tbcontent += '<li class="row cntne cntne-'+v1.content_id+'"><div class="col-md-4">Advertiser</div><div class="col-md-8 text-primary ">'+v1.comp_name+'</div></li>';
       //console.log(theData.owner);
-      //console.log(localset);
+      // console.log('image_host',IMAGE_HOST);
       
       html_img +='<div class="imgooh '+is_hiding+'" id="img-'+v1.content_id+'"><img src="'+localset+'" data-src="'+localset+'" class="wheelzoom imageooh" id="imageooh-'+v1.content_id+'"  width="512" height="320" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\' ;">\
               <div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">\
-                  <input type="checkbox" data-toggle="toggle" class="switchpic" checked data-size="mini" onchange="changePics('+v1.content_id+',\''+v1.image_night+'\',\''+v1.image_day+'\',\''+theData.owner+'\',\''+theData.no_site+'\',\''+theData.no_cnv+'\');" id="switchpic-'+v1.content_id+'" name="switchpic" data-on-text="Night" data-off-text="Day">\
+                  <input type="checkbox" data-toggle="toggle" class="switchpic" data-size="mini" onchange="changePics('+v1.content_id+',\''+v1.image_night+'\',\''+v1.image_day+'\',\''+theData.owner+'\',\''+theData.no_site+'\',\''+theData.no_cnv+'\');" id="switchpic-'+v1.content_id+'" name="switchpic" data-on-text="Night" data-off-text="Day">\
               </div></div>';
       if ($.inArray(v1.year, yea) < 0 ) yea.push(v1.year) ;
       if (typeof ymcont[v1.year+'-'+v1.month] == "undefined") ymcont[v1.year+'-'+v1.month] = [] ;
@@ -445,6 +446,7 @@ function setDataDetail(data) {
       whjm = k1 ;
       idx++;
     });
+
     tbcontent += '</ul>';
 
     $.each(yea, function(k1, y1){
@@ -711,6 +713,7 @@ function surrounding_poi(areaid,pointx,pointy,radius){
 
 
 function changePics(id,imgsrc1,imgsrc2,owner,no_site,no_cnv){
+  console.log('start change pic',imgsrc1,'-',imgsrc2);
   //console.log($("#switchpic-"+id).prop('checked'))
   /*
   if(owner == 'prisma'){
@@ -722,23 +725,51 @@ function changePics(id,imgsrc1,imgsrc2,owner,no_site,no_cnv){
     }
 
   }else{ */
-    var srcimage1 = 'assets/images/ooh-pictures/'+imgsrc2;
-    var srcimage2 = 'assets/images/ooh-pictures/'+imgsrc1;
-  //}
+    //}
+    
+    // var srcimage1 = IMAGE_HOST+'image/'+imgsrc2;
+    // var srcimage2 = IMAGE_HOST+'image/'+imgsrc1;
+
+    // src1 = night
+    // src2 = day
+    // i want to the default is day
+
+    var srcimage1 = 'assets/images/ooh-pictures/'+imgsrc1;
+    var img = new Image();
+    img.src = srcimage1;
+    if(img.height==0 && imgsrc2!='noimage.jpg')
+    {
+      srcimage1 = IMAGE_HOST+'image/'+imgsrc1
+    }
+
+    // console.log('height',img.height);
+
+    var srcimage2 = 'assets/images/ooh-pictures/'+imgsrc2;
+    var img2 = new Image();
+    img2.src = srcimage2;
+    // console.log('height',img2.height,'|',img2);
+    if(img2.height==0 && imgsrc2!='noimage.jpg')
+    {
+      srcimage2 = IMAGE_HOST+'image/'+imgsrc2;
+    }
+
 
 
   if ($("#switchpic-"+id).prop('checked') == true) { 
+    console.log('i am here 1');
     jQuery("#imageooh-"+id).error(function() {
-      this.src = "assets/images/ooh-pictures/noimage.jpg";
+      // this.src = "assets/images/ooh-pictures/noimage.jpg";
       //console.log('Error Loading Image');
     }).attr('src', srcimage2).appendTo("#imageooh-"+id);
     //$("#imageooh-"+id).attr("src", "assets/images/ooh-pictures/"+imgsrc1+"");
     //console.log('Edited');
-  } else {        
-    //$("#imageooh-"+id).attr("src", "assets/images/ooh-pictures/"+imgsrc2+"");
+  } else {   
+    console.log('i am here 2');  
+    console.log(srcimage1);
+    $("#imageooh-"+id).attr("src", srcimage1);
     jQuery("#imageooh-"+id).error(function() {
       this.src = "assets/images/ooh-pictures/noimage.jpg";
-      //console.log('Error Loading Image');
+      console.log('Error Loading Image');
     }).attr('src', srcimage1).appendTo("#imageooh-"+id);
     //console.log('Actual');
   }

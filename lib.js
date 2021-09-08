@@ -1,30 +1,11 @@
 // ----- base url -----   
 
-var APIURL    = "http://103.78.81.228:8000/v1/";
+var APIURL     = "http://103.78.81.228:8000/v1_test/";
+//var APIURL     = "http://192.168.20.135:8000/v1/";
 
 var ERP_HOST = 'http://103.78.81.227/prisma/'; 
 var APP_HOST = '192.168.20.135';
 
-// Fungsi untuk session log out jika idle
-(function() {
-    var idleDurationSecs = 1800; // 30 Menit
-    var redirectUrl = 'logout.html';  // Redirect idle users to this URL
-    var idleTimeout;
-  
-    var resetIdleTimeout = function() {
-      if(idleTimeout) clearTimeout(idleTimeout);
-  
-      idleTimeout = setTimeout(function(){
-        location.href = redirectUrl
-      }, idleDurationSecs * 1000);
-    };
-  
-    resetIdleTimeout();
-  
-    ['click', 'touchstart', 'mousemove'].forEach(evt =>
-      document.addEventListener(evt, resetIdleTimeout, false)
-    );
-  })();
 
 // ----- local storage -----
 var access_key  = localStorage.getItem('prisma_key');
