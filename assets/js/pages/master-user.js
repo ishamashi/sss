@@ -1058,9 +1058,9 @@ function addClient(id, pardat) {
 
 // User Client
 function UserClient() {
-
+    var resend_email = true;
     $.ajax({
-        cache: false,
+        cache: true,
         type: 'GET',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         url: APIURL + 'user/clientmanage',
@@ -1075,9 +1075,13 @@ function UserClient() {
                     "3": v['user_email'],
                     "4": v['company_name'],
                     "5": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
-                    "6": '<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                    "6": (resend_email)?
+                    '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + v['user_id'] + '\')"></span></button>'+  
+                    '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>':
+                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
-                };
+                    };
                 dattab.push(perdata);
                 no++;
             });
