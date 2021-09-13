@@ -948,7 +948,7 @@ function addClient(id, pardat) {
                             }else{
                                 $('#user_client').prop('disabled', true);
                                 $('#user_client').find('option').remove();
-                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini');
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini, Silahkan Tambahkan Klien Melalui Aplikasi ERP');
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
@@ -958,7 +958,7 @@ function addClient(id, pardat) {
                             } else {
                                 $('#user_client').prop('disabled', true);
                                 $('#user_client').find('option').remove();
-                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini');
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini, Silahkan Tambahkan Klien Melalui Aplikasi ERP');
                             }
                         }
                     });
