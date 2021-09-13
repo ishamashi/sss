@@ -858,7 +858,7 @@ function addClient(id, pardat) {
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
             + '<label class="pull-left"><b>Durasi</b></label>'
-            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" id="bulan_layanan">'
+            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan">'
             + '</div>'
             + '</div>'
             + '</div>'
