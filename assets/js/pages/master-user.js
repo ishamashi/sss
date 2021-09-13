@@ -854,7 +854,7 @@ function addClient(id, pardat) {
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
             + '<br>'
-            + '<input type="text" class="form-control date-picker" name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan">'
+            + '<input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan">'
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
             + '<label class="pull-left"><b>Durasi</b></label>'
@@ -1073,10 +1073,12 @@ function UserClient() {
                 perdata = {
                     "1": no,
                     "2": v['user_name'],
-                    "3": v['user_email'],
-                    "4": v['company_name'],
-                    "5": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
-                    "6": (resend_email) ?
+                    "3": v['user_login'],
+                    "4": v['level_name'],
+                    "5": v['user_email'],
+                    "6": v['company_name'],
+                    "7": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
+                    "8": (resend_email) ?
                         '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>' :
@@ -1086,7 +1088,7 @@ function UserClient() {
                 dattab.push(perdata);
                 no++;
             });
-            var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }]
+            var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }]
             // setTableContent('#example', colome, dattab);
             $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
             var table = $('#example').DataTable({
@@ -1101,7 +1103,7 @@ function UserClient() {
                 var cell = $('.filters .kolom').eq($(table.column(colIdx).header()).index());
                 console.log(cell);
                 var title = $(cell).text();
-                $(cell).html('<input type="text" class="form-control" placeholder="Cari ' + title + '" />');
+                $(cell).html('<input type="text" class="form-control" placeholder="Cari..." />');
 
                 $('input', $('.filters th').eq($(table.column(colIdx).header()).index())).off('keyup change').on('keyup change', function (e) {
                     e.stopPropagation();
