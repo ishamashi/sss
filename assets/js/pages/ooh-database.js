@@ -765,7 +765,7 @@ function changePics(id, imgsrc1, imgsrc2, owner, no_site, no_cnv) {
 		img2.onerror = function () {
 			console.log('trying read image from server');
 			$("#imageooh-" + id).attr('src', loadingImage).appendTo("#imageooh-" + id);
-			srcimage2 = IMAGE_HOST + 'image/' + imgsrc2;
+			srcimage2 = IMAGE_HOST + 'image/optimize/' + imgsrc2;
 			var img2 = new Image();
 			img2.src = srcimage2;
 			
@@ -776,6 +776,10 @@ function changePics(id, imgsrc1, imgsrc2, owner, no_site, no_cnv) {
 
 			img2.onerror = function () {
 				console.log('image from server mobile not found')
+        srcimage2 = IMAGE_HOST + 'image/' + imgsrc2;
+        var img2 = new Image();
+			  img2.src = srcimage2;
+				$("#imageooh-" + id).attr('src', img2.src).appendTo("#imageooh-" + id);
 			}
 		}
 	} else {
@@ -794,7 +798,7 @@ function changePics(id, imgsrc1, imgsrc2, owner, no_site, no_cnv) {
 		img.onerror = function () {
 			console.log('trying read image from server (2)');
 			$("#imageooh-" + id).attr('src', loadingImage).appendTo("#imageooh-" + id);
-			srcimage1 = IMAGE_HOST + 'image/' + imgsrc1;
+			srcimage1 = IMAGE_HOST + 'image/optimize/' + imgsrc1;
 			var img = new Image();
 			img.src = srcimage1;
 
@@ -805,6 +809,11 @@ function changePics(id, imgsrc1, imgsrc2, owner, no_site, no_cnv) {
 
 			img.onerror = function () {
 				console.log('image from server mobile not found (2)')
+        srcimage1 = IMAGE_HOST + 'image/' + imgsrc1;
+        var img = new Image();
+			  img.src = srcimage1;
+				$("#imageooh-" + id).attr('src', img.src).appendTo("#imageooh-" + id);
+
 			}
 		}
 
