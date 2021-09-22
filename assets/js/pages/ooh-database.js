@@ -154,8 +154,8 @@ $(document).ready(function () {
 
 
 		$('.switchpic').bootstrapToggle({
-			on: 'Day',
-			off: 'Night',
+			on: 'Night',
+			off: 'Day',
 			size: 'mini',
 			onstyle: 'primary',
 			offstyle: 'default',
