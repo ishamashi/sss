@@ -721,7 +721,7 @@ function surrounding_poi(areaid, pointx, pointy, radius) {
 }
 
 
-function changePics(id, imgsrc1, imgsrc2, owner, no_site, no_cnv) {
+function changePics(id, imgsrc2, imgsrc1, owner, no_site, no_cnv) {
 	console.log('start change pic', imgsrc1, '-', imgsrc2);
 	//console.log($("#switchpic-"+id).prop('checked'))
 	/*
