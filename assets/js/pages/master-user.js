@@ -830,8 +830,8 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<div class="pull-left">'
-            + '<input type="radio" class="form-check-input" value="aktif" name="status" checked><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
-            + '<input type="radio" class="form-check-input" value="tidak_aktif" name="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '<input type="radio" class="form-check-input" value="aktif" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="tidak_aktif" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -841,24 +841,24 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Provinsi</b></label>'
-            + '<select class="form-control" id="user_provinsi" name="user_provinsi" multiple ></select> '
+            + '<select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Industri</b></label>'
-            + '<select class="form-control" id="user_industry" name="user_industry" multiple ></select> '
+            + '<select class="form-control" id="user_industry" name="user_industry[]" multiple ></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
             + '<br>'
-            + '<input type="text" class="form-control date-picker" aria-describedby="basic-addon2" placeholder="Tangagl Mulai Layanan" id="masa_layanan">'
+            + '<input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan">'
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
             + '<label class="pull-left"><b>Durasi</b></label>'
-            + '<input type="number" class="form-control" aria-describedby="basic-addon2" placeholder="Bulan" id="bulan_layanan">'
+            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan">'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -923,41 +923,42 @@ function addClient(id, pardat) {
                         success: function (data) {
                             if (typeof data != 'object') { data = $.parseJSON(data); }
                             var optionsAsString = "<option></option>";
-                            $.each(data.data, function (k, v) {
-                                // alert(v['nama_pic']);
+                            if(data.data !='No Data')
+                            {
+                                $.each(data.data, function (k, v) {
+                                    // alert(v['nama_pic']);
 
-                                optionsAsString += "<option value='" + v['email_pic'] + "|" + v['alamat_klien'] + "'>" + v['nama_pic'] + "</option>";
-                            });
-                            $('#user_client').find('option').remove();
-                            $('#user_client').append(optionsAsString);
-                            $('#user_client').prop('disabled', false);
+                                    optionsAsString += "<option value='" + v['email_pic'] + "|" + v['alamat_klien'] + "'>" + v['nama_pic'] + "</option>";
+                                });
+                                $('#user_client').find('option').remove();
+                                $('#user_client').append(optionsAsString);
+                                $('#user_client').prop('disabled', false);
 
-                            // Menu mengambil nilai klien
-                            $('#user_client').on('change', function () {
-                                var str = $(this).val();
-                                if (str != '' && str!=null) {
-                                    console.log(str);
-                                    var email = str.split("|")[0];
-                                    var address = str.split("|")[1];
-                                    $("#user_email").val(email);
-                                    $("#user_address").val(address);
-                                }
-                            });
+                                // Menu mengambil nilai klien
+                                $('#user_client').on('change', function () {
+                                    var str = $(this).val();
+                                    if (str != '' && str != null) {
+                                        console.log(str);
+                                        var email = str.split("|")[0];
+                                        var address = str.split("|")[1];
+                                        $("#user_email").val(email);
+                                        $("#user_address").val(address);
+                                    }
+                                });
+                            }else{
+                                $('#user_client').prop('disabled', true);
+                                $('#user_client').find('option').remove();
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini, Silahkan Tambahkan Klien Melalui Aplikasi ERP');
+                            }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             if (jqXHR.status != 500) {
                                 var strjson = JSON.parse(jqXHR.responseText);
-                                swal({
-                                    title: "Error",
-                                    text: strjson.processMessage,
-                                    type: "error",
-                                    confirmButtonColor: "#DD6B55",
-                                    confirmButtonText: "Close"
-                                });
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini');
                             } else {
                                 $('#user_client').prop('disabled', true);
                                 $('#user_client').find('option').remove();
-                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini');
+                                alert('Klien Tidak Di Temukan Untuk Perusahaan Ini, Silahkan Tambahkan Klien Melalui Aplikasi ERP');
                             }
                         }
                     });
@@ -1024,8 +1025,8 @@ function addClient(id, pardat) {
 
         $('#saveClient').click(function (e) {
             e.preventDefault();
-            alert('klien');
-            // saveUser();
+            // alert('klien');
+            saveClient();
         });
 
         $('#resetFormClient').click(function (e) {
@@ -1058,9 +1059,9 @@ function addClient(id, pardat) {
 
 // User Client
 function UserClient() {
-
+    var resend_email = true;
     $.ajax({
-        cache: false,
+        cache: true,
         type: 'GET',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         url: APIURL + 'user/clientmanage',
@@ -1072,16 +1073,22 @@ function UserClient() {
                 perdata = {
                     "1": no,
                     "2": v['user_name'],
-                    "3": v['user_email'],
-                    "4": v['company_name'],
-                    "5": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
-                    "6": '<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                    "3": v['user_login'],
+                    "4": v['level_name'],
+                    "5": v['user_email'],
+                    "6": v['company_name'],
+                    "7": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
+                    "8": (resend_email) ?
+                        '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>' :
+                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
                 };
                 dattab.push(perdata);
                 no++;
             });
-            var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }]
+            var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }]
             // setTableContent('#example', colome, dattab);
             $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
             var table = $('#example').DataTable({
@@ -1096,7 +1103,7 @@ function UserClient() {
                 var cell = $('.filters .kolom').eq($(table.column(colIdx).header()).index());
                 console.log(cell);
                 var title = $(cell).text();
-                $(cell).html('<input type="text" class="form-control" placeholder="Cari ' + title + '" />');
+                $(cell).html('<input type="text" class="form-control" placeholder="Cari..." />');
 
                 $('input', $('.filters th').eq($(table.column(colIdx).header()).index())).off('keyup change').on('keyup change', function (e) {
                     e.stopPropagation();
@@ -1127,68 +1134,75 @@ function UserClient() {
     });
 }
 
-function saveClien() {
-    var form = $("#formadduser")[0];
+function saveClient() {
+    alert($("#user_provinsi").val());
+    var form = $("#formaddclient")[0];
     var data = new FormData(form);
-    var indname = $('#user_login').val();
-    var usremail = $('#user_email').val();
-    if (indname || usremail) {
-        $.ajax({
-            url: APIURL + "user/usermanage",
-            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-            type: "POST",
-            enctype: 'multipart/form-data',
-            data: data,
-            processData: false,
-            contentType: false,
-            cache: false,
-            timeout: 600000,
-            success: function (data, textStatus, jqXHR) {
-                var result = data.data;
-                if (result) {
-                    swal({
-                        title: "Success!",
-                        text: "Data Saved",
-                        type: "success",
-                        confirmButtonText: "OK"
-                    });
-                } else {
-                    swal({
-                        title: "Error!",
-                        text: "Duplicate User Login or Email !",
-                        type: "error",
-                        confirmButtonText: "OK"
-                    });
-                }
-                UserClient();
+    var perusahan = $("#user_company2").val();
+    var nama_client = $("#user_client").val();
+    var client_email = $("#user_email").val();
+    var client_address = $("#user_address").val();
+    var status = $("#status").val();
+    var user_provinsi = $("#user_provinsi").val();
+    var user_industry = $("#user_industry").val();
+    var masa_layanan = $("#masa_layanan").val();
+    var bulan_layanan = $("#bulan_layanan").val();
 
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.status != 500) {
-                    var strjson = JSON.parse(jqXHR.responseText);
-                    swal({
-                        title: "Error",
-                        text: strjson.processMessage,
-                        type: "error",
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Close"
-                    });
-                } else {
-                    swal({
-                        title: "Error",
-                        text: "Internal Server Error",
-                        type: "error",
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Close"
-                    }, function () {
-                        // location.reload();
-                    });
-                }
+    console.log('form', data);
+    $.ajax({
+        url: APIURL + "user/usermanages",
+        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        type: "POST",
+        enctype: 'multipart/form-data',
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (data, textStatus, jqXHR) {
+            var result = data.data;
+            if (result) {
+                swal({
+                    title: "Success!",
+                    text: "Data Saved",
+                    type: "success",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                swal({
+                    title: "Error!",
+                    text: "Duplicate User Login or Email !",
+                    type: "error",
+                    confirmButtonText: "OK"
+                });
             }
-        });
-    } else {
-        $('#user_name').first().focus();
-    }
+            UserClient();
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status != 500) {
+                var strjson = JSON.parse(jqXHR.responseText);
+                swal({
+                    title: "Error",
+                    text: strjson.processMessage,
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "Internal Server Error",
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                }, function () {
+                    // location.reload();
+                });
+            }
+        }
+    });
+
 }
 
 // $('#fromDate').datepicker({
