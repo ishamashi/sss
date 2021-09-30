@@ -1311,9 +1311,6 @@ async function detailClient(base64) {
         showCloseButton: true,
         showCancelButton: false,
         showConfirmButton: false,
-        onOpen: function () {
-            console.log("OPEN SWAL")
-        }
     });
 
     $("#user_company2").select2({
