@@ -24,8 +24,7 @@ $(function () {
 
     filterListUser();
     filterListLevel();
-    UserClient();
-
+    UserClient(true);
     $('select').selectpicker();
 
 });
@@ -788,7 +787,7 @@ function addClient(id, pardat) {
         var dathtml = '<div class="col-md-12">'
             + '<h4 style="text-align:left"> <span class="fa fa-plus"></span> ' + (id != "" ? "EDIT" : "PENDAFTARAN") + ' KLIEN BARU</h4>'
             + '<hr style="margin-bottom:1px">'
-            + '<form id="formaddclient">'
+            + '<form id="formaddclient" method="POST" enctype="multipart/form-data">'
             + '<input type="hidden" name="user_id" value="' + id + '" />';
 
         dathtml += '<div class="row">'
@@ -800,13 +799,13 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Nama Perusahaan</b></label>'
-            + '<select class="form-control" style="text-align:left" id="user_company2" name="user_company"></select> '
+            + '<select class="form-control" style="text-align:left" id="user_company2" name="user_company" required></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Nama Lengkap Client</b></label>'
-            + '<select class="form-control" style="text-align:left" id="user_client" name="user_client"></select> '
+            + '<select class="form-control" style="text-align:left" id="user_client" name="user_client" required></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
@@ -830,8 +829,8 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<div class="pull-left">'
-            + '<input type="radio" class="form-check-input" value="aktif" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
-            + '<input type="radio" class="form-check-input" value="tidak_aktif" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '<input type="radio" class="form-check-input" value="A" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="N" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -841,24 +840,24 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Provinsi</b></label>'
-            + '<select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple ></select> '
+            + '<select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple required></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Akses Industri</b></label>'
-            + '<select class="form-control" id="user_industry" name="user_industry[]" multiple ></select> '
+            + '<select class="form-control" id="user_industry" name="user_industry[]" multiple required></select> '
             + '</div>'
             + '</div>'
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
             + '<br>'
-            + '<input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan">'
+            + '<input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>'
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
             + '<label class="pull-left"><b>Durasi</b></label>'
-            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan">'
+            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" required>'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -902,7 +901,7 @@ function addClient(id, pardat) {
                 var optionsAsString = "<option></option>";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[5] + "'>" + v[1] + "</option>";
+                    optionsAsString += "<option " + ste + " value='" + v[5] + "' data-id='" + v[0] + "'>" + v[1] + "</option>";
                 });
                 $('#user_company2').find('option').remove();
                 $('#user_company2').append(optionsAsString);
@@ -923,12 +922,10 @@ function addClient(id, pardat) {
                         success: function (data) {
                             if (typeof data != 'object') { data = $.parseJSON(data); }
                             var optionsAsString = "<option></option>";
-                            if(data.data !='No Data')
-                            {
+                            if (data.data != 'No Data') {
                                 $.each(data.data, function (k, v) {
                                     // alert(v['nama_pic']);
-
-                                    optionsAsString += "<option value='" + v['email_pic'] + "|" + v['alamat_klien'] + "'>" + v['nama_pic'] + "</option>";
+                                    optionsAsString += "<option data-nama='" + v['nama_pic'] + "' value='" + v['email_pic'] + "|" + v['alamat_klien'] + "'>" + v['nama_pic'] + "</option>";
                                 });
                                 $('#user_client').find('option').remove();
                                 $('#user_client').append(optionsAsString);
@@ -945,7 +942,7 @@ function addClient(id, pardat) {
                                         $("#user_address").val(address);
                                     }
                                 });
-                            }else{
+                            } else {
                                 $('#user_client').prop('disabled', true);
                                 $('#user_client').find('option').remove();
                                 alert('Klien Tidak Di Temukan Untuk Perusahaan Ini, Silahkan Tambahkan Klien Melalui Aplikasi ERP');
@@ -1058,7 +1055,7 @@ function addClient(id, pardat) {
 }
 
 // User Client
-function UserClient() {
+function UserClient(firstCall = false) {
     var resend_email = true;
     $.ajax({
         cache: true,
@@ -1070,6 +1067,8 @@ function UserClient() {
             var dattab = [];
             var no = 1;
             $.each(data.data, function (k, v) {
+                var base64 = btoa(JSON.stringify(v));
+
                 perdata = {
                     "1": no,
                     "2": v['user_name'],
@@ -1079,7 +1078,7 @@ function UserClient() {
                     "6": v['company_name'],
                     "7": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
                     "8": (resend_email) ?
-                        '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + base64 + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>' :
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
@@ -1090,18 +1089,19 @@ function UserClient() {
             });
             var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }]
             // setTableContent('#example', colome, dattab);
-            $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
+            if(firstCall) $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
             var table = $('#example').DataTable({
                 columns: colome,
                 lengthChange: false,
                 data: dattab,
                 orderCellsTop: true,
-                fixedHeader: true
+                fixedHeader: true,
+                destroy: true,
             });
 
             table.columns().eq(0).each(function (colIdx) {
                 var cell = $('.filters .kolom').eq($(table.column(colIdx).header()).index());
-                console.log(cell);
+                // console.log(cell);
                 var title = $(cell).text();
                 $(cell).html('<input type="text" class="form-control" placeholder="Cari..." />');
 
@@ -1134,27 +1134,136 @@ function UserClient() {
     });
 }
 
+function resend_mail(base64) {
+    var data = JSON.parse(atob(base64));
+    var param = "";
+
+    var { user_name, user_status, user_email, company_id } = data;
+
+    var manageClient = {
+        u_name: user_name,
+        u_status: user_status,
+        u_mail: 'irwanmaulana@prisma-ads.com',
+        c_id: company_id,
+        resend: true
+    }
+
+    Object.keys(manageClient).forEach(function (key, index) {
+        if (Object.keys(manageClient).length === (index + 1)) {
+            param += `${key}=${manageClient[key]}`;
+        } else {
+            param += `${key}=${manageClient[key]}&`;
+        }
+    });
+
+    $.ajax({
+        // OLD
+        // url: APIURL + "user/usermanages",
+        url: APIURL + "user/clientmanage?" + param,
+        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        type: "POST",
+        enctype: 'multipart/form-data',
+        // data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        beforeSend: function () {
+            loading(true);
+        },
+        success: function (data, textStatus, jqXHR) {
+            loading(false);
+            var result = data.data;
+            if (result) {
+                swal({
+                    title: "Success!",
+                    text: "Email berhasil dikirim ulang!",
+                    type: "success",
+                    confirmButtonText: "OK"
+                });
+            } else {
+                swal({
+                    title: "Error!",
+                    text: "Duplicate User Login or Email !",
+                    type: "error",
+                    confirmButtonText: "OK"
+                });
+            }
+
+            UserClient();
+
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status != 500) {
+                var strjson = JSON.parse(jqXHR.responseText);
+                swal({
+                    title: "Error",
+                    text: strjson.processMessage,
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "Internal Server Error",
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                }, function () {
+                    // location.reload();
+                });
+            }
+        }
+    });
+}
+
 function saveClient() {
-    alert($("#user_provinsi").val());
+    // alert($("#user_provinsi").val());
     var form = $("#formaddclient")[0];
+    if (!form.checkValidity()) return alert('Harap lengkapi form !');
+
     var data = new FormData(form);
-    var perusahan = $("#user_company2").val();
-    var nama_client = $("#user_client").val();
+    var perusahan = $("#user_company2 option:selected").data('id');
     var client_email = $("#user_email").val();
     var client_address = $("#user_address").val();
-    var status = $("#status").val();
+    var status = $("input[id='status']:checked").val();
     var user_provinsi = $("#user_provinsi").val();
     var user_industry = $("#user_industry").val();
     var masa_layanan = $("#masa_layanan").val();
     var bulan_layanan = $("#bulan_layanan").val();
+    var nama_client = $("#user_client option:selected").text();
+    var param = "";
 
-    console.log('form', data);
+    var manageClient = {
+        u_name: nama_client,
+        u_status: status,
+        // u_mail: client_email,
+        u_mail: 'irwanmaulana@prisma-ads.com',
+        c_id: perusahan,
+        l_prov: user_provinsi.join(';'),
+        l_ind: user_industry.join(';'),
+        l_sdate: moment(masa_layanan).format('MM/DD/YY'),
+        l_edate: bulan_layanan,
+        resend: false
+    }
+
+    Object.keys(manageClient).forEach(function (key, index) {
+        if (Object.keys(manageClient).length === (index + 1)) {
+            param += `${key}=${manageClient[key]}`;
+        } else {
+            param += `${key}=${manageClient[key]}&`;
+        }
+    });
+
     $.ajax({
-        url: APIURL + "user/usermanages",
+        // OLD
+        // url: APIURL + "user/usermanages",
+        url: APIURL + "user/clientmanage?" + param,
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: "POST",
         enctype: 'multipart/form-data',
-        data: data,
+        // data: data,
         processData: false,
         contentType: false,
         cache: false,
