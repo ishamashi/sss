@@ -1143,7 +1143,7 @@ function resend_mail(base64) {
     var manageClient = {
         u_name: user_name,
         u_status: user_status,
-        u_mail: 'irwanmaulana@prisma-ads.com',
+        u_mail: user_email,
         c_id: company_id,
         resend: true
     }
@@ -1238,8 +1238,8 @@ function saveClient() {
     var manageClient = {
         u_name: nama_client,
         u_status: status,
-        // u_mail: client_email,
-        u_mail: 'irwanmaulana@prisma-ads.com',
+        u_mail: client_email,
+        // u_mail: 'irwanmaulana@prisma-ads.com',
         c_id: perusahan,
         l_prov: user_provinsi.join(';'),
         l_ind: user_industry.join(';'),
