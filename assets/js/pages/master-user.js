@@ -1234,6 +1234,65 @@ async function detailClient(base64) {
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
+                <h3 class="text-left">Layanan Aktif</h3>
+                <div class="panel panel-default bg-custom text-white">
+                    <div class="panel-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="font-large">Layanan 1</p>
+                            </div>
+                            <div class="d-flex" style="align-items: center">
+                                <p class="font-large">Aktif</p>
+                                <img src="./assets/images/icons/check.png" class="mx-1" style="width: 20px;height: 20px;">
+                            </div>
+                        </div>
+                        <br/>
+                        <p class="d-flex justify-content-start">21 Juni 2021 - 21 Des 2021</p>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-warning">Lihat Detail</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-left">Layanan Non-Aktif</h3>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="panel panel-default bg-secondary">
+                            <div class="panel-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="font-large">Layanan 1</p>
+                                    </div>
+                                </div>
+                                <br/>
+                                <p class="d-flex justify-content-start font-normal">21 Juni 2021 - 21 Des 2021</p>
+                                <br/>
+                                <div class="d-flex justify-content-end" style="align-items: center">
+                                    <p class="font-large">Non-Aktif</p>
+                                    <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="panel panel-default bg-secondary">
+                            <div class="panel-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="font-large">Layanan 1</p>
+                                    </div>
+                                </div>
+                                <br/>
+                                <p class="d-flex justify-content-start font-normal">21 Juni 2021 - 21 Des 2021</p>
+                                <br/>
+                                <div class="d-flex justify-content-end" style="align-items: center">
+                                    <p class="font-large">Non-Aktif</p>
+                                    <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
