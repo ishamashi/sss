@@ -1078,18 +1078,19 @@ function UserClient(firstCall = false) {
                     "6": v['company_name'],
                     "7": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
                     "8": (resend_email) ?
-                        '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail"><span class="fa fa-envelope" onclick="resend_mail(\'' + base64 + '\')"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>' :
-                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User"><span class="fa fa-trash" onclick="deleteThis(\'' + v['user_id'] + '\')"></span></button>'
+                        '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail" onclick="resend_mail(\'' + base64 + '\')"><span class="fa fa-envelope"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>' :
+                        // '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
                 };
                 dattab.push(perdata);
                 no++;
             });
             var colome = [{ data: "1" }, { data: "2" }, { data: "3" }, { data: "4" }, { data: "5" }, { data: "6" }, { data: "7" }, { data: "8" }]
             // setTableContent('#example', colome, dattab);
-            if(firstCall) $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
+            if (firstCall) $('#example thead tr').clone(true).addClass('filters').appendTo('#example thead');
             var table = $('#example').DataTable({
                 columns: colome,
                 lengthChange: false,
@@ -1132,6 +1133,134 @@ function UserClient(firstCall = false) {
             }
         }
     });
+}
+
+function getDetailUser(id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            cache: false,
+            type: 'GET',
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            url: APIURL + 'user/usermanage?idx=' + id,
+            dataType: 'json',
+            beforeSend: function () {
+                loading(true);
+            },
+            success: function (data) {
+                console.log("DATA DETAIL", { id, data })
+                loading(false);
+                resolve(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                reject(jqXHR);
+                if (jqXHR.status != 500) {
+                    if (jqXHR.status == 400) {
+                        window.location = "logout.html";
+                    }
+                    var strjson = JSON.parse(jqXHR.responseText);
+                } else {
+                }
+            }
+        });
+    })
+}
+
+async function detailClient(base64) {
+    var detail = JSON.parse(atob(base64));
+    console.log("DETAIL CLIENT", detail);
+    var detailUser = await getDetailUser(detail.user_id).catch(err => err);
+    console.log("Detail User", detailUser);
+
+    var html = `
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="active">
+                <a href="#pengaturan-profil" role="tab" data-toggle="tab">Pengaturan Profil</a>
+            </li>
+            <li>
+                <a href="#pengaturan-langganan" role="tab" data-toggle="tab">Pengaturan Langganan</a>
+            </li>
+        </ul>
+        <div class="panel-body tab-content">
+            <div class="tab-pane active" id="pengaturan-profil">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-horizontal">
+
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Nama Perusahaan</b></label>
+                                    <select class="form-control" style="text-align:left" id="user_company2" name="user_company" required></select> 
+                                </div>
+                            </div>
+                        
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Nama Lengkap Client</b></label>
+                                    <select class="form-control" style="text-align:left" id="user_client" name="user_client" required></select> 
+                                </div>
+                            </div>
+                        
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Email Client</b></label>
+                                    <input type="text" id="user_email" name="user_email" class="form-control" value="" readonly />
+                                </div>
+                            </div>
+                        
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Alamat Perusahaan</b></label>
+                                    <textarea name="user_address" id="user_address" class="form-control" rows="2" readonly></textarea>
+                                </div>
+                            </div>                            
+                        
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Status</b></label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <div class="pull-left">
+                                        <input type="radio" class="form-check-input" value="A" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                        <input type="radio" class="form-check-input" value="N" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="pengaturan-langganan">
+            </div>
+        </div>
+    `;
+    swal({
+        html: html,
+        width: 600,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onOpen: function () {
+            console.log("OPEN SWAL")
+        }
+    });
+
+    $("#user_company2").select2({
+        placeholder: '-- Pilih Nama Perusahaan --'
+    });
+
+    $("#user_provinsi").select2({
+        placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
+    });
+
+    $("#user_client").select2({
+        placeholder: "-- Silahkan Pilih Klien --",
+        allowClear: true
+    });
+
 }
 
 function resend_mail(base64) {
@@ -1245,7 +1374,6 @@ function saveClient() {
         l_ind: user_industry.join(';'),
         l_sdate: moment(masa_layanan).format('MM/DD/YY'),
         l_edate: bulan_layanan,
-        resend: false
     }
 
     Object.keys(manageClient).forEach(function (key, index) {
