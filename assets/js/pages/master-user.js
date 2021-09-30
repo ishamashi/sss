@@ -1143,12 +1143,8 @@ function getDetailUser(id) {
             headers: { "Ip-Addr": IP, "token": "Bearer " + token },
             url: APIURL + 'user/usermanage?idx=' + id,
             dataType: 'json',
-            beforeSend: function () {
-                loading(true);
-            },
             success: function (data) {
                 console.log("DATA DETAIL", { id, data })
-                loading(false);
                 resolve(data);
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -1166,12 +1162,18 @@ function getDetailUser(id) {
 }
 
 async function detailClient(base64) {
+    loading(true);
+    var getSourcePerusahaan = {}
+        , getSourceUserClient = {}
+        , dataClient = [];
     var detail = JSON.parse(atob(base64));
-    console.log("DETAIL CLIENT", detail);
     var detailUser = await getDetailUser(detail.user_id).catch(err => err);
-    console.log("Detail User", detailUser);
+    var dataPerusahaan = await getDataPerusahaan().catch(err => err);
+    loading(false);
 
     var html = `
+        <h3 class="m-0 text-left">Detail Client</h3>
+        <hr/>
         <ul class="nav nav-tabs" role="tablist">
             <li class="active">
                 <a href="#pengaturan-profil" role="tab" data-toggle="tab">Pengaturan Profil</a>
@@ -1231,6 +1233,10 @@ async function detailClient(base64) {
 
                         </div>
                     </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-default btn-lg mx-1">Tutup</button>
+                    <button class="btn btn-primary btn-lg mx-1">Simpan</button>
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
@@ -1293,6 +1299,9 @@ async function detailClient(base64) {
                         </div>
                     </div>
                 </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-default btn-lg">Tutup</button>
+                </div>
             </div>
         </div>
     `;
@@ -1308,18 +1317,103 @@ async function detailClient(base64) {
     });
 
     $("#user_company2").select2({
-        placeholder: '-- Pilih Nama Perusahaan --'
+        placeholder: '-- Pilih Nama Perusahaan --',
+        data: dataPerusahaan,
+    }).select2('val', detail.company_id);
+
+    // Event onchange Company
+    $('#user_company2').on('change', function () {
+        console.log("CHANGE COMPANY", $("#user_company2 :selected").data().data.source);
+    })
+
+    getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
+    dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
+    console.log({
+        detailUser,
+        dataPerusahaan,
+        dataClient,
+        getSourcePerusahaan,
+        detail
     });
+
+    if (!dataClient) return alert("Client tidak ditemukan !");
+
+    $("#user_client").select2({
+        placeholder: "-- Silahkan Pilih Klien --",
+        allowClear: true,
+        data: dataClient
+    });
+    getSourceUserClient = $("#user_client :selected").data().data.source;
+    $('#user_email').val(detail.user_email);
+    $('#user_address').val(getSourcePerusahaan[2].split(';')[2]);
+
+    $(`input[name="status"][value='${detail.user_status}']`).prop("checked", true);
 
     $("#user_provinsi").select2({
         placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
     });
+}
 
-    $("#user_client").select2({
-        placeholder: "-- Silahkan Pilih Klien --",
-        allowClear: true
+function getDataPerusahaan() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: APIURL + 'user/company',
+            cache: false,
+            delay: 250,
+            type: 'GET',
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            dataType: 'json',
+            success: function ({ data }) {
+                var temp = [];
+                if (data.length > 0) {
+                    temp = data.map((item) => {
+                        return {
+                            id: item[0],
+                            text: item[1],
+                            source: item
+                        }
+                    });
+                    resolve(temp);
+                }
+            },
+            error: function (err) {
+                console.log(err.message);
+                reject(err);
+            }
+        })
     });
+}
 
+async function getDataClient(value) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: APIURL + 'user/clientmanage?id_k=' + value,
+            cache: false,
+            type: 'GET',
+            data: {},
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            dataType: 'json',
+            success: function (result) {
+                var temp = [];
+                if (result.data !== 'No Data') {
+                    $.each(result.data, (k, v) => {
+                        temp.push({
+                            id: v.id_pic,
+                            text: v.nama_pic,
+                            source: v
+                        });
+                    });
+                    resolve(temp);
+                }else{
+                    resolve(false);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                reject(err);
+            }
+        })
+    })
 }
 
 function resend_mail(base64) {
