@@ -1,4 +1,5 @@
 
+var modals = [];
 
 $(function () {
 
@@ -1054,6 +1055,99 @@ function addClient(id, pardat) {
     });
 }
 
+async function aksesProvinsi(selectorProvinsi, selected = [], readonly = false) {
+    var data = await getDataProvinsi().catch(err => err);
+
+    var provinsi = $(`#${selectorProvinsi}`).select2({
+        data,
+        placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
+    });
+
+    if (selected.length > 0) provinsi.select2('val', selected);
+    if (readonly) provinsi.select2({ disabled: readonly });
+}
+
+async function aksesIndustri(selectorIndustri, selected = [], readonly = false) {
+    var data = await getDataIndustri().catch(err => err);
+
+    var industry = $(`#${selectorIndustri}`).select2({
+        data,
+        placeholder: '-- Pilih Industri Yang Bisa Di Pilih --'
+    });
+
+    if (selected.length > 0) industry.select2('val', selected);
+    if (readonly) industry.select2({ disabled: readonly });
+}
+
+function getDataIndustri() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            cache: false,
+            type: 'GET',
+            data: {},
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            url: APIURL + 'data/filterindustry',
+            dataType: 'json',
+            success: function ({ data }) {
+                // if (typeof data != 'object') { data = $.parseJSON(data); }
+                var temp = [];
+                if (data.length > 0) {
+                    temp = data.map((item) => {
+                        return {
+                            id: item[0],
+                            text: item[1],
+                            source: item
+                        }
+                    });
+                    resolve(temp);
+                } else {
+                    resolve(false);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                reject(err);
+            }
+        });
+    })
+}
+
+function getDataProvinsi(province = '', city = '') {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: APIURL + "data/filterarea?province=" + province + "&city=" + city,
+            headers: {
+                "token": token_type + " " + token
+            },
+            type: "GET",
+            contentType: "application/json",
+            dataType: 'json',
+            cache: false,
+            timeout: 600000,
+            success: function ({ data }) {
+                // if (typeof data != 'object') data = $.parseJSON(data);
+                var temp = [];
+                if (data.length > 0) {
+                    temp = data.map((item) => {
+                        return {
+                            id: item[0],
+                            text: item[1],
+                            source: item
+                        }
+                    })
+                    resolve(temp);
+                } else {
+                    resolve(false);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                reject(err);
+            }
+        });
+    })
+}
+
 // User Client
 function UserClient(firstCall = false) {
     var resend_email = true;
@@ -1167,9 +1261,12 @@ async function detailClient(base64) {
         , getSourceUserClient = {}
         , dataClient = [];
     var detail = JSON.parse(atob(base64));
-    var detailUser = await getDetailUser(detail.user_id).catch(err => err);
+    var dataLayanan = await getDataDetailLayanan(detail.user_id).catch(err => {
+        console.log("CATCH LAYANAN", err.responseJSON.processMessage);
+        return [];
+    });
+    // console.log("DATA LAYANAN", dataLayanan)
     var dataPerusahaan = await getDataPerusahaan().catch(err => err);
-    loading(false);
 
     var html = `
         <h3 class="m-0 text-left">Detail Client</h3>
@@ -1183,7 +1280,7 @@ async function detailClient(base64) {
             </li>
         </ul>
         <div class="panel-body tab-content">
-            <div class="tab-pane active" id="pengaturan-profil">
+            <div class="tab-pane active" id="pengaturan-profil" style="height: 55vh;overflow: auto;overflow-x: hidden;">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-horizontal">
@@ -1198,7 +1295,7 @@ async function detailClient(base64) {
                             <div class="form-group">
                                 <div class="col-md-12 col-xs-7">
                                     <label class="pull-left"><b>Nama Lengkap Client</b></label>
-                                    <select class="form-control" style="text-align:left" id="user_client" name="user_client" required></select> 
+                                    <select class="form-control" style="text-align:left;width: 100% !important;" id="user_client" name="user_client" required></select> 
                                 </div>
                             </div>
                         
@@ -1225,7 +1322,7 @@ async function detailClient(base64) {
                             <div class="form-group">
                                 <div class="col-md-12 col-xs-7">
                                     <div class="pull-left">
-                                        <input type="radio" class="form-check-input" value="A" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                        <input type="radio" class="form-check-input" value="A" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
                                         <input type="radio" class="form-check-input" value="N" name="status" id="status"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
                                     </div>
                                 </div>
@@ -1235,76 +1332,82 @@ async function detailClient(base64) {
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-default btn-lg mx-1">Tutup</button>
+                    <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Tutup</a>
                     <button class="btn btn-primary btn-lg mx-1">Simpan</button>
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
-                <h3 class="text-left">Layanan Aktif</h3>
-                <div class="panel panel-default bg-custom text-white">
-                    <div class="panel-body">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <p class="font-large">Layanan 1</p>
-                            </div>
-                            <div class="d-flex" style="align-items: center">
-                                <p class="font-large">Aktif</p>
-                                <img src="./assets/images/icons/check.png" class="mx-1" style="width: 20px;height: 20px;">
-                            </div>
-                        </div>
-                        <br/>
-                        <p class="d-flex justify-content-start">21 Juni 2021 - 21 Des 2021</p>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-warning">Lihat Detail</button>
-                        </div>
-                    </div>
-                </div>
+                <div style="height: 55vh;overflow: auto;overflow-x: hidden;position:relative;">
+                    <h3 class="text-left">Layanan Aktif</h3>
 
-                <h3 class="text-left">Layanan Non-Aktif</h3>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="panel panel-default bg-secondary">
-                            <div class="panel-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="font-large">Layanan 1</p>
-                                    </div>
-                                </div>
-                                <br/>
-                                <p class="d-flex justify-content-start font-normal">21 Juni 2021 - 21 Des 2021</p>
-                                <br/>
-                                <div class="d-flex justify-content-end" style="align-items: center">
-                                    <p class="font-large">Non-Aktif</p>
-                                    <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
-                                </div>
-                            </div>
+                    ${dataLayanan.map((item) => {
+        if (item.status === 'A') {
+            var detailLayanan = btoa(JSON.stringify(item));
+            return `<div class="panel panel-default bg-custom text-white">
+                                        <div class="panel-body">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p class="font-large">Layanan 1</p>
+                                                </div>
+                                                <div class="d-flex" style="align-items: center">
+                                                    <p class="font-large">Aktif</p>
+                                                    <img src="./assets/images/icons/check.png" class="mx-1" style="width: 20px;height: 20px;">
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <p class="d-flex justify-content-start">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
+                                            <div class="d-flex justify-content-end">
+                                                <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}')" class="btn btn-warning">Lihat Detail</a>
+                                            </div>
+                                        </div>
+                                    </div>`
+        }
+    })
+        }
+
+                    <h3 class="text-left">Layanan Non-Aktif</h3>
+                        <div class="row">
+                        ${dataLayanan.map((item) => {
+            if (item.status === 'N') {
+                var detailLayanan = btoa(JSON.stringify(item));
+                return `<div class="col-sm-6">
+                                            <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}'')">
+                                                <div class="panel panel-default bg-secondary">
+                                                    <div class="panel-body">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                                <p class="font-large">Layanan 1</p>
+                                                            </div>
+                                                        </div>
+                                                        <br/>
+                                                        <p class="d-flex justify-content-start font-normal text-left">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
+                                                        <br/>
+                                                        <div class="d-flex justify-content-end" style="align-items: center">
+                                                            <p class="font-large">Non-Aktif</p>
+                                                            <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>`
+            }
+        })
+        }
+                          
                         </div>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="panel panel-default bg-secondary">
-                            <div class="panel-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <p class="font-large">Layanan 1</p>
-                                    </div>
-                                </div>
-                                <br/>
-                                <p class="d-flex justify-content-start font-normal">21 Juni 2021 - 21 Des 2021</p>
-                                <br/>
-                                <div class="d-flex justify-content-end" style="align-items: center">
-                                    <p class="font-large">Non-Aktif</p>
-                                    <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
-                                </div>
-                            </div>
-                        </div>
+                    <div class="d-flex justify-content-around" style="position: fixed;bottom: 20%;right: 35%;">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;">+</a>
                     </div>
-                </div>
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-default btn-lg">Tutup</button>
+                    <hr class="mt-0" />
+                    <div class="d-flex justify-content-end">
+                        <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg">Tutup</a>
+                    </div>
                 </div>
             </div>
         </div>
     `;
+
     swal({
         html: html,
         width: 600,
@@ -1319,18 +1422,30 @@ async function detailClient(base64) {
     }).select2('val', detail.company_id);
 
     // Event onchange Company
-    $('#user_company2').on('change', function () {
+    $('#user_company2').on('change', async function () {
         console.log("CHANGE COMPANY", $("#user_company2 :selected").data().data.source);
+        getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
+        dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
+        if (!dataClient) {
+            alert('Client tidak ditemukan !');
+            dataClient = [];
+        }
+
+        $("#user_client").empty().select2({
+            data: dataClient
+        });
     })
 
     getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
     dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
+    loading(false);
+
     console.log({
-        detailUser,
-        dataPerusahaan,
-        dataClient,
-        getSourcePerusahaan,
-        detail
+        company: dataPerusahaan,
+        client: dataClient,
+        source_company: getSourcePerusahaan,
+        detail,
+        dataLayanan
     });
 
     if (!dataClient) return alert("Client tidak ditemukan !");
@@ -1339,16 +1454,323 @@ async function detailClient(base64) {
         placeholder: "-- Silahkan Pilih Klien --",
         allowClear: true,
         data: dataClient
+    }).select2('val', detail.user_email);
+
+    getSourceUserClient = $("#user_client :selected");
+
+    if (typeof getSourceUserClient.data() !== 'undefined') {
+        var sourceClient = getSourceUserClient.data().data.source;
+        console.log("Source Client", getSourceUserClient.data().data.source);
+        $('#user_email').val(sourceClient.email_pic);
+        $('#user_address').val(sourceClient.alamat_klien);
+    }
+
+    $("#user_client").on('change', function () {
+        var getSourceUserClient = $("#user_client :selected").data().data.source;
+
+        $('#user_email').val(getSourceUserClient.email_pic);
+        $('#user_address').val(getSourceUserClient.alamat_klien);
     });
-    getSourceUserClient = $("#user_client :selected").data().data.source;
-    $('#user_email').val(detail.user_email);
-    $('#user_address').val(getSourcePerusahaan[2].split(';')[2]);
 
     $(`input[name="status"][value='${detail.user_status}']`).prop("checked", true);
+}
 
-    $("#user_provinsi").select2({
-        placeholder: '-- Pilih Provinsi Yang Bisa Di Akses --',
+function getDataDetailLayanan(user_id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: APIURL + `user/layanan?u_id=${user_id}`,
+            cache: false,
+            delay: 250,
+            type: 'GET',
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            dataType: 'json',
+            success: function ({ data }) {
+                resolve(data);
+            },
+            error: function (err) {
+                console.log("ERROR", err.responseJSON);
+                reject(err);
+            }
+        });
     });
+}
+
+function detailLayanan(dataParent, dataChild) {
+    var data = JSON.parse(atob(dataChild));
+    // console.log("DATA", data);
+
+    var html = `
+        <h3 class="m-0 text-left">Detail Layanan</h3>
+        <hr/>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-horizontal">
+                    <div class="panel-body form-group-separated">
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Nama Layanan</b></label>
+                                <input type="text" class="form-control" style="text-align:left" value="Layanan 1" required readonly> 
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Akses Provinsi</b></label>
+                                <select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple required readonly></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Akses Industri</b></label>
+                                <select class="form-control" id="user_industry" name="user_industry[]" multiple required readonly></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-9 col-sm-6 col-xs-6">
+                                <label class="pull-left"><b>Masa Layanan</b></label>
+                                <input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-6">
+                                <label class="pull-left"><b>Durasi</b></label>
+                                <input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" required readonly>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-end">
+            <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Batal</a>
+        </div>
+    `;
+
+    swal({
+        html: html,
+        width: 600,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onClose: () => {
+            console.log("ONCLOSE SWAL");
+            detailClient(dataParent);
+        },
+        onOpen: () => {
+            $('#masa_layanan').val(`${moment(data.start_date).format('DD MMMM YYYY')} - ${moment(data.end_date).format('DD MMMM YYYY')}`);
+
+            //     new Date(2008, 10, 4), // November 4th, 2008
+            var diff_start = new Date(moment(data.start_date).format('YYYY'), moment(data.start_date).format('MM'), moment(data.start_date).format('DD'))
+            var diff_end = new Date(moment(data.end_date).format('YYYY'), moment(data.end_date).format('MM'), moment(data.end_date).format('DD'))
+
+            var getDiff = getDiffMonths(diff_start, diff_end);
+            $('#bulan_layanan').val(getDiff);
+
+            var selectedProvinsi = (data.provinsi.length > 0) ? data.provinsi.map((item) => item.id) : [];
+            var selectedIndustry = (data.industry.length > 0) ? data.industry.map((item) => item.id) : [];
+
+            aksesProvinsi('user_provinsi', selectedProvinsi, true);
+            aksesIndustri('user_industry', selectedIndustry, true);
+        }
+    });
+}
+
+async function buatLayananBaru(base64) {
+    var detail = JSON.parse(atob(base64));
+    var dataLayanan = await getDataDetailLayanan(detail.user_id).catch(err => err);
+    var filterActiveLayanan = dataLayanan.find((item) => item.status === 'A');
+    var tempDates = [];
+    if (typeof filterActiveLayanan !== 'undefined') {
+        tempDates = getRange(moment(filterActiveLayanan.start_date).format('YYYY-MM-DD'), moment(filterActiveLayanan.end_date).format('YYYY-MM-DD'), 'days');
+    }
+    var html = `
+        <h3 class="m-0 text-left">Buat Layanan Baru</h3>
+        <hr/>
+        <div class="row">
+            <div class="col-md-12">
+                <form id="formaddclient" method="POST" enctype="multipart/form-data">
+                <div class="form-horizontal">
+                    <div class="panel-body form-group-separated">
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Nama Layanan</b></label>
+                                <input type="hidden" class="form-control" id="user_id" value="${detail.user_id}" required readonly />
+                                <input type="text" class="form-control" style="text-align:left" value="Layanan 1" required readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Akses Provinsi</b></label>
+                                <select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Akses Industri</b></label>
+                                <select class="form-control" id="user_industry" name="user_industry[]" multiple required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-9 col-sm-6 col-xs-6">
+                                <label class="pull-left"><b>Masa Layanan</b></label>
+                                <input type="hidden" class="form-control" id="start_date">
+                                <input type="hidden" class="form-control" id="end_date">
+                                
+                                <input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-6">
+                                <label class="pull-left"><b>Durasi</b></label>
+                                <input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" readonly>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-end">
+            <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Batal</a>
+            <a href="javascript:void(0)" onclick="submitAddLayanan()" class="btn btn-primary btn-lg mx-1">Simpan</a>
+        </div>
+    `;
+
+    swal({
+        html: html,
+        width: 600,
+        showCloseButton: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onClose: () => {
+            detailClient(base64);
+        },
+        onOpen: () => {
+            $('#masa_layanan').daterangepicker({
+                format: 'MM/DD/YY',
+                autoclose: true,
+                opens: "center",
+                drops: "up",
+                autoApply: true,
+                minDate: moment().add(1, 'days'),
+                isInvalidDate: function (date) {
+                    return searchingDayIfExists(tempDates, moment(date).format('YYYY-MM-DD'));
+                },
+            }, function (start, end, label) {
+                console.log("A new date selection was made: " + start.format('MM/DD/YY') + ' to ' + end.format('MM/DD/YY'));
+                $('#start_date').val(start.format('MM/DD/YY'));
+                $('#end_date').val(end.format('MM/DD/YY'));
+
+                //     new Date(2008, 10, 4), // November 4th, 2008
+                var diff_start = new Date(moment(start).format('YYYY'), moment(start).format('MM'), moment(start).format('DD'))
+                var diff_end = new Date(moment(end).format('YYYY'), moment(end).format('MM'), moment(end).format('DD'))
+
+                var getDiff = getDiffMonths(diff_start, diff_end);
+                $('#bulan_layanan').val(getDiff);
+            });
+            aksesProvinsi('user_provinsi');
+            aksesIndustri('user_industry');
+        }
+    });
+}
+
+function submitAddLayanan() {
+    var form = $("#formaddclient")[0];
+    var param = "";
+    if (!form.checkValidity()) return alert('Harap lengkapi form !');
+
+    let data = {
+        u_id: $('#user_id').val(),
+        l_prov: $('#user_provinsi').val().join(';'),
+        l_ind: $('#user_industry').val().join(';'),
+        l_sdate: $('#start_date').val(),
+        l_edate: $('#end_date').val(),
+    }
+
+    Object.keys(data).forEach(function (key, index) {
+        if (Object.keys(data).length === (index + 1)) {
+            param += `${key}=${data[key]}`;
+        } else {
+            param += `${key}=${data[key]}&`;
+        }
+    });
+
+    $.ajax({
+        url: APIURL + 'user/layanan?' + param,
+        cache: false,
+        delay: 250,
+        type: 'POST',
+        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        dataType: 'json',
+        beforeSend: function () {
+            loading(true);
+            console.log("SEND DATA", { param });
+        },
+        success: function (result, textStatus, jqXHR) {
+            loading(false);
+
+            if (result.processMessage === 'Success') {
+                swal({
+                    title: "Success!",
+                    text: "Layanan berhasil dibuat !",
+                    type: "success",
+                    confirmButtonText: "OK"
+                });
+            }
+            UserClient();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status != 500) {
+                var strjson = JSON.parse(jqXHR.responseText);
+                swal({
+                    title: "Error",
+                    text: strjson.processMessage,
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "Internal Server Error",
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                }, function () {
+                    // location.reload();
+                });
+            }
+        }
+    });
+}
+
+function searchingDayIfExists(array = [], value = '') {
+    var exists = false;
+    if (array.length < 1) return false;
+
+    array.find((item) => {
+        if (item === value) {
+            exists = true;
+        }
+    });
+
+    return exists;
+}
+
+function getRange(startDate, endDate, type, format = 'YYYY-MM-DD') {
+    let fromDate = moment(startDate)
+    let toDate = moment(endDate)
+    let diff = toDate.diff(fromDate, type)
+    let range = []
+    for (let i = 0; i < diff; i++) {
+        range.push(moment(startDate).add(i, type).format(format))
+    }
+    return range;
 }
 
 function getDataPerusahaan() {
@@ -1377,8 +1799,12 @@ function getDataPerusahaan() {
                 console.log(err.message);
                 reject(err);
             }
-        })
+        });
     });
+}
+
+function closeSwal() {
+    swal.clickCancel();
 }
 
 async function getDataClient(value) {
@@ -1390,18 +1816,18 @@ async function getDataClient(value) {
             data: {},
             headers: { "Ip-Addr": IP, "token": "Bearer " + token },
             dataType: 'json',
-            success: function (result) {
+            success: function ({ data }) {
                 var temp = [];
-                if (result.data !== 'No Data') {
-                    $.each(result.data, (k, v) => {
+                if (data !== 'No Data') {
+                    $.each(data, (k, v) => {
                         temp.push({
-                            id: v.id_pic,
+                            id: v.email_pic,
                             text: v.nama_pic,
                             source: v
                         });
                     });
                     resolve(temp);
-                }else{
+                } else {
                     resolve(false);
                 }
             },
@@ -1599,3 +2025,23 @@ function saveClient() {
 //     var minDate = new Date(selected.date.valueOf());
 //     $('#toDate').datepicker('setStartDate', minDate);
 // });
+
+function monthDiff(d1, d2) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
+}
+
+function getDiffMonths(d1, d2) {
+    var diff = monthDiff(d1, d2);
+    console.log(
+        d1.toISOString().substring(0, 10),
+        "to",
+        d2.toISOString().substring(0, 10),
+        ":",
+        diff
+    );
+    return diff;
+}
