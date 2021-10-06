@@ -1171,11 +1171,11 @@ function UserClient(firstCall = false) {
                     "5": v['user_email'],
                     "6": v['company_name'],
                     "7": v['user_status'] == 'A' ? 'Aktif' : 'Non Aktif',
-                    "8": (resend_email) ?
+                    "8": (v['confirmation_status'] === 'F') ?
                         '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail" onclick="resend_mail(\'' + base64 + '\')"><span class="fa fa-envelope"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>' :
-                        // '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Edit User"><span class="fa fa-eye" onclick="editUser(\'' + v['user_id'] + '\')"></span></button>' +
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>' 
+                        :
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
                 };
@@ -1692,24 +1692,24 @@ function submitAddLayanan() {
         l_edate: $('#end_date').val(),
     }
 
-    Object.keys(data).forEach(function (key, index) {
-        if (Object.keys(data).length === (index + 1)) {
-            param += `${key}=${data[key]}`;
-        } else {
-            param += `${key}=${data[key]}&`;
-        }
-    });
+    // Object.keys(data).forEach(function (key, index) {
+    //     if (Object.keys(data).length === (index + 1)) {
+    //         param += `${key}=${data[key]}`;
+    //     } else {
+    //         param += `${key}=${data[key]}&`;
+    //     }
+    // });
 
     $.ajax({
-        url: APIURL + 'user/layanan?' + param,
-        cache: false,
-        delay: 250,
-        type: 'POST',
+        url: APIURL + 'user/layanan',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        type: 'POST',
+        delay: 250,
+        cache: false,
+        data: data,
         dataType: 'json',
         beforeSend: function () {
             loading(true);
-            console.log("SEND DATA", { param });
         },
         success: function (result, textStatus, jqXHR) {
             loading(false);
@@ -1853,22 +1853,22 @@ function resend_mail(base64) {
         resend: true
     }
 
-    Object.keys(manageClient).forEach(function (key, index) {
-        if (Object.keys(manageClient).length === (index + 1)) {
-            param += `${key}=${manageClient[key]}`;
-        } else {
-            param += `${key}=${manageClient[key]}&`;
-        }
-    });
+    // Object.keys(manageClient).forEach(function (key, index) {
+    //     if (Object.keys(manageClient).length === (index + 1)) {
+    //         param += `${key}=${manageClient[key]}`;
+    //     } else {
+    //         param += `${key}=${manageClient[key]}&`;
+    //     }
+    // });
 
     $.ajax({
         // OLD
         // url: APIURL + "user/usermanages",
-        url: APIURL + "user/clientmanage?" + param,
+        url: APIURL + "user/clientmanage",
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: "POST",
         enctype: 'multipart/form-data',
-        // data: data,
+        data: manageClient,
         processData: false,
         contentType: false,
         cache: false,

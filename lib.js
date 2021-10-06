@@ -337,24 +337,6 @@ function storeFilterCache(province = 0, city = 0, type = 0, industry = 0,
     localStorage.setItem('filter_owner', owner);
 }
 
-// test(
-//     new Date(2008, 10, 4), // November 4th, 2008
-//     new Date(2010, 2, 12)  // March 12th, 2010
-// );
-// // Result: 16
-
-// test(
-//     new Date(2010, 0, 1),  // January 1st, 2010
-//     new Date(2010, 2, 12)  // March 12th, 2010
-// );
-// // Result: 2
-
-// test(
-//     new Date(2010, 1, 1),  // February 1st, 2010
-//     new Date(2010, 2, 12)  // March 12th, 2010
-// );
-// // Result: 1
-
 function loadFilter(triggered = true) {
     f_prov = localStorage.getItem('filter_prov');
     f_city = localStorage.getItem('filter_city');
