@@ -1174,7 +1174,7 @@ function UserClient(firstCall = false) {
                     "8": (v['confirmation_status'] === 'F') ?
                         '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail" onclick="resend_mail(\'' + base64 + '\')"><span class="fa fa-envelope"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>' 
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
                         :
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
@@ -1253,6 +1253,72 @@ function getDetailUser(id) {
             }
         });
     })
+}
+
+function htmlLayananNonAktif(dataLayanan = [], base64 = "") {
+    var html = "";
+    if(dataLayanan.length < 1) return html;
+
+    dataLayanan.forEach((item) => {
+        if (item.status === 'N') {
+            var detailLayanan = btoa(JSON.stringify(item));
+            html += `<div class="col-md-6 col-sm-6 col-xs-6">
+                        <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}')" style="text-decoration: none; color: #545454">
+                            <div class="panel panel-default bg-secondary">
+                                <div class="panel-body">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <p class="font-large">Layanan 1</p>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <p class="d-flex justify-content-start font-normal text-left">${moment(item.start_date).format('DD MMM YYYY')} - ${moment(item.end_date).format('DD MMM YYYY')}</p>
+                                    <br/>
+                                    <div class="d-flex justify-content-end" style="align-items: center">
+                                        <p class="font-large">Non-Aktif</p>
+                                        <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>`
+        }
+    });
+
+    return html;
+}
+
+function htmlLayananAktif(dataLayanan = [], base64 = "") {
+    var html = "";
+    if(dataLayanan.length < 1) return html;
+
+    dataLayanan.forEach((item) => {
+        if (item.status === 'A') {
+            var detailLayanan = btoa(JSON.stringify(item));
+            html += `
+                <div class="panel panel-default bg-custom text-white">
+                    <div class="panel-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="font-large">Layanan 1</p>
+                            </div>
+                            <div class="d-flex" style="align-items: center">
+                                <p class="font-large">Aktif</p>
+                                <img src="./assets/images/icons/check.png" class="mx-1" style="width: 20px;height: 20px;">
+                            </div>
+                        </div>
+                        <br/>
+                        <p class="d-flex justify-content-start">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}')" class="btn btn-warning" style="background-color: hsl(58deg 100% 59% / 65%) !important; border-radius: 2em; !important">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            `
+        }
+    });
+
+    return html;
 }
 
 async function detailClient(base64) {
@@ -1339,62 +1405,9 @@ async function detailClient(base64) {
             <div class="tab-pane" id="pengaturan-langganan">
                 <div style="height: 55vh;overflow: auto;overflow-x: hidden;position:relative;">
                     <h3 class="text-left">Layanan Aktif</h3>
-
-                    ${dataLayanan.map((item) => {
-        if (item.status === 'A') {
-            var detailLayanan = btoa(JSON.stringify(item));
-            return `<div class="panel panel-default bg-custom text-white">
-                                        <div class="panel-body">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <p class="font-large">Layanan 1</p>
-                                                </div>
-                                                <div class="d-flex" style="align-items: center">
-                                                    <p class="font-large">Aktif</p>
-                                                    <img src="./assets/images/icons/check.png" class="mx-1" style="width: 20px;height: 20px;">
-                                                </div>
-                                            </div>
-                                            <br/>
-                                            <p class="d-flex justify-content-start">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
-                                            <div class="d-flex justify-content-end">
-                                                <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}')" class="btn btn-warning">Lihat Detail</a>
-                                            </div>
-                                        </div>
-                                    </div>`
-        }
-    })
-        }
-
+                    ${htmlLayananAktif(dataLayanan, base64)}
                     <h3 class="text-left">Layanan Non-Aktif</h3>
-                        <div class="row">
-                        ${dataLayanan.map((item) => {
-            if (item.status === 'N') {
-                var detailLayanan = btoa(JSON.stringify(item));
-                return `<div class="col-sm-6">
-                                            <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}'')">
-                                                <div class="panel panel-default bg-secondary">
-                                                    <div class="panel-body">
-                                                        <div class="d-flex justify-content-between">
-                                                            <div>
-                                                                <p class="font-large">Layanan 1</p>
-                                                            </div>
-                                                        </div>
-                                                        <br/>
-                                                        <p class="d-flex justify-content-start font-normal text-left">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
-                                                        <br/>
-                                                        <div class="d-flex justify-content-end" style="align-items: center">
-                                                            <p class="font-large">Non-Aktif</p>
-                                                            <img src="./assets/images/icons/remove.png" class="mx-1" style="width: 20px;height: 20px;">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>`
-            }
-        })
-        }
-                          
-                        </div>
+                        <div class="row">${htmlLayananNonAktif(dataLayanan, base64)}</div>
                     </div>
                     <div class="d-flex justify-content-around" style="position: fixed;bottom: 20%;right: 35%;">
                         <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;">+</a>
