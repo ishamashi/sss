@@ -1257,7 +1257,7 @@ function getDetailUser(id) {
 
 function htmlLayananNonAktif(dataLayanan = [], base64 = "") {
     var html = "";
-    if(dataLayanan.length < 1) return html;
+    if (dataLayanan.length < 1) return html;
 
     dataLayanan.forEach((item) => {
         if (item.status === 'N') {
@@ -1290,7 +1290,7 @@ function htmlLayananNonAktif(dataLayanan = [], base64 = "") {
 
 function htmlLayananAktif(dataLayanan = [], base64 = "") {
     var html = "";
-    if(dataLayanan.length < 1) return html;
+    if (dataLayanan.length < 1) return html;
 
     dataLayanan.forEach((item) => {
         if (item.status === 'A') {
@@ -1309,7 +1309,8 @@ function htmlLayananAktif(dataLayanan = [], base64 = "") {
                         </div>
                         <br/>
                         <p class="d-flex justify-content-start">${moment(item.start_date).format('DD MMMM YYYY')} - ${moment(item.end_date).format('DD MMMM YYYY')}</p>
-                        <div class="d-flex justify-content-end">
+                        <div class="d-flex justify-content-between">
+                            <p id="timerCount" data-startdate="${moment(item.end_date)}"></p>
                             <a href="javascript:void(0)" onclick="detailLayanan('${base64}', '${detailLayanan}')" class="btn btn-warning" style="background-color: hsl(58deg 100% 59% / 65%) !important; border-radius: 2em; !important">Lihat Detail</a>
                         </div>
                     </div>
@@ -1319,6 +1320,28 @@ function htmlLayananAktif(dataLayanan = [], base64 = "") {
     });
 
     return html;
+}
+
+function diffDates(end, start = '') {
+    var now = moment();
+    var end = moment(end);
+    var duration = moment.duration(end.diff(now));
+
+    //Get Days and subtract from duration
+    var days = duration.asDays();
+    duration.subtract(moment.duration(days, 'days'));
+
+    //Get hours and subtract from duration
+    var hours = duration.hours();
+    duration.subtract(moment.duration(hours, 'hours'));
+
+    //Get Minutes and subtract from duration
+    var minutes = duration.minutes();
+    duration.subtract(moment.duration(minutes, 'minutes'));
+
+    //Get seconds
+    var seconds = duration.seconds();
+    return `${Math.round(days)}d, ${hours}h ${minutes}m ${seconds}s`;
 }
 
 async function detailClient(base64) {
@@ -1591,13 +1614,21 @@ function detailLayanan(dataParent, dataChild) {
 }
 
 async function buatLayananBaru(base64) {
+    var tempDates = [];
     var detail = JSON.parse(atob(base64));
     var dataLayanan = await getDataDetailLayanan(detail.user_id).catch(err => err);
-    var filterActiveLayanan = dataLayanan.find((item) => item.status === 'A');
-    var tempDates = [];
-    if (typeof filterActiveLayanan !== 'undefined') {
-        tempDates = getRange(moment(filterActiveLayanan.start_date).format('YYYY-MM-DD'), moment(filterActiveLayanan.end_date).format('YYYY-MM-DD'), 'days');
-    }
+
+    await Promise.all(
+        dataLayanan.map((item) => {
+            var getRangeDate = getRange(moment(item.start_date).format('YYYY-MM-DD'), moment(item.end_date).format('YYYY-MM-DD'), 'days');
+            if (getRangeDate.length > 0) tempDates = tempDates.concat(getRangeDate);
+        })
+    )
+
+    tempDates = tempDates.filter((item, index) => {
+        return (tempDates.indexOf(item) == index)
+    })
+
     var html = `
         <h3 class="m-0 text-left">Buat Layanan Baru</h3>
         <hr/>
@@ -2058,3 +2089,9 @@ function getDiffMonths(d1, d2) {
     );
     return diff;
 }
+
+setInterval(() => {
+    var data = $('#timerCount').data('startdate');
+    var getTimer = diffDates(data);
+    $('#timerCount').html(getTimer);
+}, 1000);
