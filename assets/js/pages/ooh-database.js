@@ -85,7 +85,7 @@ $(document).ready(function () {
 		  
 		  
 		}); */
-
+		console.log("SEARCH MARKER", { province, city, type, industry, fromDate, toDate, oohstatus, ownership });
 		storeFilterCache(province, city, type, industry, fromDate, toDate, oohstatus, ownership);
 
 	});
@@ -201,7 +201,7 @@ function getData() {
 			if (typeof data != 'object') { data = $.parseJSON(data); }
 			setData(data);
 			loading(false);
-			console.log('testing', data);
+			// console.log('testing', data);
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			errorHandler(jqXHR);
@@ -229,16 +229,15 @@ function setData(data) {
 			"no_cnv": v['no_cnv'],
 			"no_site": v['no_site'],
 			"district": v['district_name'],
-			"address": "<a class=\"uppercase\" href=\"#\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\">" + v['address'] + "</a>",
-
+			"address": "<a class=\"uppercase\" href=\"#\" onclick=\"zoomMarker('" + v['ooh_id'] + "')\">" + v['address'] + "</a>",
 			"type": v['otyp_name'],
 			"size": v['panjang'] + " m X " + v['lebar'] + " m",
 			"lighting": v['lighting'],
 			"reach": (v['reach'] === null) ? '0' : numberToMoney(v['reach']),
 			"traffic": (v['traffic'] === null) ? '0' : numberToMoney(v['traffic']),
 			"price": (rate_card === null) ? '0' : numberToMoney(rate_card),
-			"action": (can_edit) ? "<a href=\"#\" data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : '-',
-			"print": "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>"
+			"action": (can_edit) ? "<a href=\"#\" data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>  <a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>" : "<a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>",
+			"print": "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>",
 		}
 		/* "action":  (v['ooh_origin'] === 'ARCHERNINE') ? "<a href=\"#\" onclick=\"editOoh('"+v['ooh_id']+"')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "", */
 		datane.push(perdata);
@@ -252,7 +251,7 @@ function setData(data) {
 			"status": v.ooh_status,
 		}
 		pointdata.push(perpoint);
-		console.log('testing', perdata);
+		// console.log('testing', perdata);
 	});
 
 	setTableContent(datane);
@@ -320,6 +319,7 @@ function setTableContent(datane) {
 			{ "width": "5%", "targets": [9, 10] }
 		],
 		"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+			// console.log("ROW", nRow);
 			$('td:eq(0)', nRow).html(iDisplayIndexFull + 1);
 			return nRow;
 		},
@@ -344,6 +344,10 @@ function setTableContent(datane) {
 	});
 }
 
+function zoomMarker(ooh_id) {
+	controllingZoomMaps(ooh_id);
+}
+
 function detailOoh(ooh_id) {
 	if (ooh_id) {
 		$.ajax({
@@ -359,6 +363,7 @@ function detailOoh(ooh_id) {
 			timeout: 600000,
 			success: function (data, textStatus, jqXHR) {
 				if (typeof data != 'object') { data = $.parseJSON(data); }
+				// console.log("data DETAIL OOh", temp[0]);
 				setDataDetail(data.data)
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -419,7 +424,7 @@ function setDataDetail(data) {
 	var html = '';
 
 	$.each(data, function (idooh, theData) {
-
+		console.log("THE DATA", theData);
 		var prismaphoto = '';
 		var tbcontent = '<ul class="list-unstyled uppercase">';
 		$.each(theData.conthis, function (k1, v1) {
@@ -451,20 +456,19 @@ function setDataDetail(data) {
 
 		tbcontent += '</ul>';
 
-		var no=0;
+		var no = 0;
 		$.each(yea, function (k1, y1) {
 			no++;
 			opye += '<option value="' + y1 + '">' + y1 + '</option>';
-			if(no==1) 
-			{
+			if (no == 1) {
 				mntth += '<div class="btn-group btn-group btgrp" id="btgrp-' + y1 + '" > ';
-			}else{
+			} else {
 				mntth += '<div class="btn-group btn-group btgrp hide" id="btgrp-' + y1 + '" > ';
 			}
 			var nme = 1;
 			var idmx = 0;
 			$.each(monthe, function (km, vm) {
-				
+
 				var dishow = 'class="btn  btn-primary  btn-cilik" disabled';
 				if (typeof ymcont[y1 + '-' + km] !== "undefined") {
 					var is_active1 = '';// (idmx == 0) ? 'active' : '';
@@ -546,7 +550,8 @@ function setDataDetail(data) {
                 <div class="tab-pane fade  active" id="home" role="tabpanel" aria-labelledby="home-tab">\
                   <div class="stats-info">\
                     <ul class="list-unstyled uppercase">\
-                      <li class="row"><div class="col-md-4">Site Number</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_site + '</h5></div></li>\
+					  <li class="row"><div class="col-md-4">Canvasing ID</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_cnv + '</h5></div></li>\
+					  <li class="row"><div class="col-md-4">Site Prisma</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_site + '</h5></div></li>\
                       <li class="row"><div class="col-md-4">Address</div><div class="col-md-8 text-primary ">'+ theData.address + '</div></li>\
                       <li class="row"><div class="col-md-4">OOH Point</div><div class="col-md-8 text-primary ">'+ theData.latitude + ', ' + theData.longitude + '</div></li>\
                       <li class="row"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">'+ theData.conthis[0].ind_name + '</div></li>\
@@ -768,7 +773,7 @@ function changePics(id, imgsrc2, imgsrc1, owner, no_site, no_cnv) {
 			srcimage2 = IMAGE_HOST + 'image/optimize/' + imgsrc2;
 			var img2 = new Image();
 			img2.src = srcimage2;
-			
+
 			img2.onload = function () {
 				console.log('image from server mobile found');
 				$("#imageooh-" + id).attr('src', img2.src).appendTo("#imageooh-" + id);
@@ -776,9 +781,9 @@ function changePics(id, imgsrc2, imgsrc1, owner, no_site, no_cnv) {
 
 			img2.onerror = function () {
 				console.log('image from server mobile not found')
-        srcimage2 = IMAGE_HOST + 'image/' + imgsrc2;
-        var img2 = new Image();
-			  img2.src = srcimage2;
+				srcimage2 = IMAGE_HOST + 'image/' + imgsrc2;
+				var img2 = new Image();
+				img2.src = srcimage2;
 				$("#imageooh-" + id).attr('src', img2.src).appendTo("#imageooh-" + id);
 			}
 		}
@@ -809,9 +814,9 @@ function changePics(id, imgsrc2, imgsrc1, owner, no_site, no_cnv) {
 
 			img.onerror = function () {
 				console.log('image from server mobile not found (2)')
-        srcimage1 = IMAGE_HOST + 'image/' + imgsrc1;
-        var img = new Image();
-			  img.src = srcimage1;
+				srcimage1 = IMAGE_HOST + 'image/' + imgsrc1;
+				var img = new Image();
+				img.src = srcimage1;
 				$("#imageooh-" + id).attr('src', img.src).appendTo("#imageooh-" + id);
 
 			}
