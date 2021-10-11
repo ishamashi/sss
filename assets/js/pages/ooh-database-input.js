@@ -142,23 +142,43 @@ $(function(){
     for(i=1; i<=8;i++){
         var is_active = i==1?'active':'';
         var title = '';
+
 	if(i == 1) {
-            title = 'BAST1';
-        } else if(i == 2) {
-            title = 'BAST2';
-        } else if(i == 3){
-            title = 'Recovering1';
-        } else if(i == 4){
-            title = 'Recovering2';
-        } else if(i == 5){
-            title = 'Claim 1';
-        } else if(i == 6){
-            title = 'Claim 2';
-        } else if(i == 7){
-            title = 'Maintenance';
-        } else {
-            title = 'Disposal';
-        }
+        title = 'Content 1';
+    } else if(i == 2) {
+        title = 'Content 2';
+    } else if(i == 3){
+        title = 'Content 3';
+    } else if(i == 4){
+        title = 'Content 4';
+    } else if(i == 5){
+        title = 'Content 5';
+    } else if(i == 6){
+        title = 'Content 6';
+    } else if(i == 7){
+        title = 'Content 7';
+    } else {
+        title = 'Content 8';
+    }
+
+    // if(i == 1) {
+    //     title = 'BAST1';
+    // } else if(i == 2) {
+    //     title = 'BAST2';
+    // } else if(i == 3){
+    //     title = 'Recovering1';
+    // } else if(i == 4){
+    //     title = 'Recovering2';
+    // } else if(i == 5){
+    //     title = 'Claim 1';
+    // } else if(i == 6){
+    //     title = 'Claim 2';
+    // } else if(i == 7){
+    //     title = 'Maintenance';
+    // } else {
+    //     title = 'Disposal';
+    // }
+
 	html_list += '<li class="'+is_active+'"><a href="#tab-'+i+'" role="tab" data-toggle="tab">'+title+'</a></li>';        
 
         html_content += '<div class="tab-pane '+is_active+'" id="tab-'+i+'">'
