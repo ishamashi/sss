@@ -854,6 +854,8 @@ function addClient(id, pardat) {
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
             + '<br>'
+            + '<input type="hidden" class="form-control" name="start_date" id="start_date" required>'
+            + '<input type="hidden" class="form-control" name="end_date" id="end_date" required>'
             + '<input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>'
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
@@ -882,9 +884,25 @@ function addClient(id, pardat) {
             showCancelButton: false,
             showConfirmButton: false,
             onOpen: function () {
-                $('#masa_layanan').datepicker({
-                    format: 'yyyy-mm-dd',
+                $('#masa_layanan').daterangepicker({
+                    format: 'MM/DD/YY',
+                    autoclose: true,
+                    opens: "center",
+                    drops: "up",
+                    autoApply: true,
+                    minDate: moment().add(0, 'days'),
                     autoclose: true
+                }, function (start, end, label) {
+                    console.log("A new date selection was made: " + start.format('MM/DD/YY') + ' to ' + end.format('MM/DD/YY'));
+                    $('#start_date').val(start.format('MM/DD/YY'));
+                    $('#end_date').val(end.format('MM/DD/YY'));
+
+                    //     new Date(2008, 10, 4), // November 4th, 2008
+                    var diff_start = new Date(moment(start).format('YYYY'), moment(start).format('MM'), moment(start).format('DD'))
+                    var diff_end = new Date(moment(end).format('YYYY'), moment(end).format('MM'), moment(end).format('DD'))
+
+                    var getDiff = getDiffMonths(diff_start, diff_end);
+                    $('#bulan_layanan').val(getDiff);
                 });
             }
         });
@@ -902,7 +920,7 @@ function addClient(id, pardat) {
                 var optionsAsString = "<option></option>";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[5] + "' data-id='" + v[0] + "'>" + v[1] + "</option>";
+                    optionsAsString += "<option " + ste + " value='" + v[5] + "' data-id='" + v[6] + "'>" + v[1] + "</option>";
                 });
                 $('#user_company2').find('option').remove();
                 $('#user_company2').append(optionsAsString);
@@ -1370,6 +1388,7 @@ async function detailClient(base64) {
         </ul>
         <div class="panel-body tab-content">
             <div class="tab-pane active" id="pengaturan-profil" style="height: 55vh;overflow: auto;overflow-x: hidden;">
+                <form id="form-update" class="" method="post">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-horizontal">
@@ -1391,6 +1410,7 @@ async function detailClient(base64) {
                             <div class="form-group">
                                 <div class="col-md-12 col-xs-7">
                                     <label class="pull-left"><b>Email Client</b></label>
+                                    <input type="hidden" id="old_mail" name="old_mail" class="form-control" readonly />
                                     <input type="text" id="user_email" name="user_email" class="form-control" value="" readonly />
                                 </div>
                             </div>
@@ -1422,7 +1442,7 @@ async function detailClient(base64) {
                 </div>
                 <div class="d-flex justify-content-end">
                     <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Tutup</a>
-                    <button class="btn btn-primary btn-lg mx-1">Simpan</button>
+                    <a href="javascript:void(0)" onclick="updateProfile()" class="btn btn-primary btn-lg mx-1">Simpan</a>
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
@@ -1433,7 +1453,7 @@ async function detailClient(base64) {
                         <div class="row">${htmlLayananNonAktif(dataLayanan, base64)}</div>
                     </div>
                     <div class="d-flex justify-content-around" style="position: fixed;bottom: 20%;right: 35%;">
-                        <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;">+</a>
+                        <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;"><span>&#43;</span></a>
                     </div>
                     <hr class="mt-0" />
                     <div class="d-flex justify-content-end">
@@ -1455,25 +1475,29 @@ async function detailClient(base64) {
     $("#user_company2").select2({
         placeholder: '-- Pilih Nama Perusahaan --',
         data: dataPerusahaan,
+        disabled: true,
     }).select2('val', detail.company_id);
 
     // Event onchange Company
-    $('#user_company2').on('change', async function () {
-        console.log("CHANGE COMPANY", $("#user_company2 :selected").data().data.source);
+    // $('#user_company2').on('change', async function () {
+    //     console.log("CHANGE COMPANY", $("#user_company2 :selected").data().data.source);
+    //     getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
+    //     dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
+    //     if (!dataClient) {
+    //         alert('Client tidak ditemukan !');
+    //         dataClient = [];
+    //     }
+
+    //     $("#user_client").empty().select2({
+    //         data: dataClient
+    //     });
+    // })
+    getSourcePerusahaan = $("#user_company2 :selected");
+    if (typeof getSourcePerusahaan.data() !== 'undefined') {
         getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
+        console.log("GET SOURCE PERUSAHAAN", getSourcePerusahaan);
         dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
-        if (!dataClient) {
-            alert('Client tidak ditemukan !');
-            dataClient = [];
-        }
-
-        $("#user_client").empty().select2({
-            data: dataClient
-        });
-    })
-
-    getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
-    dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
+    }
     loading(false);
 
     console.log({
@@ -1489,7 +1513,8 @@ async function detailClient(base64) {
     $("#user_client").select2({
         placeholder: "-- Silahkan Pilih Klien --",
         allowClear: true,
-        data: dataClient
+        data: dataClient,
+        minimumInputLength: 1,
     }).select2('val', detail.user_email);
 
     getSourceUserClient = $("#user_client :selected");
@@ -1497,6 +1522,7 @@ async function detailClient(base64) {
     if (typeof getSourceUserClient.data() !== 'undefined') {
         var sourceClient = getSourceUserClient.data().data.source;
         console.log("Source Client", getSourceUserClient.data().data.source);
+        $('#old_email').val(sourceClient.email_pic);
         $('#user_email').val(sourceClient.email_pic);
         $('#user_address').val(sourceClient.alamat_klien);
     }
@@ -1509,6 +1535,47 @@ async function detailClient(base64) {
     });
 
     $(`input[name="status"][value='${detail.user_status}']`).prop("checked", true);
+}
+
+async function updateProfile(value) {
+    var form = $('#form-update')[0];
+    var old_email = $('#old_email').val();
+    var new_email = $('#user_email').val();
+    if (!form.checkValidity()) return alert('Harap lengkapi form !');
+
+    var data = {
+        u_mail: old_email,
+        status: $('input[name="status"]:checked').val(),
+        username: "",
+    }
+
+    if (new_email !== old_email) {
+        data['u_mail_new'] = new_email;
+    }
+
+    var update = await submitUpdateProfile(data).catch((err) => err);
+
+    console.log("UPDATE PROFILE", {data, update});
+}
+
+function submitUpdateProfile(data) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: APIURL + `user/layanan?u_id=${user_id}`,
+            cache: false,
+            delay: 250,
+            type: 'GET',
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            dataType: 'json',
+            success: function ({ data }) {
+                resolve(data);
+            },
+            error: function (err) {
+                console.log("ERROR", err.responseJSON);
+                reject(err);
+            }
+        });
+    });
 }
 
 function getDataDetailLayanan(user_id) {
@@ -1533,7 +1600,7 @@ function getDataDetailLayanan(user_id) {
 
 function detailLayanan(dataParent, dataChild) {
     var data = JSON.parse(atob(dataChild));
-    // console.log("DATA", data);
+    // console.log("DETAIL LAYANAN", data);
 
     var html = `
         <h3 class="m-0 text-left">Detail Layanan</h3>
@@ -1591,13 +1658,11 @@ function detailLayanan(dataParent, dataChild) {
         showCancelButton: false,
         showConfirmButton: false,
         onClose: () => {
-            console.log("ONCLOSE SWAL");
             detailClient(dataParent);
         },
         onOpen: () => {
             $('#masa_layanan').val(`${moment(data.start_date).format('DD MMMM YYYY')} - ${moment(data.end_date).format('DD MMMM YYYY')}`);
 
-            //     new Date(2008, 10, 4), // November 4th, 2008
             var diff_start = new Date(moment(data.start_date).format('YYYY'), moment(data.start_date).format('MM'), moment(data.start_date).format('DD'))
             var diff_end = new Date(moment(data.end_date).format('YYYY'), moment(data.end_date).format('MM'), moment(data.end_date).format('DD'))
 
@@ -1736,19 +1801,12 @@ function submitAddLayanan() {
         l_edate: $('#end_date').val(),
     }
 
-    // Object.keys(data).forEach(function (key, index) {
-    //     if (Object.keys(data).length === (index + 1)) {
-    //         param += `${key}=${data[key]}`;
-    //     } else {
-    //         param += `${key}=${data[key]}&`;
-    //     }
-    // });
+    console.log("ADD LAYANAN", data);
 
     $.ajax({
         url: APIURL + 'user/layanan',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: 'POST',
-        delay: 250,
         cache: false,
         data: data,
         dataType: 'json',
@@ -1831,7 +1889,7 @@ function getDataPerusahaan() {
                 if (data.length > 0) {
                     temp = data.map((item) => {
                         return {
-                            id: item[0],
+                            id: item[6],
                             text: item[1],
                             source: item
                         }
@@ -1862,7 +1920,7 @@ async function getDataClient(value) {
             dataType: 'json',
             success: function ({ data }) {
                 var temp = [];
-                if (data !== 'No Data') {
+                if (data !== 'No Data' && data.length > 0) {
                     $.each(data, (k, v) => {
                         temp.push({
                             id: v.email_pic,
@@ -1897,13 +1955,6 @@ function resend_mail(base64) {
         resend: true
     }
 
-    // Object.keys(manageClient).forEach(function (key, index) {
-    //     if (Object.keys(manageClient).length === (index + 1)) {
-    //         param += `${key}=${manageClient[key]}`;
-    //     } else {
-    //         param += `${key}=${manageClient[key]}&`;
-    //     }
-    // });
 
     $.ajax({
         // OLD
@@ -1911,10 +1962,7 @@ function resend_mail(base64) {
         url: APIURL + "user/clientmanage",
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: "POST",
-        enctype: 'multipart/form-data',
         data: manageClient,
-        processData: false,
-        contentType: false,
         cache: false,
         timeout: 600000,
         beforeSend: function () {
@@ -1982,41 +2030,35 @@ function saveClient() {
     var masa_layanan = $("#masa_layanan").val();
     var bulan_layanan = $("#bulan_layanan").val();
     var nama_client = $("#user_client option:selected").text();
-    var param = "";
+    var start_date = $("#start_date").val();
+    var end_date = $("#end_date").val();
 
     var manageClient = {
-        u_name: nama_client,
+        u_name: nama_client.trim(),
         u_status: status,
         u_mail: client_email,
         // u_mail: 'irwanmaulana@prisma-ads.com',
         c_id: perusahan,
         l_prov: user_provinsi.join(';'),
         l_ind: user_industry.join(';'),
-        l_sdate: moment(masa_layanan).format('MM/DD/YY'),
-        l_edate: bulan_layanan,
+        l_sdate: start_date,
+        l_edate: end_date,
     }
 
-    Object.keys(manageClient).forEach(function (key, index) {
-        if (Object.keys(manageClient).length === (index + 1)) {
-            param += `${key}=${manageClient[key]}`;
-        } else {
-            param += `${key}=${manageClient[key]}&`;
-        }
-    });
+    console.log("ADD CLIENT", manageClient);
 
     $.ajax({
         // OLD
         // url: APIURL + "user/usermanages",
-        url: APIURL + "user/clientmanage?" + param,
+        url: APIURL + "user/clientmanage",
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: "POST",
-        enctype: 'multipart/form-data',
-        // data: data,
-        processData: false,
-        contentType: false,
+        // enctype: 'application/x-www-form-urlencoded',
+        data: manageClient,
         cache: false,
         timeout: 600000,
         success: function (data, textStatus, jqXHR) {
+            console.log("DATA", data);
             var result = data.data;
             if (result) {
                 swal({
