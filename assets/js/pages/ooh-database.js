@@ -424,7 +424,7 @@ function setDataDetail(data) {
 	var html = '';
 
 	$.each(data, function (idooh, theData) {
-		console.log("THE DATA", theData);
+		console.log("DETAIL VIEW OOH", theData);
 		var prismaphoto = '';
 		var tbcontent = '<ul class="list-unstyled uppercase">';
 		$.each(theData.conthis, function (k1, v1) {
@@ -550,8 +550,9 @@ function setDataDetail(data) {
                 <div class="tab-pane fade  active" id="home" role="tabpanel" aria-labelledby="home-tab">\
                   <div class="stats-info">\
                     <ul class="list-unstyled uppercase">\
+					  <li class="row"><div class="col-md-4">Pemilik</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.owner + '</h5></div></li>\
 					  <li class="row"><div class="col-md-4">Canvasing ID</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_cnv + '</h5></div></li>\
-					  <li class="row"><div class="col-md-4">Site Prisma</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_site + '</h5></div></li>\
+					  <li class="row"><div class="col-md-4">Nomor Site Prisma</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_site + '</h5></div></li>\
                       <li class="row"><div class="col-md-4">Address</div><div class="col-md-8 text-primary ">'+ theData.address + '</div></li>\
                       <li class="row"><div class="col-md-4">OOH Point</div><div class="col-md-8 text-primary ">'+ theData.latitude + ', ' + theData.longitude + '</div></li>\
                       <li class="row"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">'+ theData.conthis[0].ind_name + '</div></li>\
