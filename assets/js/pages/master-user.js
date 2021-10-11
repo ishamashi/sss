@@ -1801,8 +1801,6 @@ function submitAddLayanan() {
         l_edate: $('#end_date').val(),
     }
 
-    console.log("ADD LAYANAN", data);
-
     $.ajax({
         url: APIURL + 'user/layanan',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
@@ -1827,6 +1825,7 @@ function submitAddLayanan() {
             UserClient();
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            loading(false);
             if (jqXHR.status != 500) {
                 var strjson = JSON.parse(jqXHR.responseText);
                 swal({
@@ -1869,7 +1868,7 @@ function getRange(startDate, endDate, type, format = 'YYYY-MM-DD') {
     let toDate = moment(endDate)
     let diff = toDate.diff(fromDate, type)
     let range = []
-    for (let i = 0; i < diff; i++) {
+    for (let i = 0; i <= diff; i++) {
         range.push(moment(startDate).add(i, type).format(format))
     }
     return range;
