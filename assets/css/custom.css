@@ -470,3 +470,8 @@
 .mt-0{
   margin-top: 0 !important;
 }
+
+.btn-outline-primary {
+  border: 2px solid #572d86;
+  color: #572d86;
+}

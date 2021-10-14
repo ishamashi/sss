@@ -860,7 +860,7 @@ function addClient(id, pardat) {
             + '</div>'
             + '<div class="col-md-3 col-xs-7">'
             + '<label class="pull-left"><b>Durasi</b></label>'
-            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" required>'
+            + '<input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" readonly required>'
             + '</div>'
             + '</div>'
             + '</div>'
@@ -1403,6 +1403,7 @@ async function detailClient(base64) {
                             <div class="form-group">
                                 <div class="col-md-12 col-xs-7">
                                     <label class="pull-left"><b>Nama Lengkap Client</b></label>
+                                    <input type="hidden" id="username" name="username" class="form-control" readonly />
                                     <select class="form-control" style="text-align:left;width: 100% !important;" id="user_client" name="user_client" required></select> 
                                 </div>
                             </div>
@@ -1410,7 +1411,7 @@ async function detailClient(base64) {
                             <div class="form-group">
                                 <div class="col-md-12 col-xs-7">
                                     <label class="pull-left"><b>Email Client</b></label>
-                                    <input type="hidden" id="old_mail" name="old_mail" class="form-control" readonly />
+                                    <input type="hidden" id="old_email" name="old_email" class="form-control" readonly />
                                     <input type="text" id="user_email" name="user_email" class="form-control" value="" readonly />
                                 </div>
                             </div>
@@ -1453,7 +1454,7 @@ async function detailClient(base64) {
                         <div class="row">${htmlLayananNonAktif(dataLayanan, base64)}</div>
                     </div>
                     <div class="d-flex justify-content-around" style="position: fixed;bottom: 20%;right: 35%;">
-                        <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;"><span>&#43;</span></a>
+                        <a href="javascript:void(0)" id="btnSubmit" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;"><span>&#43;</span></a>
                     </div>
                     <hr class="mt-0" />
                     <div class="d-flex justify-content-end">
@@ -1522,6 +1523,7 @@ async function detailClient(base64) {
     if (typeof getSourceUserClient.data() !== 'undefined') {
         var sourceClient = getSourceUserClient.data().data.source;
         console.log("Source Client", getSourceUserClient.data().data.source);
+        $('#username').val(sourceClient.nama_pic);
         $('#old_email').val(sourceClient.email_pic);
         $('#user_email').val(sourceClient.email_pic);
         $('#user_address').val(sourceClient.alamat_klien);
@@ -1529,7 +1531,7 @@ async function detailClient(base64) {
 
     $("#user_client").on('change', function () {
         var getSourceUserClient = $("#user_client :selected").data().data.source;
-
+        $('#username').val(getSourceUserClient.nama_pic);
         $('#user_email').val(getSourceUserClient.email_pic);
         $('#user_address').val(getSourceUserClient.alamat_klien);
     });
@@ -1540,37 +1542,63 @@ async function detailClient(base64) {
 async function updateProfile(value) {
     var form = $('#form-update')[0];
     var old_email = $('#old_email').val();
+    var user_client = $('#user_client').val();
     var new_email = $('#user_email').val();
+    var username = $('#username').val();
+
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
 
     var data = {
         u_mail: old_email,
         status: $('input[name="status"]:checked').val(),
-        username: "",
+        u_name: username,
     }
 
     if (new_email !== old_email) {
         data['u_mail_new'] = new_email;
     }
 
-    var update = await submitUpdateProfile(data).catch((err) => err);
+    var update = await submitUpdateProfile(data).catch((err) => err.responseJSON);
 
-    console.log("UPDATE PROFILE", {data, update});
+    if (update.processMessage === "Success") {
+        swal({
+            title: "Success!",
+            text: "Data Updated! ",
+            type: "success",
+            confirmButtonText: "OK"
+        });
+    } else {
+        swal({
+            title: "Error",
+            text: update.processMessage,
+            type: "error",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Close"
+        });
+    }
+
+    UserClient();
 }
 
 function submitUpdateProfile(data) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: APIURL + `user/layanan?u_id=${user_id}`,
+            url: APIURL + `user/clientmanage`,
             cache: false,
             delay: 250,
-            type: 'GET',
+            type: 'PUT',
+            data: data,
             headers: { "Ip-Addr": IP, "token": "Bearer " + token },
             dataType: 'json',
-            success: function ({ data }) {
+            beforeSend: function(){
+                disabledButton('btnSubmit');
+            },
+            success: function (data) {
+                disabledButton('btnSubmit', false);
                 resolve(data);
             },
             error: function (err) {
+                disabledButton('btnSubmit', false);
                 console.log("ERROR", err.responseJSON);
                 reject(err);
             }
@@ -1746,7 +1774,7 @@ async function buatLayananBaru(base64) {
         <hr>
         <div class="d-flex justify-content-end">
             <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Batal</a>
-            <a href="javascript:void(0)" onclick="submitAddLayanan()" class="btn btn-primary btn-lg mx-1">Simpan</a>
+            <a href="javascript:void(0)" onclick="submitAddLayanan()" id="btnSubmit" class="btn btn-primary btn-lg mx-1">Simpan</a>
         </div>
     `;
 
@@ -1781,6 +1809,7 @@ async function buatLayananBaru(base64) {
 
                 var getDiff = getDiffMonths(diff_start, diff_end);
                 $('#bulan_layanan').val(getDiff);
+                
             });
             aksesProvinsi('user_provinsi');
             aksesIndustri('user_industry');
@@ -1790,8 +1819,8 @@ async function buatLayananBaru(base64) {
 
 function submitAddLayanan() {
     var form = $("#formaddclient")[0];
-    var param = "";
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
+    if($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan');
 
     let data = {
         u_id: $('#user_id').val(),
@@ -1810,9 +1839,11 @@ function submitAddLayanan() {
         dataType: 'json',
         beforeSend: function () {
             loading(true);
+            disabledButton('btnSubmit');
         },
         success: function (result, textStatus, jqXHR) {
             loading(false);
+            disabledButton('btnSubmit', false);
 
             if (result.processMessage === 'Success') {
                 swal({
@@ -1826,6 +1857,8 @@ function submitAddLayanan() {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             loading(false);
+            disabledButton('btnSubmit', false);
+
             if (jqXHR.status != 500) {
                 var strjson = JSON.parse(jqXHR.responseText);
                 swal({
@@ -1848,6 +1881,16 @@ function submitAddLayanan() {
             }
         }
     });
+}
+
+function disabledButton(selector, disabled = true){
+    if(disabled){
+        $(`#${selector}`).attr('disabled', 'disabled');
+        $(`#${selector}`).addClass('disabled');
+    }else{
+        $(`#${selector}`).removeAttr('disabled');
+        $(`#${selector}`).removeClass('disabled');
+    }
 }
 
 function searchingDayIfExists(array = [], value = '') {
@@ -2015,19 +2058,18 @@ function resend_mail(base64) {
 }
 
 function saveClient() {
-    // alert($("#user_provinsi").val());
     var form = $("#formaddclient")[0];
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
+    if($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan !');
 
     var data = new FormData(form);
     var perusahan = $("#user_company2 option:selected").data('id');
     var client_email = $("#user_email").val();
-    var client_address = $("#user_address").val();
     var status = $("input[id='status']:checked").val();
     var user_provinsi = $("#user_provinsi").val();
     var user_industry = $("#user_industry").val();
-    var masa_layanan = $("#masa_layanan").val();
-    var bulan_layanan = $("#bulan_layanan").val();
+    // var masa_layanan = $("#masa_layanan").val();
+    // var bulan_layanan = $("#bulan_layanan").val();
     var nama_client = $("#user_client option:selected").text();
     var start_date = $("#start_date").val();
     var end_date = $("#end_date").val();
@@ -2044,8 +2086,6 @@ function saveClient() {
         l_edate: end_date,
     }
 
-    console.log("ADD CLIENT", manageClient);
-
     $.ajax({
         // OLD
         // url: APIURL + "user/usermanages",
@@ -2056,8 +2096,11 @@ function saveClient() {
         data: manageClient,
         cache: false,
         timeout: 600000,
+        beforeSend: function(){
+            disabledButton('saveClient');
+        },
         success: function (data, textStatus, jqXHR) {
-            console.log("DATA", data);
+            disabledButton('saveClient', false);
             var result = data.data;
             if (result) {
                 swal({
@@ -2078,6 +2121,7 @@ function saveClient() {
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            disabledButton('saveClient', false);
             if (jqXHR.status != 500) {
                 var strjson = JSON.parse(jqXHR.responseText);
                 swal({
