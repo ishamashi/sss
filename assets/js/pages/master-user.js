@@ -1476,23 +1476,10 @@ async function detailClient(base64) {
     $("#user_company2").select2({
         placeholder: '-- Pilih Nama Perusahaan --',
         data: dataPerusahaan,
-        disabled: true,
+        // disabled: true,
     }).select2('val', detail.company_id);
-
-    // Event onchange Company
-    // $('#user_company2').on('change', async function () {
-    //     console.log("CHANGE COMPANY", $("#user_company2 :selected").data().data.source);
-    //     getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
-    //     dataClient = await getDataClient(getSourcePerusahaan[5]).catch(err => err);
-    //     if (!dataClient) {
-    //         alert('Client tidak ditemukan !');
-    //         dataClient = [];
-    //     }
-
-    //     $("#user_client").empty().select2({
-    //         data: dataClient
-    //     });
-    // })
+    $("#user_company2").attr("readonly", "readonly");
+    
     getSourcePerusahaan = $("#user_company2 :selected");
     if (typeof getSourcePerusahaan.data() !== 'undefined') {
         getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
