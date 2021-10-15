@@ -1443,7 +1443,7 @@ async function detailClient(base64) {
                 </div>
                 <div class="d-flex justify-content-end">
                     <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Tutup</a>
-                    <a href="javascript:void(0)" onclick="updateProfile()" class="btn btn-primary btn-lg mx-1">Simpan</a>
+                    <a href="javascript:void(0)" id="btnSubmit" onclick="updateProfile('${base64}')" class="btn btn-primary btn-lg mx-1">Simpan</a>
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
@@ -1454,7 +1454,7 @@ async function detailClient(base64) {
                         <div class="row">${htmlLayananNonAktif(dataLayanan, base64)}</div>
                     </div>
                     <div class="d-flex justify-content-around" style="position: fixed;bottom: 20%;right: 35%;">
-                        <a href="javascript:void(0)" id="btnSubmit" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;"><span>&#43;</span></a>
+                        <a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="buatLayananBaru('${base64}')" style="border-radius: 50%;"><span>&#43;</span></a>
                     </div>
                     <hr class="mt-0" />
                     <div class="d-flex justify-content-end">
@@ -1526,7 +1526,17 @@ async function detailClient(base64) {
     $(`input[name="status"][value='${detail.user_status}']`).prop("checked", true);
 }
 
-async function updateProfile(value) {
+async function getDetailPic(company_id, email_pic){
+    var dataPerusahaan = await getDataPerusahaan().catch(err => err);
+    var detailPerusahaan = dataPerusahaan.find((item) => item.id === company_id);
+    var dataPic = await getDataClient(detailPerusahaan.source[5]).catch(err => err);
+    var detailPic = dataPic.find((item) => item.id === email_pic);
+    if(typeof detailPic === 'undefined') alert('Email PIC Tidak terdaftar.');
+    return detailPic;
+}
+
+async function updateProfile(base64) {
+    var detail = JSON.parse(atob(base64));
     var form = $('#form-update')[0];
     var old_email = $('#old_email').val();
     var user_client = $('#user_client').val();
@@ -1534,17 +1544,23 @@ async function updateProfile(value) {
     var username = $('#username').val();
 
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
-
     var data = {
         u_mail: old_email,
         status: $('input[name="status"]:checked').val(),
         u_name: username,
     }
-
+    
     if (new_email !== old_email) {
         data['u_mail_new'] = new_email;
+        var detailPic = await getDetailPic(detail.company_id, new_email);
+        data['address'] = detailPic.source.alamat_klien;
     }
 
+    // else{
+    //     var detailPic = await getDetailPic(detail.company_id, old_email);
+    // }
+
+    // console.log("value", data);
     var update = await submitUpdateProfile(data).catch((err) => err.responseJSON);
 
     if (update.processMessage === "Success") {
@@ -1970,10 +1986,12 @@ async function getDataClient(value) {
     })
 }
 
-function resend_mail(base64) {
+async function resend_mail(base64) {
     var data = JSON.parse(atob(base64));
+    console.log("base64", data);
     var param = "";
 
+    var detailPic = await getDetailPic(data.company_id, data.user_email);
     var { user_name, user_status, user_email, company_id } = data;
 
     var manageClient = {
@@ -1981,9 +1999,11 @@ function resend_mail(base64) {
         u_status: user_status,
         u_mail: user_email,
         c_id: company_id,
-        resend: true
+        resend: true,
+        address: detailPic.source.alamat_klien
     }
 
+    // console.log("manageClient", manageClient);
 
     $.ajax({
         // OLD
@@ -2020,6 +2040,7 @@ function resend_mail(base64) {
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            loading(false);
             if (jqXHR.status != 500) {
                 var strjson = JSON.parse(jqXHR.responseText);
                 swal({
@@ -2060,11 +2081,13 @@ function saveClient() {
     var nama_client = $("#user_client option:selected").text();
     var start_date = $("#start_date").val();
     var end_date = $("#end_date").val();
+    var address = $("#user_address").val();
 
     var manageClient = {
         u_name: nama_client.trim(),
         u_status: status,
         u_mail: client_email,
+        address: address,
         // u_mail: 'irwanmaulana@prisma-ads.com',
         c_id: perusahan,
         l_prov: user_provinsi.join(';'),
