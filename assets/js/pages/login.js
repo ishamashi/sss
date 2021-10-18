@@ -21,7 +21,7 @@ $(function(){
 				  localStorage.setItem('prisma_lvmn', data.data.prisma_lvmn);
 				  localStorage.setItem('prisma_lvsd', data.data.prisma_lvsd);
 				  localStorage.setItem('prisma_level', data.data.prisma_level);
-				  window.location = "index.html";
+				  window.location = "menu.html";
 				} else {
 				  console.log(data)
 				}

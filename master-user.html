@@ -86,8 +86,22 @@
 
 		.select2-selection__arrow {
 			margin: 2px;
-		} 
+		}
 
+		select[readonly].select2-hidden-accessible+.select2-container {
+			pointer-events: none;
+			touch-action: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection {
+			background: #eee !important;
+			box-shadow: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__arrow,
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__clear {
+			display: none;
+		}
 	</style>
 
 
@@ -416,7 +430,6 @@
 	<script src="assets/plugins/ion/ion.rangeSlider.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/sweet-alert/sweetalert2.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-
 
 	<script type="text/javascript" src="assets/js/plugins.js"></script>
 

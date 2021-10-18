@@ -4,7 +4,7 @@
 		
 		<!-- Title -->
 		<link rel="icon" href="assets/images/favicon.png">
-		<title>PRISMA | Login - Sign in</title>
+		<title>PRISMA | Confrimation</title>
 		
 		<meta content="width=device-width, initial-scale=1" name="viewport"/>
 		<meta charset="UTF-8">
@@ -54,17 +54,14 @@
 							<div class="login-box">
 								<a href="index.html" class="text-center"><img class="text-center" src="assets/images/Logo_Prisma_Baru.png" height="150"></a>
 								<p class="text-center m-t-md">Please Input Your New Username & Password.</p>
-								<form class="m-t-md" id="loginform">
+								<form class="m-t-md" id="confirmForm" enctype="application/x-www-form-urlencoded">
 									<div class="form-group">
-										<input type="text" class="form-control" placeholder="Username" required name="username" id="username">
+										<input type="text" class="form-control"  autocomplete="off" placeholder="Username" name="username" id="username" required>
 									</div>
 									<div class="form-group">
-										<input type="password" class="form-control" placeholder="Password" required name="password" id="password">
+										<input type="password" class="form-control" autocomplete="off" placeholder="Password" name="password" id="password" required>
 									</div>
-									<button type="submit" class="btn btn-success btn-block" style="background-color: #572d86;" id="register">Register</button>
-									<!-- <a href="forgot.html" class="display-block text-center m-t-md text-sm">Forgot Password?</a> -->
-									<!-- <p class="text-center m-t-xs text-sm">Do not have an account?</p> -->
-									<!-- <a href="register.html" class="btn btn-default btn-block m-t-md">Create an account</a> -->
+									<button type="button" class="btn btn-success btn-block" style="background-color: #572d86;" id="confirmation">Confirmation</button>
 								</form>
 								<p class="text-center m-t-xs text-sm">2019 &copy; Archernine.</p>
 							</div>
