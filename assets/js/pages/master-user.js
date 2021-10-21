@@ -1479,7 +1479,7 @@ async function detailClient(base64) {
         // disabled: true,
     }).select2('val', detail.company_id);
     $("#user_company2").attr("readonly", "readonly");
-    
+
     getSourcePerusahaan = $("#user_company2 :selected");
     if (typeof getSourcePerusahaan.data() !== 'undefined') {
         getSourcePerusahaan = $("#user_company2 :selected").data().data.source;
@@ -1526,12 +1526,12 @@ async function detailClient(base64) {
     $(`input[name="status"][value='${detail.user_status}']`).prop("checked", true);
 }
 
-async function getDetailPic(company_id, email_pic){
+async function getDetailPic(company_id, email_pic) {
     var dataPerusahaan = await getDataPerusahaan().catch(err => err);
     var detailPerusahaan = dataPerusahaan.find((item) => item.id === company_id);
     var dataPic = await getDataClient(detailPerusahaan.source[5]).catch(err => err);
     var detailPic = dataPic.find((item) => item.id === email_pic);
-    if(typeof detailPic === 'undefined') alert('Email PIC Tidak terdaftar.');
+    if (typeof detailPic === 'undefined') alert('Email PIC Tidak terdaftar.');
     return detailPic;
 }
 
@@ -1549,7 +1549,7 @@ async function updateProfile(base64) {
         status: $('input[name="status"]:checked').val(),
         u_name: username,
     }
-    
+
     if (new_email !== old_email) {
         data['u_mail_new'] = new_email;
         var detailPic = await getDetailPic(detail.company_id, new_email);
@@ -1593,7 +1593,7 @@ function submitUpdateProfile(data) {
             data: data,
             headers: { "Ip-Addr": IP, "token": "Bearer " + token },
             dataType: 'json',
-            beforeSend: function(){
+            beforeSend: function () {
                 disabledButton('btnSubmit');
             },
             success: function (data) {
@@ -1812,7 +1812,7 @@ async function buatLayananBaru(base64) {
 
                 var getDiff = getDiffMonths(diff_start, diff_end);
                 $('#bulan_layanan').val(getDiff);
-                
+
             });
             aksesProvinsi('user_provinsi');
             aksesIndustri('user_industry');
@@ -1823,7 +1823,7 @@ async function buatLayananBaru(base64) {
 function submitAddLayanan() {
     var form = $("#formaddclient")[0];
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
-    if($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan');
+    if ($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan');
 
     let data = {
         u_id: $('#user_id').val(),
@@ -1886,11 +1886,11 @@ function submitAddLayanan() {
     });
 }
 
-function disabledButton(selector, disabled = true){
-    if(disabled){
+function disabledButton(selector, disabled = true) {
+    if (disabled) {
         $(`#${selector}`).attr('disabled', 'disabled');
         $(`#${selector}`).addClass('disabled');
-    }else{
+    } else {
         $(`#${selector}`).removeAttr('disabled');
         $(`#${selector}`).removeClass('disabled');
     }
@@ -1988,9 +1988,8 @@ async function getDataClient(value) {
 
 async function resend_mail(base64) {
     var data = JSON.parse(atob(base64));
-    console.log("base64", data);
     var param = "";
-    
+
     var dataLayanan = await getDataDetailLayanan(data.user_id).catch(err => {
         console.log("CATCH LAYANAN", err.responseJSON.processMessage);
         return false;
@@ -2010,17 +2009,22 @@ async function resend_mail(base64) {
         address: detailPic.source.alamat_klien
     }
 
+    console.log("DATA", { getLayananActive });
 
-    if(typeof getLayananActive !== 'undefined'){
+    if (typeof getLayananActive !== 'undefined') {
         manageClient['l_prov'] = getLayananActive.provinsi.map((item) => item.id).join(';');
         manageClient['l_ind'] = getLayananActive.industry.map((item) => item.id).join(';');
-    }else{
+        manageClient['l_sdate'] = moment(getLayananActive.start_date).format('MM/DD/YYYY')
+        manageClient['l_edate'] = moment(getLayananActive.end_date).format('MM/DD/YYYY')
+    } else {
         alert("Tidak ada layanan yang aktif !");
         manageClient['l_prov'] = null;
         manageClient['l_ind'] = null;
+        manageClient['l_sdate'] = null;
+        manageClient['l_edate'] = null;
     }
 
-    console.log("manageClient", {manageClient, detailPic, getLayananActive});
+    console.log("manageClient", { manageClient, detailPic, getLayananActive });
 
     $.ajax({
         // OLD
@@ -2085,7 +2089,7 @@ async function resend_mail(base64) {
 function saveClient() {
     var form = $("#formaddclient")[0];
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
-    if($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan !');
+    if ($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan !');
 
     var data = new FormData(form);
     var perusahan = $("#user_company2 option:selected").data('id');
@@ -2123,7 +2127,7 @@ function saveClient() {
         data: manageClient,
         cache: false,
         timeout: 600000,
-        beforeSend: function(){
+        beforeSend: function () {
             disabledButton('saveClient');
         },
         success: function (data, textStatus, jqXHR) {
