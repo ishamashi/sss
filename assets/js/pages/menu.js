@@ -20,7 +20,6 @@ function checkLogin(token) {
 }
 
 async function checkLayanan(token) {
-    console.log("Token", token);
     if (token.usr_level !== 1) return;
 
     var dataLayanan = await getDataLayanan(token.usr_id).catch(err => {

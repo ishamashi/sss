@@ -1990,6 +1990,13 @@ async function resend_mail(base64) {
     var data = JSON.parse(atob(base64));
     console.log("base64", data);
     var param = "";
+    
+    var dataLayanan = await getDataDetailLayanan(data.user_id).catch(err => {
+        console.log("CATCH LAYANAN", err.responseJSON.processMessage);
+        return false;
+    });
+
+    var getLayananActive = dataLayanan.find((item) => item.status === 'A');
 
     var detailPic = await getDetailPic(data.company_id, data.user_email);
     var { user_name, user_status, user_email, company_id } = data;
@@ -2003,7 +2010,17 @@ async function resend_mail(base64) {
         address: detailPic.source.alamat_klien
     }
 
-    // console.log("manageClient", manageClient);
+
+    if(typeof getLayananActive !== 'undefined'){
+        manageClient['l_prov'] = getLayananActive.provinsi.map((item) => item.id).join(';');
+        manageClient['l_ind'] = getLayananActive.industry.map((item) => item.id).join(';');
+    }else{
+        alert("Tidak ada layanan yang aktif !");
+        manageClient['l_prov'] = null;
+        manageClient['l_ind'] = null;
+    }
+
+    console.log("manageClient", {manageClient, detailPic, getLayananActive});
 
     $.ajax({
         // OLD
