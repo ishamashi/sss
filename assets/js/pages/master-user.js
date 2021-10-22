@@ -1548,7 +1548,7 @@ async function updateProfile(base64) {
         c_id: detail.company_id,
         u_mail: old_email,
         status: $('input[name="status"]:checked').val(),
-        u_name: detail.username,
+        u_name: detail.user_name,
         u_name_new: username 
     }
 
