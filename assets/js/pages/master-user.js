@@ -1545,9 +1545,11 @@ async function updateProfile(base64) {
 
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
     var data = {
+        c_id: detail.company_id,
         u_mail: old_email,
         status: $('input[name="status"]:checked').val(),
-        u_name: username,
+        u_name: detail.username,
+        u_name_new: username 
     }
 
     if (new_email !== old_email) {
@@ -1555,10 +1557,6 @@ async function updateProfile(base64) {
         var detailPic = await getDetailPic(detail.company_id, new_email);
         data['address'] = detailPic.source.alamat_klien;
     }
-
-    // else{
-    //     var detailPic = await getDetailPic(detail.company_id, old_email);
-    // }
 
     // console.log("value", data);
     var update = await submitUpdateProfile(data).catch((err) => err.responseJSON);
