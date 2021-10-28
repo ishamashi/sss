@@ -1443,7 +1443,7 @@ async function detailClient(base64) {
                 </div>
                 <div class="d-flex justify-content-end">
                     <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Tutup</a>
-                    <a href="javascript:void(0)" id="btnSubmit" onclick="updateProfile('${base64}')" class="btn btn-primary btn-lg mx-1">Simpan</a>
+                    <a href="javascript:void(0)" id="btnSubmit" onclick="updateProfile('${base64}', event)" class="btn btn-primary btn-lg mx-1">Simpan</a>
                 </div>
             </div>
             <div class="tab-pane" id="pengaturan-langganan">
@@ -1535,7 +1535,8 @@ async function getDetailPic(company_id, email_pic) {
     return detailPic;
 }
 
-async function updateProfile(base64) {
+async function updateProfile(base64, event) {
+    event.preventDefault();
     var detail = JSON.parse(atob(base64));
     var form = $('#form-update')[0];
     var old_email = $('#old_email').val();
@@ -1544,6 +1545,7 @@ async function updateProfile(base64) {
     var username = $('#username').val();
 
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
+    disabledButton('btnSubmit');
     var data = {
         c_id: detail.company_id,
         u_mail: old_email,
