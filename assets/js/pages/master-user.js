@@ -1554,6 +1554,8 @@ async function updateProfile(base64, event) {
         u_name_new: username 
     }
 
+    console.log("submit update profile", data);
+
     if (new_email !== old_email) {
         data['u_mail_new'] = new_email;
         var detailPic = await getDetailPic(detail.company_id, new_email);
