@@ -1,7 +1,7 @@
 var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
-
+var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
 $(document).ready(function () {
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
