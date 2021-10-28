@@ -1192,10 +1192,10 @@ function UserClient(firstCall = false) {
                     "8": (v['confirmation_status'] === 'F') ?
                         '&nbsp;&nbsp;<button class="btn btn-primary btn-rounded" title="Resend e-Mail" onclick="resend_mail(\'' + base64 + '\')"><span class="fa fa-envelope"></span></button>' +
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded disabled" disabled="disabled" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash"></span></button>'
                         :
                         '&nbsp;&nbsp;<button class="btn btn-default btn-rounded" title="Detail User" onclick="detailClient(\'' + base64 + '\')"><span class="fa fa-eye"></span></button>' +
-                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash" ></span></button>'
+                        '&nbsp;&nbsp;<button class="btn btn-danger btn-rounded disabled" disabled="disabled" title="Delete User" onclick="deleteThis(\'' + v['user_id'] + '\')"><span class="fa fa-trash"></span></button>'
                 };
                 dattab.push(perdata);
                 no++;
