@@ -142,23 +142,43 @@ $(function(){
     for(i=1; i<=8;i++){
         var is_active = i==1?'active':'';
         var title = '';
+
 	if(i == 1) {
-            title = 'BAST1';
-        } else if(i == 2) {
-            title = 'BAST2';
-        } else if(i == 3){
-            title = 'Recovering1';
-        } else if(i == 4){
-            title = 'Recovering2';
-        } else if(i == 5){
-            title = 'Claim 1';
-        } else if(i == 6){
-            title = 'Claim 2';
-        } else if(i == 7){
-            title = 'Maintenance';
-        } else {
-            title = 'Disposal';
-        }
+        title = 'Content 1';
+    } else if(i == 2) {
+        title = 'Content 2';
+    } else if(i == 3){
+        title = 'Content 3';
+    } else if(i == 4){
+        title = 'Content 4';
+    } else if(i == 5){
+        title = 'Content 5';
+    } else if(i == 6){
+        title = 'Content 6';
+    } else if(i == 7){
+        title = 'Content 7';
+    } else {
+        title = 'Content 8';
+    }
+
+    // if(i == 1) {
+    //     title = 'BAST1';
+    // } else if(i == 2) {
+    //     title = 'BAST2';
+    // } else if(i == 3){
+    //     title = 'Recovering1';
+    // } else if(i == 4){
+    //     title = 'Recovering2';
+    // } else if(i == 5){
+    //     title = 'Claim 1';
+    // } else if(i == 6){
+    //     title = 'Claim 2';
+    // } else if(i == 7){
+    //     title = 'Maintenance';
+    // } else {
+    //     title = 'Disposal';
+    // }
+
 	html_list += '<li class="'+is_active+'"><a href="#tab-'+i+'" role="tab" data-toggle="tab">'+title+'</a></li>';        
 
         html_content += '<div class="tab-pane '+is_active+'" id="tab-'+i+'">'
@@ -217,15 +237,15 @@ $(function(){
                     +'<div class="form-group">'
                         +'<label class="col-md-6 control-label">Image Day</label>'
                         +'<div class="col-md-12">'
-                            +'<img class="img" style="height:256px;" id="preview_image_night'+i+'" onerror="if (this.src != \'assets/images/ooh-pictures/noimage2.jpg\') this.src = \'assets/images/ooh-pictures/noimage2.jpg\';" src="#" alt="Image Night - '+i+'" />'
-                            +'<input type="file" multiple class="file image_night" id="image_night'+i+'" name="image_night['+i+']" data-preview-file-type="jpg"/>'
+                            +'<img class="img" style="height:256px;" id="preview_image_day'+i+'"  onerror="checkingImageIfError(\'preview_image_day'+i+'\', \'day\')" src="#" alt="Image Day - '+i+'" />'
+                            +'<input type="file" multiple class="file image_day" id="image_day'+i+'" name="image_day['+i+']" data-preview-file-type="jpg"/>'
                         +'</div>'
                     +'</div>'
                     +'<div class="form-group">'
                         +'<label class="col-md-6 control-label">Image Night</label>'
                         +'<div class="col-md-12">'
-                            +'<img class="img" style="height:256px;" id="preview_image_day'+i+'"  onerror="if (this.src != \'assets/images/ooh-pictures/noimage.jpg\') this.src = \'assets/images/ooh-pictures/noimage.jpg\';" src="#" alt="Image Day - '+i+'" />'
-                            +'<input type="file" multiple class="file image_day" id="image_day'+i+'" name="image_day['+i+']" data-preview-file-type="jpg"/>'
+                            +'<img class="img" style="height:256px;" id="preview_image_night'+i+'" onerror="checkingImageIfError(\'preview_image_night'+i+'\', \'night\')" src="#" alt="Image Night - '+i+'" />'
+                            +'<input type="file" multiple class="file image_night" id="image_night'+i+'" name="image_night['+i+']" data-preview-file-type="jpg"/>'
                         +'</div>'
                     +'</div>'
                     +'<input type="hidden" id="remove_this'+i+'" name="remove_this['+i+']" value="0">'
@@ -446,6 +466,25 @@ $(function(){
 
 });
 
+function checkingImageIfError(selector, type = 'day'){
+    var asset = '';
+    var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+    var selected = $(`#${selector}`);
+
+    if(type === 'day'){
+        asset = 'assets/images/ooh-pictures/noimage.jpg';
+    }else{
+        asset = 'assets/images/ooh-pictures/noimage2.jpg';
+    }
+
+    if(typeof selected.data('url') !== 'undefined'){
+        selected.attr('src', host_android + selected.data('url'));
+    }else{
+        selected.attr('src', asset);
+    }
+    return;
+}
+
 function activeTab(tab){
     $('.nav-tabs a[href="#' + tab + '"]').tab('show');
 };
@@ -572,11 +611,16 @@ function showContentByMonth(monthyear){
                 
                 $('#datee').val(zeroleftpad(vv.month,2)+'-'+vv.year);
                 //console.log(idx+' - '+vv.industry);
-                $.each(vv, function(k2,v2){ 
+                $.each(vv, function(k2,v2){
+                    // console.log("Rendering Image...", {
+                    //     tipe: k2,
+                    //     index: idx,
+                    //     src: v2
+                    // });
                     if($('#'+k2+''+idx+'').length){
                         if(k2=='image_day' || k2=='image_night'){ 
                             var localset = ''; //'http://192.168.56.106/prisma-frontend/';
-                            $('#preview_'+k2+''+idx+'').attr('src',localset+'assets/images/ooh-pictures/'+v2);
+                            $('#preview_'+k2+''+idx+'').attr('src',localset+'assets/images/ooh-pictures/'+v2).attr('data-url', v2);
                             $('#'+k2+''+idx+'').text(v2);
                         } else {
                             $('#'+k2+''+idx+'').val(v2); 

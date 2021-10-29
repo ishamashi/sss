@@ -86,8 +86,22 @@
 
 		.select2-selection__arrow {
 			margin: 2px;
-		} 
+		}
 
+		select[readonly].select2-hidden-accessible+.select2-container {
+			pointer-events: none;
+			touch-action: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection {
+			background: #eee !important;
+			box-shadow: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__arrow,
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__clear {
+			display: none;
+		}
 	</style>
 
 
@@ -257,7 +271,7 @@
 							<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">USER</a></li>
 							<li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">COMPANY</a></li>
 							<li><a href="#tab-lvl" role="tab" data-toggle="tab">LEVEL</a></li>
-							<!-- <li><a href="#tab-client" role="tab" data-toggle="tab">CLIENT</a></li> -->
+							<li><a href="#tab-client" role="tab" data-toggle="tab">CLIENT</a></li>
 						</ul>
 						<div class="panel-body tab-content">
 							<div class="tab-pane active" id="tab-cont">
@@ -353,6 +367,8 @@
 													<tr>
 														<th width='10%' class="kolom">No</th>
 														<th width='20%' class="kolom">Fullname</th>
+														<th width='20%' class="kolom">User Login</th>
+														<th width='20%' class="kolom">Level</th>
 														<th width='20%' class="kolom">Email</th>
 														<th width='25%' class="kolom">Company</th>
 														<th width='20%' class="kolom">Status</th>
@@ -414,7 +430,6 @@
 	<script src="assets/plugins/ion/ion.rangeSlider.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/sweet-alert/sweetalert2.js"></script>
 	<script type="text/javascript" src="assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-
 
 	<script type="text/javascript" src="assets/js/plugins.js"></script>
 
