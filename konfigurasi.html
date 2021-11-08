@@ -9,13 +9,14 @@
 
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<meta charset="UTF-8">
-	<meta name="description" content="Premium Innovation & Solution Media" />
+	<meta name="description" content="Admin Dashboard Template" />
 	<meta name="keywords" content="admin,dashboard" />
 	<meta name="author" content="Steelcoders" />
 
 	<!-- Styles -->
 	<link href='assets/css/fonts.css' rel='stylesheet' type='text/css'>
 	<link href="assets/plugins/pace-master/themes/blue/pace-theme-flash.css" rel="stylesheet" />
+	<link href="assets/css/jquery-ui.min.css" rel="stylesheet" />
 	<link href="assets/plugins/uniform/css/uniform.default.min.css" rel="stylesheet" />
 	<link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/fontawesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
@@ -31,12 +32,14 @@
 	<link href="assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css" />
-	<link href="assets/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css" />
-	<link href="assets/plugins/sweet-alert/sweetalert2.css" rel="stylesheet" type="text/css" />
-	<link href="assets/plugins/nestable/nestable.css" rel="stylesheet" type="text/css" />
 	<link href="assets/plugins/datatables/css/jquery.datatables.min.css" rel="stylesheet" type="text/css" />
-	<link href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css" rel="stylesheet"
+	<link href="assets/plugins/image-cropper/cropper.min.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/sweet-alert/sweetalert2.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/ion/ion.rangeSlider.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/ion/ion.rangeSlider.skinFlat.css" rel="stylesheet" type="text/css" />
+	<link href="assets/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet"
 		type="text/css" />
 
 	<!-- Theme Styles -->
@@ -44,26 +47,60 @@
 	<link href="assets/css/custom.css" rel="stylesheet" type="text/css" />
 
 	<script src="assets/plugins/3d-bold-navigation/js/modernizr.js"></script>
-
+	<script src="assets/js/qrcode.min.js"></script>
 
 
 	<style type="text/css">
-		.col-md-1,
-		.col-md-2,
-		.col-md-3 {
-			padding-right: 0px;
-			padding-left: 0px;
-			margin-top: -5px;
+		#markers {
+			margin: 0px 30px;
+			position: absolute;
+			right: 0;
+			bottom: 90px;
+			z-index: 7;
+			background-color: #FFFFFF;
+			border-radius: 2px;
+			height: 40px;
+			width: 40px;
 		}
 
-		.col-md-6 {
-			padding-right: 0px;
-			padding-left: 0px;
+		.tabmonth {
+			padding: 7px;
 		}
 
-		.titik_prisma {
-			background-color: lightgoldenrodyellow;
-			color: red;
+		.stats-info ul li {
+			padding: 7px 0;
+		}
+
+		thead input {
+			width: 100%;
+		}
+
+		.select2-selection {
+
+			text-align: left;
+		}
+
+		.select2-selection__rendered {
+			margin: 2px;
+		}
+
+		.select2-selection__arrow {
+			margin: 2px;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container {
+			pointer-events: none;
+			touch-action: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection {
+			background: #eee !important;
+			box-shadow: none;
+		}
+
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__arrow,
+		select[readonly].select2-hidden-accessible+.select2-container .select2-selection__clear {
+			display: none;
 		}
 	</style>
 
@@ -83,6 +120,17 @@
 		<h3><span class="pull-left">Chat</span><a href="javascript:void(0);" class="pull-right" id="closeRight"><i
 					class="fa fa-times"></i></a></h3>
 		<div class="slimscroll">
+		</div>
+	</nav>
+	<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2">
+		<h3><span class="pull-left">Sandra Smith</span> <a href="javascript:void(0);" class="pull-right"
+				id="closeRight2"><i class="fa fa-angle-right"></i></a></h3>
+		<div class="slimscroll chat">
+		</div>
+		<div class="chat-write">
+			<form class="form-horizontal" action="javascript:void(0);">
+				<input type="text" class="form-control" placeholder="Say something">
+			</form>
 		</div>
 	</nav>
 	<form class="search-form" action="#" method="GET">
@@ -118,6 +166,9 @@
 									class="waves-effect waves-button waves-classic sidebar-toggle"><i class="fa fa-bars"
 										style="color: #fff;"></i></a>
 							</li>
+							<!-- <li>
+									<a href="#cd-nav" class="waves-effect waves-button waves-classic cd-nav-trigger"><i class="fa fa-diamond"></i></a>
+								</li> -->
 							<li>
 								<a href="javascript:void(0);"
 									class="waves-effect waves-button waves-classic toggle-fullscreen"><i
@@ -152,100 +203,50 @@
 					
 				</div>
 			</div><!-- Page Sidebar Inner -->
+			<div class="slimScrollBar"
+				style="background: rgb(204, 204, 204); width: 7px; position: absolute; top: 0px; opacity: 0.3; display: block; border-radius: 0px; z-index: 99; right: 0px; height: 30px;">
+			</div>
 		</div><!-- Page Sidebar -->
 		<div class="page-inner">
-			<div class="page-title">
-				<div class="container" style="margin-bottom: -20px;">
-					<div class="row">
-						<!-- modal -->
-						<div class="modal fade history_archieve" tabindex="-1" role="dialog"
-							aria-labelledby="myLargeModalLabel" aria-hidden="true">
-							<div class="modal-dialog modal-lg" style="width: 80%;">
-								<div class="modal-content">
-									<div class="modal-header">
-										<button type="button" class="close" data-dismiss="modal"
-											aria-label="Close"><span aria-hidden="true">&times;</span></button>
-										<h3 class="modal-title" id="myLargeModalLabel">History Request Delete</h3>
-									</div>
-									<div class="modal-body" id="data_history">
-										<table style="border-bottom: 1px solid #E5E5E5;"
-										class="table table-bordered table-striped" width='100%' id="history_archieve_data">
-											<thead>
-												<tr>
-													<th>No</th>
-													<th>Tanggal Pengajuan</th>
-													<th>Tanggal Archive</th>
-													<th>Status</th>
-												</tr>
-											</thead>
-										</table>
-									</div>
-									<div class="modal-footer">
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-12">
-							<div class="panel panel-white">
-								<div class="panel-body">
-									<div class="row">
-										<div class="col-md-12">
-											<div class="col-md-3">
-												<select class="form-control" id="province">
-													<option value="">All Province</option>
-												</select>
-											</div>
-											<div class="col-md-3">
-												<select class="form-control" id="industry" title="All Industry">
-													<option value="">All Industry</option>
-												</select>
-											</div>
-											<div class="col-md-2">
-												<select class="form-control" id="owner" multiple title="Select Owner">
-												</select>
-											</div>
-											<div class="col-md-2">
-												<select class="form-control" id="type" title="All Type">
-													<option value="">All Type</option>
-												</select>
-											</div>
-											<div class="col-md-2" style="margin-top: 0px;padding-left: 5px;">
-												<button type="button" class="btn btn-info btn-rounded"
-													style="border-radius: 5px;margin-top: 1px;"
-													id="search">Search</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+			<div id="main-wrapper" class="container">
+				<ul class="breadcrumb">
+					<li><a href="#">Konfigurasi</a></li>
+					<li class="active">Version</li>
+				</ul>
+				<div class="row">
+					<div class="col-md-12">
+						<h2>
+							Konfigurasi
+						</h2>
 					</div>
 				</div>
-			</div>
-			<div id="main-wrapper" class="container">
 				<div class="form-horizontal">
 					<div class="panel panel-default tabs">
 						<ul class="nav nav-tabs" role="tablist">
-							<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">Request</a></li>
-							<li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">Archive</a></li>
+							<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">Version</a></li>
+							<!-- <li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">COMPANY</a></li>
+							<li><a href="#tab-lvl" role="tab" data-toggle="tab">LEVEL</a></li>
+							<li><a href="#tab-client" role="tab" data-toggle="tab">CLIENT</a></li> -->
 						</ul>
 						<div class="panel-body tab-content">
 							<div class="tab-pane active" id="tab-cont">
+								<div class="col-md-12" style="padding: 10px 0px;">
+									<div class="col-md-10"></div>
+									<div class="col-md-2">
+										<button class="btn btn-info btn-block" id="addUser" type="text"><span
+												class="fa fa-plus"></span> &nbsp; <b> ADD VERSION </b></button>
+									</div>
+								</div>
 								<div class="col-md-12">
 									<div class="panel panel-default" style="padding: 10px;">
 										<div class="panel-body panel-body-table">
-											<table id="request_del" style="border-bottom: 1px solid #E5E5E5;"
-												class="table table-bordered table-striped" width='100%'>
+											<table id="mst_version" style="border-bottom: 1px solid #E5E5E5;"
+												class="table table-bordered table-striped">
 												<thead>
 													<tr>
-														<th class="text-center" width="2%">No</th>
-														<th class="text-center">Canvassing Number</th>
-														<th class="text-center">District</th>
-														<th class="text-center">Site Number</th>
-														<th class="text-center">Alamat</th>
-														<th class="text-center">Requester</th>
-														<th class="text-center" width='25%'>Waktu Request</th>
-														<th class="text-center" width='25%'>Waktu Rollback</th>
+														<th class="text-center" width="40">No</th>
+														<th class="text-center">Version</th>
+														<th class="text-center">Date</th>
 														<th class="text-center">Action</th>
 													</tr>
 												</thead>
@@ -255,25 +256,74 @@
 								</div>
 							</div>
 							<div class="tab-pane" id="tab-cmp">
+								<div class="col-md-12" style="padding: 10px 0px;">
+									<div class="col-md-10"></div>
+									<div class="col-md-2">
+										<button class="btn btn-info btn-block" id="addCompany" type="text"><span
+												class="fa fa-plus"></span> &nbsp; <b> ADD COMPANY </b></button>
+									</div>
+								</div>
 								<div class="col-md-12">
-									<div class="panel panel-default" style="border-bottom: 1px solid #E5E5E5;"
-										class="table table-bordered table-striped">
+									<div class="panel panel-default" style="padding: 10px;">
 										<div class="panel-body panel-body-table">
-											<table id="archieve_del" class="table table-bordered table-striped"
-												width='100%'>
+											<table id="mstcompany" class="table table-bordered table-striped">
 												<thead>
 													<tr>
-														<th class="text-center" width="5%">No</th>
-														<th class="text-center">Canvassing Number</th>
-														<th class="text-center">District</th>
-														<th class="text-center">Site Number</th>
-														<th class="text-center">Alamat</th>
-														<th class="text-center">Requester</th>
-														<th class="text-center">Waktu Request</th>
-														<th class="text-center">Waktu Archived</th>
-														<th class="text-center">Status</th>
-														<th class="text-center">history</th>
-														<th class="text-center">Action</th>
+														<th class="text-center" width="40">No</th>
+														<th class="text-center">Company Name</th>
+														<th class="text-center">Company Desc</th>
+														<th class="text-center">Company Email</th>
+														<th class="text-center">Company Advertiser</th>
+														<th class="text-center">Actions</th>
+													</tr>
+												</thead>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane" id="tab-lvl">
+								<div class="col-md-12">
+									<div class="panel panel-default" style="padding: 10px;">
+										<div class="panel-body panel-body-table">
+											<table id="mstlevel" class="table table-bordered table-striped"
+												style="width: 100%">
+												<thead>
+													<tr>
+														<th class="text-center" width="40">No</th>
+														<th class="text-center">Level Name</th>
+														<th class="text-center">Level Display</th>
+														<th class="text-center">Level Sub Display</th>
+														<th class="text-center">Level Desc</th>
+													</tr>
+												</thead>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="tab-pane" id="tab-client">
+								<div class="col-md-12" style="padding: 10px 0px;">
+									<div class="col-md-10"></div>
+									<div class="col-md-2">
+										<button class="btn btn-info btn-block" id="addClient" type="text"><span
+												class="fa fa-plus"></span> &nbsp; <b> ADD CLIENT </b></button>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="panel panel-default" style="padding: 10px;">
+										<div class="panel-body panel-body-table">
+											<table id="example" class="display" style="width:100%">
+												<thead>
+													<tr>
+														<th width='10%' class="kolom">No</th>
+														<th width='20%' class="kolom">Fullname</th>
+														<th width='20%' class="kolom">User Login</th>
+														<th width='20%' class="kolom">Level</th>
+														<th width='20%' class="kolom">Email</th>
+														<th width='25%' class="kolom">Company</th>
+														<th width='20%' class="kolom">Status</th>
+														<th width='5%' class=""></th>
 													</tr>
 												</thead>
 											</table>
@@ -284,70 +334,18 @@
 						</div>
 					</div>
 				</div>
-			</div><!-- Main Wrapper -->
-			<div class="page-footer">
-				<div class="container">
-					<p class="no-s">2019 &copy; Archernine. <span id="current_version"></span></p>
-				</div>
+
+
 			</div>
+			<!-- </form> -->
+		</div><!-- Main Wrapper -->
+		<div class="page-footer">
+			<div class="container">
+				<p class="no-s">2019 &copy; Archernine. <span id="current_version"></span></p>
+			</div>
+		</div>
 		</div><!-- Page Inner -->
 	</main><!-- Page Content -->
-	<nav class="cd-nav-container" id="cd-nav">
-		<header>
-			<h3>Navigation</h3>
-			<a href="#0" class="cd-close-nav">Close</a>
-		</header>
-		<ul class="cd-nav list-unstyled">
-			<li class="cd-selected" data-menu="index">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-home"></i>
-					</span>
-					<p>Dashboard</p>
-				</a>
-			</li>
-			<li data-menu="profile">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-user"></i>
-					</span>
-					<p>Profile</p>
-				</a>
-			</li>
-			<li data-menu="inbox">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-envelope"></i>
-					</span>
-					<p>Mailbox</p>
-				</a>
-			</li>
-			<li data-menu="#">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-tasks"></i>
-					</span>
-					<p>Tasks</p>
-				</a>
-			</li>
-			<li data-menu="#">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-cog"></i>
-					</span>
-					<p>Settings</p>
-				</a>
-			</li>
-			<li data-menu="calendar">
-				<a href="javsacript:void(0);">
-					<span>
-						<i class="glyphicon glyphicon-calendar"></i>
-					</span>
-					<p>Calendar</p>
-				</a>
-			</li>
-		</ul>
-	</nav>
 	<div class="cd-overlay"></div>
 
 
@@ -367,7 +365,7 @@
 	<script src="assets/plugins/jquery-counterup/jquery.counterup.min.js"></script>
 	<script src="assets/plugins/toastr/toastr.min.js"></script>
 	<script src="assets/plugins/metrojs/MetroJs.min.js"></script>
-	<script src="assets/js/modern.min.js"></script>
+	<!-- <script src="assets/js/modern.min.js"></script> -->
 	<script src="assets/plugins/select2/js/select2.min.js"></script>
 	<script src="assets/plugins/highcharts/highcharts.js"></script>
 	<script src="assets/plugins/moment/moment.js"></script>
@@ -375,30 +373,39 @@
 	<script src="assets/plugins/summernote-master/summernote.min.js"></script>
 	<script src="assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
-	<script src="assets/plugins/bootstrap-select/bootstrap-select.min.js"></script>
-	<script src="assets/plugins/sweet-alert/sweetalert2.js"></script>
 	<script src="assets/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="assets/plugins/image-cropper/cropper.min.js"></script>
+	<script src="assets/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/smartwizard/jquery.smartWizard-2.0.min.js"></script>
+	<script src="assets/plugins/wheelzoom.js"></script>
 	<script src="assets/plugins/ion/ion.rangeSlider.min.js"></script>
-	<script src="assets/plugins/nestable/jquery.nestable.js"></script>
+	<script type="text/javascript" src="assets/plugins/sweet-alert/sweetalert2.js"></script>
+	<script type="text/javascript" src="assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
-	<script src="assets/js/pam.js"></script>
-	<script src="assets/js/pages/request-delete.js"></script>
+	<script type="text/javascript" src="assets/js/plugins.js"></script>
+
+	<script src="assets/js/pages/konfigurasi.js"></script>
 	<script src="assets/js/load-common.js"></script>
-
-	<!-- Untuk print or download -->
-	<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-	<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-	<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
-
 
 	<!-- Lib Controller JS -->
 	<script src="assets/js/lib.js"></script>
 	<script type="text/javascript">
 		loginReq(token);
 	</script>
+
+	<!-- Modal -->
+	<div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-body text-center">
+					<div class="loader"></div>
+					<div clas="loader-txt">
+						<p>Please wait..</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 

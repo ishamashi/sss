@@ -1,6 +1,7 @@
 $(document).ready(function () {
   $("#user-name").html(name);
 
+    $("#menu_nav").load('navigation.html');
   check_version();
   $(".avatar").prop("src", "assets/images/avatar" + prisma_level + ".png");
 

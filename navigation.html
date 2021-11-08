@@ -1,0 +1,81 @@
+<script>
+    $(document).ready(function() {
+        var current_url = window.location.href;
+        var page = current_url.split("/");
+        var page_aktif = page[4];
+
+        if (page_aktif=='index.html') {
+            $("#menu_1").addClass("active");
+        }else if(page_aktif=='ooh-database.html')
+        {
+            $("#menu_2").addClass("active");
+        }else if(page_aktif=='optimization.html') {
+            $("#menu_3").addClass("active");
+        }else{
+            $("#menu_4").addClass("active");
+        }
+    });
+</script>
+
+<ul class="menu accordion-menu">
+    <li class="nav-heading"><span>Navigation</span></li>
+    <li id="menu_1" data-lv="index">
+        <a href="index.html"><span class="menu-icon icon-speedometer"></span>
+            <p>Overview</p>
+        </a>
+    </li>
+    <li id="menu_2" data-lv="ooh-database">
+        <a href="ooh-database.html"><span class="menu-icon icon-pointer"></span>
+            <p>OOH Database</p>
+        </a>
+    </li>
+    <li id="menu_3" data-lv="optimization">
+        <a href="optimization.html"><span class="menu-icon icon-globe-alt"></span>
+            <p>Optimization</p>
+        </a>
+    </li>
+    <li id="menu_4" data-lv="master-industry">
+        <a href="#"><span class="menu-icon icon-equalizer"></span>
+            <p>Master Data</p>
+        </a>
+        <ul>
+            <li data-lv="master-industry">
+                <a href="master-industry.html"><span class="menu-icon icon-equalizer"></span>
+                    <p>Master Industry</p>
+                </a>
+            </li>
+            <li data-lv="master-advertiser">
+                <a href="master-advertiser.html"><span class="menu-icon icon-equalizer"></span>
+                    <p>Master Advertiser</p>
+                </a>
+            </li>
+            <li data-lv="master-pam-industry">
+                <a href="master-pam-industry.html"><span class="menu-icon icon-equalizer"></span>
+                    <p>Master Industry</p>
+                </a>
+            </li>
+            <li data-lv="ooh-canvasing">
+                <a href="ooh-canvasing.html"><span class="menu-icon icon-equalizer"></span>
+                    <p>OOH Canvasing</p>
+                </a>
+            </li>
+            <li data-lv="master-kodeproduk">
+                <a href="master-kodeproduk.html"><span class="menu-icon icon-handbag"></span>
+                    <p>Master Kode Produk</p>
+                </a>
+            </li>
+            <li data-lv="master-user">
+                <a href="master-user.html"><span class="menu-icon icon-equalizer"></span>
+                    <p>Master Users</p>
+                </a>
+            </li>
+            <li data-lv="request-delete">
+                <a href="request-delete.html"><span class="menu-icon icon-trash"></span>
+                    <p>Request Delete</p>
+                </a>
+            </li>
+
+        </ul>
+    </li>
+</ul>
+
