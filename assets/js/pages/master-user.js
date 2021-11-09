@@ -920,7 +920,7 @@ function addClient(id, pardat) {
                 var optionsAsString = "<option></option>";
                 $.each(data.data, function (k, v) {
                     var ste = pardat[9] == v[0] ? 'SELECTED' : '';
-                    optionsAsString += "<option " + ste + " value='" + v[5] + "' data-id='" + v[6] + "'>" + v[1] + "</option>";
+                    optionsAsString += "<option " + ste + " value='" + v[5] + "' data-id='" + v[0] + "'>" + v[1] + "</option>";
                 });
                 $('#user_company2').find('option').remove();
                 $('#user_company2').append(optionsAsString);
