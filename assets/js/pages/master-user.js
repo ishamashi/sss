@@ -1936,7 +1936,7 @@ function getDataPerusahaan() {
                 if (data.length > 0) {
                     temp = data.map((item) => {
                         return {
-                            id: item[6],
+                            id: item[0],
                             text: item[1],
                             source: item
                         }
