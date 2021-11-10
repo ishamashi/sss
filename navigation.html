@@ -1,18 +1,64 @@
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        chklvl();
+        chkdel();
+
         var current_url = window.location.href;
         var page = current_url.split("/");
         var page_aktif = page[4];
 
-        if (page_aktif=='index.html') {
+        if (page_aktif == 'index.html') {
             $("#menu_1").addClass("active");
-        }else if(page_aktif=='ooh-database.html')
-        {
+        } else if (page_aktif == 'ooh-database.html') {
             $("#menu_2").addClass("active");
-        }else if(page_aktif=='optimization.html') {
+        } else if (page_aktif == 'optimization.html') {
             $("#menu_3").addClass("active");
-        }else{
+        } else {
             $("#menu_4").addClass("active");
+        }
+
+
+        function chklvl() {
+            var excpt = localStorage.getItem('prisma_lvmn');
+            if (excpt) {
+                arrex = excpt.split(',');
+                $('[data-lv]').each(function () {
+                    var lvdat = $(this).data();
+                    if (arrex.indexOf(lvdat.lv) < 0) {
+                        $(this).remove();
+                    }
+                });
+                var locate = location.pathname.split('/');
+                var pathe = locate[locate.length - 1].split('.html')
+                if (arrex.indexOf(pathe[0]) < 0 && pathe[0] != 'login' && pathe[0] != 'logout') {
+                    window.location = arrex[0] + ".html";
+                }
+
+            }
+
+            var excpt = localStorage.getItem('prisma_lvsd');
+            if (excpt) {
+                arrex = excpt.split(',');
+                $('[data-lvsd]').each(function () {
+                    var lvdat = $(this).data();
+                    //console.log(lvdat.lvsd);
+                    if (arrex.indexOf(lvdat.lvsd) < 0) {
+                        $(this).hide();
+                    }
+                });
+            }
+        }
+
+        function chkdel(lvsdne) {
+            var stat = false;
+            var excpt = localStorage.getItem('prisma_lvsd');
+            if (excpt) {
+                arrex = excpt.split(',');
+                $.each(arrex, function (k, v) {
+                    if (v == lvsdne) stat = true;
+                })
+            }
+            return stat;
         }
     });
 </script>
@@ -78,4 +124,3 @@
         </ul>
     </li>
 </ul>
-
