@@ -5,7 +5,13 @@
 
         var current_url = window.location.href;
         var page = current_url.split("/");
-        var page_aktif = page[4];
+        if(current_url.search("localhost")) {
+            var page_aktif = page[4];
+        }else{
+            var page_aktif = page[3];
+        }
+
+        alert(page_aktif);
 
         if (page_aktif == 'index.html') {
             $("#menu_1").addClass("active");
