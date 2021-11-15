@@ -2,6 +2,7 @@ var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
 var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
+var advertiser = '';
 $(document).ready(function () {
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
@@ -25,6 +26,16 @@ $(document).ready(function () {
 		$('#toDate').datepicker('setStartDate', minDate);
 	});
 
+	(async () => {
+		var adv = "";
+		let advertis = await getAdvertiser().catch(err => err);
+		advertis.forEach((item) => {
+			adv += `<option value="${item[0]}">${item[1]}</option>`;
+		});
+		$('#advertiser').append(adv);
+		$('#advertiser').selectpicker('refresh');
+	})();
+
 	$('#toDate').datepicker({
 		orientation: "top auto",
 		autoclose: true,
@@ -40,6 +51,8 @@ $(document).ready(function () {
 		oohstatus = $('#status_ooh').val();
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
+
+		advertiser = $('#advertiser').val();
 
 		if (industry === null) {
 			industry = '';
@@ -85,12 +98,29 @@ $(document).ready(function () {
 		  
 		  
 		}); */
-		console.log("SEARCH MARKER", { province, city, type, industry, fromDate, toDate, oohstatus, ownership });
+		console.log("SEARCH MARKER", { province, city, type, industry, fromDate, toDate, oohstatus, ownership, advertiser });
 		storeFilterCache(province, city, type, industry, fromDate, toDate, oohstatus, ownership);
 
 	});
 
-
+	function getAdvertiser()
+	{
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url: APIURL + 'data/filterindustry?lvl=adv',
+				headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+				type: 'GET',
+				dataType: 'json',
+				success: function(res){
+					resolve(res.data);
+				},
+				error: function(err){
+					console.log(err);
+					reject(err);
+				}
+			});
+		});
+	}
 
 	$('.ooh-detail-modal').on('show.bs.modal', function () {
 		// do something when the modal is shown 
@@ -187,7 +217,7 @@ $(document).ready(function () {
 function getData() {
 	loading();
 	$.ajax({
-		url: APIURL + "data/oohlib?province=" + province + "&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
+		url: APIURL + "data/oohlib?province=" + province + "&advertiser="+ advertiser +"&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
 		headers: {
 			"token": token_type + " " + token
 		},
