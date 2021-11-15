@@ -475,3 +475,7 @@
   border: 2px solid #572d86;
   color: #572d86;
 }
+
+table.borderless td,table.borderless th{
+  border: none !important;
+}
