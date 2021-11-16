@@ -959,6 +959,7 @@ function showingContents(data) {
 		startDate: moment(selectedDate).format('MMMM, YYYY'),
 		opens: "left",
 		drops: "down",
+		showDropdowns: true,
 		autoApply: true,
 	}, function(start, end){
 		var startDate = start.format('YYYY-MM');
