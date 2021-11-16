@@ -3,6 +3,12 @@ var center_lat = '';
 var center_lng = '';
 var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
 var advertiser = '';
+var globalDataContentsOOH = [];
+var selectedPreviewOOHImage = {
+	image_day: null,
+	image_night: null,
+};
+
 $(document).ready(function () {
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
@@ -103,18 +109,17 @@ $(document).ready(function () {
 
 	});
 
-	function getAdvertiser()
-	{
+	function getAdvertiser() {
 		return new Promise((resolve, reject) => {
 			$.ajax({
 				url: APIURL + 'data/filterindustry?lvl=adv',
 				headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 				type: 'GET',
 				dataType: 'json',
-				success: function(res){
+				success: function (res) {
 					resolve(res.data);
 				},
-				error: function(err){
+				error: function (err) {
 					console.log(err);
 					reject(err);
 				}
@@ -217,7 +222,7 @@ $(document).ready(function () {
 function getData() {
 	loading();
 	$.ajax({
-		url: APIURL + "data/oohlib?province=" + province + "&advertiser="+ advertiser +"&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
+		url: APIURL + "data/oohlib?province=" + province + "&advertiser=" + advertiser + "&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
 		headers: {
 			"token": token_type + " " + token
 		},
@@ -439,6 +444,19 @@ function printOoh(ooh_id) {
 	}
 }
 
+const RemoveDuplicates = (array, key, type = 'single') => {
+	return array.reduce((arr, item) => {
+		const removed = arr.filter(i => i[key] !== item[key]);
+		return [...removed, item];
+	}, []);
+};
+
+const RemoveDuplicatesDouble = (array, key1, key2) => {
+	return array.reduce((arr, item) => {
+		const removed = arr.filter(i => (i[key1] !== item[key1] && i[key2] !== item[key2]));
+		return [...removed, item];
+	}, []);
+};
 
 // OOH Detail Popup Window
 function setDataDetail(data) {
@@ -456,7 +474,11 @@ function setDataDetail(data) {
 		image_day: null,
 		image_night: null
 	};
+	var tempCountThis = [];
 	var selectedDate = "";
+	var resultData = [];
+
+	var filterData = [];
 
 	console.log("DATA", { data });
 	$.each(data, function (idooh, theData) {
@@ -465,14 +487,42 @@ function setDataDetail(data) {
 		})
 		var prismaphoto = '';
 		var tbcontent = `<table class="table borderless">`;
-		$.each(theData.conthis, function (k1, v1) {
-			console.log({
-				image_day: v1.image_day,
-				image_night: v1.image_night,
+		$.each(theData.conthis, function (key, value) {
+			tempCountThis.push(value);
+		});
+
+		filterData = RemoveDuplicates(tempCountThis, 'sorper');
+
+		resultData = filterData.map((item) => {
+			var content = tempCountThis.filter((subItem, index) => {
+				if (subItem.sorper === item.sorper) {
+					return subItem;
+				}
+			});
+
+			content = content.map((itemContent, index) => {
+				return {
+					...itemContent,
+					index: index + 1,
+				}
 			})
 
+			var date = moment(item.year + '-' + item.month + '-01').format('YYYY-MM-DD');
+			return {
+				year: item.year,
+				month: item.month,
+				sorper: item.sorper,
+				contents: content,
+				dates: moment(date).format('YYYY-MM'),
+			}
+		});
+		resultData.sort((a, b) => parseInt(b.sorper) - parseInt(a.year));
+		globalDataContentsOOH = resultData;
+
+		console.log("FIX COUNTHIS", { tempCountThis, filterData, resultData });
+
+		$.each(theData.conthis, function (k1, v1) {
 			if (v1.image_day !== null && v1.image_day != 'noimage.jpg') {
-				console.log(v1.image_day);
 				imageFront['image_day'] = v1.image_day;
 			}
 
@@ -480,15 +530,11 @@ function setDataDetail(data) {
 				imageFront['image_night'] = v1.image_night;
 			}
 
-
-			if (imageFront.image_day !== null) {
+			if (imageFront.image_day !== null && typeof imageFront.image_day !== 'undefined') {
 				imageFront = imageFront.image_day;
-			} else if (imageFront.image_night !== null) {
+			} else if (imageFront.image_night !== null && typeof imageFront.image_night !== 'undefined') {
 				imageFront = imageFront.image_night;
 			}
-			console.log({
-				imageFront
-			})
 
 			var is_hiding_image = (idx == 0) ? '' : 'hide';
 			// var is_hiding_image = (idx == 0) ? '' : 'hide';
@@ -538,7 +584,7 @@ function setDataDetail(data) {
 		var objectArr = Object.keys(ymcont);
 		if (objectArr.length > 0) {
 			var splitObject = objectArr[0].split('-');
-			selectedDate = moment(objectArr[0] + '-01').format('YYYY-MM-DD');
+			// selectedDate = moment(objectArr[0] + '-01').format('YYYY-MM-DD');
 		}
 
 		var no = 0;
@@ -702,33 +748,7 @@ function setDataDetail(data) {
 					</div>
 				</div>
 			</div>
-			<div class="tab-pane fade" id="contents" role="tabpanel">
-				<div class="row">
-					<div class="col-md-4">
-						<div class="form-group">
-							<label for="exampleInputEmail1">Periode</label>
-							<input type="text" class="form-control" id="periodePicker" name="periodePicker">
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-12">
-						<label for="">Slot</label>
-						<div class="form-group">
-							${btvid}
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="image-crop col-md-6">
-						${html_img}
-					</div>
-					<div class="image-crop col-md-6">
-						${tbcontent}
-					</div>
-				</div>
-
-			</div>
+			<div class="tab-pane fade" id="contents" role="tabpanel"></div>
 			<div class="tab-pane fade" id="poi" role="tabpanel">
 				<div class="row">
 					<div class="col-lg-6 col-md-6">
@@ -905,8 +925,29 @@ function setDataDetail(data) {
 	//   </div>
 
 	$("#detail_ooh").html(html);
+	showingContents(resultData);
 	$(".ooh-detail-modal").modal("show");
-	// console.log(selectedDate);
+}
+
+function checkErrorImg(value, id) {
+	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+}
+
+function showingContents(data) {
+	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
+	console.log(data)
+	var html = `<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="exampleInputEmail1">Periode</label>
+							<input type="text" class="form-control" id="periodePicker" name="periodePicker">
+						</div>
+					</div>
+				</div>
+				<div id="showingDetailContent"></div>`;
+	$('#contents').html(html);
+
+	console.log(selectedDate);
 	$('#periodePicker').daterangepicker({
 		parentEl: ".ooh-detail-modal .modal-body",
 		singleDatePicker: true,
@@ -919,15 +960,148 @@ function setDataDetail(data) {
 		opens: "left",
 		drops: "down",
 		autoApply: true,
+	}, function(start, end){
+		var startDate = start.format('YYYY-MM');
+		var endDate = end.format('YYYY-MM');
+
+		var getDetailContent = data.find((item) => item.dates === startDate);
+		if(typeof getDetailContent === 'undefined') return alert("Content tidak ada !");
+		showingDetailContent(getDetailContent);
+		console.log("CHANGE PERIODE", getDetailContent);
 	});
+	showingDetailContent(data[0]);
 }
 
-function checkErrorImg(value, id) {
-	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
-	// console.log({
-	// 	value,
-	// 	id
-	// })
+function showingDetailContent(value) {
+	var { contents } = value;
+	var slot = '';
+	var dataContents = btoa(JSON.stringify(contents));
+	slot += `<div class="btn-group">`;
+
+	for (let i = 0; i < 8; i++) {
+		slot += `
+				<button 
+					style="margin-left: 0.50em;margin-right: 0.50em;border-radius: 0.25em;"
+					id="buttonSlot${i + 1}" 
+					onclick="changeSlot('${dataContents}', 
+										'${(typeof contents[i] !== 'undefined') ? contents[i].sorper : ''}', 
+										'${(typeof contents[i] !== 'undefined') ? contents[i].index : ''}', 
+										'buttonSlot${i + 1}')" 
+					class="btn btn-primary ${(typeof contents[i] === 'undefined' ? ' disabled ' : '')} ${(i === 0 ? ' btn-active-slot ' : '')}">
+					${i + 1}
+				</button>			
+			`;
+	}
+
+	slot += `</div>`;
+
+	var html = `<div class="row">
+					<div class="col-md-12">
+						<label for="">Slot</label>
+						<div class="form-group">
+							${slot}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="image-crop col-md-6" id="showImageOOH"></div>
+					<div class="image-crop col-md-6" id="showTableOOH"></div>
+				</div>`;
+
+	$('#showingDetailContent').html(html);
+
+	showingImageOOH(contents[0]);
+	showingTableOOH(contents[0]);
+}
+
+function showingTableOOH(contents){
+	var html = `
+				<table class="table borderless">
+					<tr class="cntne cntne-${contents.content_id}">
+						<th colspan="2"><h3>Isi Content</h3></th>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Campaign</th>
+						<td>${contents.campaign_title}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Industry</th>
+						<td>${contents.ind_name}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Sub-Industry</th>
+						<td>${contents.subind_name}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Advertiser</th>
+						<td>${contents.comp_name}</td>
+					</tr>
+				</table>
+				`;
+	$('#showTableOOH').html(html);
+}
+
+function changeSlot(contents, sorper, index, selector) {
+	if (sorper === '' && index === '') return;
+	var parsingContents = JSON.parse(atob(contents));
+	var selectObject = parsingContents.find((item) => item.sorper == sorper && item.index == index);
+	$("[id*='buttonSlot']").removeClass('btn-active-slot');
+	$(`#${selector}`).addClass('btn-active-slot');
+	showingImageOOH(selectObject);
+	showingTableOOH(selectObject);
+}
+
+function showingImageOOH(content) {
+	var image = '';
+	selectedPreviewOOHImage = {
+		image_day: content.image_day,
+		image_night: content.image_night
+	}
+	var url = 'assets/images/ooh-pictures/' + content.image_day;
+
+	image += `<div class="imgooh" id="showingPreviewImg">
+		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
+			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
+			<input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePicImageOOH(event)" id="switchpic" name="switchpic" data-on-text="Night" data-off-text="Day">
+			</div>
+	</div>`;
+
+	$('#showImageOOH').html(image);
+	$('.switchpic').bootstrapToggle({
+		on: 'Night',
+		off: 'Day',
+		size: 'mini',
+		onstyle: 'primary',
+		offstyle: 'default',
+		width: 54,
+	});
+
+	$('.switchpic').trigger("click");
+	wheelzoom(document.querySelectorAll('.wheelzoom-previewOoh'));
+}
+
+function changePicImageOOH(e) {
+	var checked = $('#switchpic').is(':checked');
+	console.log("CHANGE PIC", checked);
+	var url = 'assets/images/ooh-pictures/';
+	if (!checked) {
+		// Day
+		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
+		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+	} else {
+		// Night
+		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_night);
+		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+	}
+}
+
+function checkingImageIfError() {
+	var image = $("#imageoohPreview");
+	var asset = '';
+	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+
+	$('#imageoohPreview').attr('src', host_android + image.data('url'));
+	return;
 }
 
 function surrounding_poi(areaid, pointx, pointy, radius) {
