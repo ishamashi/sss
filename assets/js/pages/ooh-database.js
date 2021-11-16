@@ -10,6 +10,9 @@ var selectedPreviewOOHImage = {
 };
 
 $(document).ready(function () {
+	if (parseInt(localStorage.prisma_level) === 1) {
+		$('#table-price-ooh').remove();
+	}
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
 	filterArea();
@@ -270,11 +273,15 @@ function setData(data) {
 			"lighting": v['lighting'],
 			"reach": (v['reach'] === null) ? '0' : numberToMoney(v['reach']),
 			"traffic": (v['traffic'] === null) ? '0' : numberToMoney(v['traffic']),
-			"price": (rate_card === null) ? '0' : numberToMoney(rate_card),
 			"action": (can_edit) ? "<a href=\"#\" data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>  <a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>" : "<a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>",
 			"print": "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>",
 		}
 		/* "action":  (v['ooh_origin'] === 'ARCHERNINE') ? "<a href=\"#\" onclick=\"editOoh('"+v['ooh_id']+"')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "", */
+		if (parseInt(localStorage.prisma_level) !== 1) {
+			perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+		}
+		console.log("DATAAAA2222", datane);
+
 		datane.push(perdata);
 		perpoint = {
 			"ooh_id": v.ooh_id,
@@ -307,12 +314,34 @@ function setData(data) {
 }
 
 function setTableContent(datane) {
+	console.log("DATAATA")
 	if (!$.fn.DataTable.fnIsDataTable("#ooh_site")) {
 		// do nothing
 	} else {
 		$('#ooh_site').DataTable().destroy();
 		// $('#table-data').html('');
 	}
+	var columns = [
+		{ data: "no" },
+		{ data: "no_cnv" },
+		{ data: "no_site" },
+		{ data: "district" },
+		{ data: "address" },
+		//{data: "location"},
+		{ data: "type" },
+		{ data: "size" },
+		{ data: "traffic" },
+	];
+
+	if (parseInt(localStorage.prisma_level) !== 1) {
+		columns.push({
+			data: 'price'
+		})
+	}
+
+	columns.push({ data: "action" });
+	columns.push({ data: "print" });
+	console.log("COLUMN", columns);
 	$('#ooh_site').DataTable({
 		"fixedHeader": false,
 		"destroy": true,
@@ -332,26 +361,13 @@ function setTableContent(datane) {
 		buttons: [
 			'copy', 'csv', 'excel', 'pageLength'
 		],
-		"columns": [
-			{ data: "no" },
-			{ data: "no_cnv" },
-			{ data: "no_site" },
-			{ data: "district" },
-			{ data: "address" },
-			//{data: "location"},
-			{ data: "type" },
-			{ data: "size" },
-			{ data: "traffic" },
-			{ data: "price" },
-			{ data: "action" },
-			{ data: "print" },
-		],
+		"columns": columns,
 		"columnDefs": [
 			// { className: "text-center", "targets": [ 0 ] },
 			// { "visible": false, "targets": [ 0 ] },
 
 			{ "width": "25%", "targets": [4] },
-			{ "width": "5%", "targets": [9, 10] }
+			// { "width": "5%", "targets": [9, 10] }
 		],
 		"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 			// console.log("ROW", nRow);
@@ -961,12 +977,12 @@ function showingContents(data) {
 		drops: "down",
 		showDropdowns: true,
 		autoApply: true,
-	}, function(start, end){
+	}, function (start, end) {
 		var startDate = start.format('YYYY-MM');
 		var endDate = end.format('YYYY-MM');
 
 		var getDetailContent = data.find((item) => item.dates === startDate);
-		if(typeof getDetailContent === 'undefined') return alert("Content tidak ada !");
+		if (typeof getDetailContent === 'undefined') return alert("Content tidak ada !");
 		showingDetailContent(getDetailContent);
 		console.log("CHANGE PERIODE", getDetailContent);
 	});
@@ -1015,7 +1031,7 @@ function showingDetailContent(value) {
 	showingTableOOH(contents[0]);
 }
 
-function showingTableOOH(contents){
+function showingTableOOH(contents) {
 	var html = `
 				<table class="table borderless">
 					<tr class="cntne cntne-${contents.content_id}">
@@ -1395,11 +1411,16 @@ function fillTable(pointdrag) {
 							"lighting": v.lighting,
 							"reach": (v.reach === null) ? '0' : numberToMoney(v.reach),
 							"traffic": (v.traffic === null) ? '0' : numberToMoney(v.traffic),
-							"price": (rate_card === null) ? '0' : numberToMoney(rate_card),
+							// "price": (rate_card === null) ? '0' : numberToMoney(rate_card),
 							"action": (can_edit) ? "<a href=\"#\"  data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v.ooh_id + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "-",
 							"print": "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>"
 						}
+
+						if (parseInt(localStorage.prisma_level) !== 1) {
+							perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+						}
 						datane.push(perdata);
+						console.log("DATAAAA", datane);
 
 					});
 					setTableContent(datane);
