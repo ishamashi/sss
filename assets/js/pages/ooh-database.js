@@ -11,7 +11,8 @@ var selectedPreviewOOHImage = {
 
 $(document).ready(function () {
 	if (parseInt(localStorage.prisma_level) === 1) {
-		$('#table-price-ooh').remove();
+		$('#table-price-ooh, #table-print-ooh').remove();
+		$('#table-prismaId-ooh').html('Pemilik');
 	}
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
@@ -274,13 +275,14 @@ function setData(data) {
 			"reach": (v['reach'] === null) ? '0' : numberToMoney(v['reach']),
 			"traffic": (v['traffic'] === null) ? '0' : numberToMoney(v['traffic']),
 			"action": (can_edit) ? "<a href=\"#\" data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>  <a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>" : "<a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>",
-			"print": "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>",
 		}
 		/* "action":  (v['ooh_origin'] === 'ARCHERNINE') ? "<a href=\"#\" onclick=\"editOoh('"+v['ooh_id']+"')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "", */
 		if (parseInt(localStorage.prisma_level) !== 1) {
 			perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+			perdata['print'] = "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>";
+		} else if (parseInt(localStorage.prisma_level) === 1) {
+			perdata['no_site'] = (v['no_site'] === null) ? 'Non Prisma' : 'Prisma';
 		}
-		console.log("DATAAAA2222", datane);
 
 		datane.push(perdata);
 		perpoint = {
@@ -314,13 +316,13 @@ function setData(data) {
 }
 
 function setTableContent(datane) {
-	console.log("DATAATA")
 	if (!$.fn.DataTable.fnIsDataTable("#ooh_site")) {
 		// do nothing
 	} else {
 		$('#ooh_site').DataTable().destroy();
 		// $('#table-data').html('');
 	}
+
 	var columns = [
 		{ data: "no" },
 		{ data: "no_cnv" },
@@ -340,8 +342,12 @@ function setTableContent(datane) {
 	}
 
 	columns.push({ data: "action" });
-	columns.push({ data: "print" });
-	console.log("COLUMN", columns);
+	if (parseInt(localStorage.prisma_level) !== 1) {
+		columns.push({
+			data: 'print'
+		})
+	}
+
 	$('#ooh_site').DataTable({
 		"fixedHeader": false,
 		"destroy": true,
@@ -984,7 +990,6 @@ function showingContents(data) {
 		var getDetailContent = data.find((item) => item.dates === startDate);
 		if (typeof getDetailContent === 'undefined') return alert("Content tidak ada !");
 		showingDetailContent(getDetailContent);
-		console.log("CHANGE PERIODE", getDetailContent);
 	});
 	showingDetailContent(data[0]);
 }
@@ -1413,14 +1418,15 @@ function fillTable(pointdrag) {
 							"traffic": (v.traffic === null) ? '0' : numberToMoney(v.traffic),
 							// "price": (rate_card === null) ? '0' : numberToMoney(rate_card),
 							"action": (can_edit) ? "<a href=\"#\"  data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v.ooh_id + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "-",
-							"print": "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>"
 						}
 
 						if (parseInt(localStorage.prisma_level) !== 1) {
 							perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+							perdata['print'] = "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>";
+						} else if (parseInt(localStorage.prisma_level) === 1) {
+							perdata['no_site'] = (v.no_site === null) ? 'Non Prisma' : 'Prisma';
 						}
 						datane.push(perdata);
-						console.log("DATAAAA", datane);
 
 					});
 					setTableContent(datane);
