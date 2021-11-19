@@ -2,7 +2,18 @@ var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
 var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
+var advertiser = '';
+var globalDataContentsOOH = [];
+var selectedPreviewOOHImage = {
+	image_day: null,
+	image_night: null,
+};
+
 $(document).ready(function () {
+	if (parseInt(localStorage.prisma_level) === 1) {
+		$('#table-price-ooh, #table-print-ooh').remove();
+		$('#table-prismaId-ooh').html('Pemilik');
+	}
 	initMap(-3.337954, 116.596456, 'opt');
 	$('select').selectpicker();
 	filterArea();
@@ -25,6 +36,16 @@ $(document).ready(function () {
 		$('#toDate').datepicker('setStartDate', minDate);
 	});
 
+	(async () => {
+		var adv = "";
+		let advertis = await getAdvertiser().catch(err => err);
+		advertis.forEach((item) => {
+			adv += `<option value="${item[0]}">${item[1]}</option>`;
+		});
+		$('#advertiser').append(adv);
+		$('#advertiser').selectpicker('refresh');
+	})();
+
 	$('#toDate').datepicker({
 		orientation: "top auto",
 		autoclose: true,
@@ -40,6 +61,8 @@ $(document).ready(function () {
 		oohstatus = $('#status_ooh').val();
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
+
+		advertiser = $('#advertiser').val();
 
 		if (industry === null) {
 			industry = '';
@@ -85,12 +108,28 @@ $(document).ready(function () {
 		  
 		  
 		}); */
-		console.log("SEARCH MARKER", { province, city, type, industry, fromDate, toDate, oohstatus, ownership });
+		console.log("SEARCH MARKER", { province, city, type, industry, fromDate, toDate, oohstatus, ownership, advertiser });
 		storeFilterCache(province, city, type, industry, fromDate, toDate, oohstatus, ownership);
 
 	});
 
-
+	function getAdvertiser() {
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url: APIURL + 'data/filterindustry?lvl=adv',
+				headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+				type: 'GET',
+				dataType: 'json',
+				success: function (res) {
+					resolve(res.data);
+				},
+				error: function (err) {
+					console.log(err);
+					reject(err);
+				}
+			});
+		});
+	}
 
 	$('.ooh-detail-modal').on('show.bs.modal', function () {
 		// do something when the modal is shown 
@@ -187,7 +226,7 @@ $(document).ready(function () {
 function getData() {
 	loading();
 	$.ajax({
-		url: APIURL + "data/oohlib?province=" + province + "&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
+		url: APIURL + "data/oohlib?province=" + province + "&advertiser=" + advertiser + "&district=" + city + "&type=" + type + "&status=" + oohstatus + "&industry=" + industry + "&from=" + fromDate + "&to=" + toDate + "&ownership=" + ownership + "&address=" + jalan,
 		headers: {
 			"token": token_type + " " + token
 		},
@@ -235,11 +274,16 @@ function setData(data) {
 			"lighting": v['lighting'],
 			"reach": (v['reach'] === null) ? '0' : numberToMoney(v['reach']),
 			"traffic": (v['traffic'] === null) ? '0' : numberToMoney(v['traffic']),
-			"price": (rate_card === null) ? '0' : numberToMoney(rate_card),
 			"action": (can_edit) ? "<a href=\"#\" data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>  <a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>" : "<a style=\"margin-right:5px;margin-left: 5px;\" href=\"javascript:void(0)\" onclick=\"detailOoh('" + v['ooh_id'] + "')\" data-toggle=\"modal\" data-target=\".ooh-detail-modal\"><span class=\"menu-icon icon-eye\" title=\"View OOH\"></span></a>",
-			"print": "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>",
 		}
 		/* "action":  (v['ooh_origin'] === 'ARCHERNINE') ? "<a href=\"#\" onclick=\"editOoh('"+v['ooh_id']+"')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "", */
+		if (parseInt(localStorage.prisma_level) !== 1) {
+			perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+			perdata['print'] = "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>";
+		} else if (parseInt(localStorage.prisma_level) === 1) {
+			perdata['no_site'] = (v['no_site'] === null) ? 'Non Prisma' : 'Prisma';
+		}
+
 		datane.push(perdata);
 		perpoint = {
 			"ooh_id": v.ooh_id,
@@ -278,6 +322,32 @@ function setTableContent(datane) {
 		$('#ooh_site').DataTable().destroy();
 		// $('#table-data').html('');
 	}
+
+	var columns = [
+		{ data: "no" },
+		{ data: "no_cnv" },
+		{ data: "no_site" },
+		{ data: "district" },
+		{ data: "address" },
+		//{data: "location"},
+		{ data: "type" },
+		{ data: "size" },
+		{ data: "traffic" },
+	];
+
+	if (parseInt(localStorage.prisma_level) !== 1) {
+		columns.push({
+			data: 'price'
+		})
+	}
+
+	columns.push({ data: "action" });
+	if (parseInt(localStorage.prisma_level) !== 1) {
+		columns.push({
+			data: 'print'
+		})
+	}
+
 	$('#ooh_site').DataTable({
 		"fixedHeader": false,
 		"destroy": true,
@@ -297,26 +367,13 @@ function setTableContent(datane) {
 		buttons: [
 			'copy', 'csv', 'excel', 'pageLength'
 		],
-		"columns": [
-			{ data: "no" },
-			{ data: "no_cnv" },
-			{ data: "no_site" },
-			{ data: "district" },
-			{ data: "address" },
-			//{data: "location"},
-			{ data: "type" },
-			{ data: "size" },
-			{ data: "traffic" },
-			{ data: "price" },
-			{ data: "action" },
-			{ data: "print" },
-		],
+		"columns": columns,
 		"columnDefs": [
 			// { className: "text-center", "targets": [ 0 ] },
 			// { "visible": false, "targets": [ 0 ] },
 
 			{ "width": "25%", "targets": [4] },
-			{ "width": "5%", "targets": [9, 10] }
+			// { "width": "5%", "targets": [9, 10] }
 		],
 		"fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
 			// console.log("ROW", nRow);
@@ -409,6 +466,19 @@ function printOoh(ooh_id) {
 	}
 }
 
+const RemoveDuplicates = (array, key, type = 'single') => {
+	return array.reduce((arr, item) => {
+		const removed = arr.filter(i => i[key] !== item[key]);
+		return [...removed, item];
+	}, []);
+};
+
+const RemoveDuplicatesDouble = (array, key1, key2) => {
+	return array.reduce((arr, item) => {
+		const removed = arr.filter(i => (i[key1] !== item[key1] && i[key2] !== item[key2]));
+		return [...removed, item];
+	}, []);
+};
 
 // OOH Detail Popup Window
 function setDataDetail(data) {
@@ -422,30 +492,109 @@ function setDataDetail(data) {
 	var btvid = '';
 	var idx = 0;
 	var html = '';
+	var imageFront = {
+		image_day: null,
+		image_night: null
+	};
+	var tempCountThis = [];
+	var selectedDate = "";
+	var resultData = [];
 
+	var filterData = [];
+
+	console.log("DATA", { data });
 	$.each(data, function (idooh, theData) {
-		console.log("DETAIL VIEW OOH", theData);
+		console.log({
+			theData
+		})
 		var prismaphoto = '';
-		var tbcontent = '<ul class="list-unstyled uppercase">';
+		var tbcontent = `<table class="table borderless">`;
+		$.each(theData.conthis, function (key, value) {
+			tempCountThis.push(value);
+		});
+
+		filterData = RemoveDuplicates(tempCountThis, 'sorper');
+
+		resultData = filterData.map((item) => {
+			var content = tempCountThis.filter((subItem, index) => {
+				if (subItem.sorper === item.sorper) {
+					return subItem;
+				}
+			});
+
+			content = content.map((itemContent, index) => {
+				return {
+					...itemContent,
+					index: index + 1,
+				}
+			})
+
+			var date = moment(item.year + '-' + item.month + '-01').format('YYYY-MM-DD');
+			return {
+				year: item.year,
+				month: item.month,
+				sorper: item.sorper,
+				contents: content,
+				dates: moment(date).format('YYYY-MM'),
+			}
+		});
+		resultData.sort((a, b) => parseInt(b.sorper) - parseInt(a.year));
+		globalDataContentsOOH = resultData;
+
+		console.log("FIX COUNTHIS", { tempCountThis, filterData, resultData });
+
 		$.each(theData.conthis, function (k1, v1) {
-			var is_hiding = (idx == 0) ? '' : 'hide';
+			if (v1.image_day !== null && v1.image_day != 'noimage.jpg') {
+				imageFront['image_day'] = v1.image_day;
+			}
+
+			if (v1.image_night !== null && v1.image_night != 'noimage.jpg') {
+				imageFront['image_night'] = v1.image_night;
+			}
+
+			if (imageFront.image_day !== null && typeof imageFront.image_day !== 'undefined') {
+				imageFront = imageFront.image_day;
+			} else if (imageFront.image_night !== null && typeof imageFront.image_night !== 'undefined') {
+				imageFront = imageFront.image_night;
+			}
+
+			var is_hiding_image = (idx == 0) ? '' : 'hide';
+			// var is_hiding_image = (idx == 0) ? '' : 'hide';
 
 			prismaphoto = ERP_HOST + 'assets/img/' + theData.no_site + '.jpg';
 
 			var localset = 'assets/images/ooh-pictures/' + v1.image_night;
 			// var localset = IMAGE_HOST+'image/'+v1.image_night;
+			tbcontent += `
+				<tr class="cntne cntne-${v1.content_id}">
+					<th colspan="2"><h3>Isi Content</h3></th>
+				</tr>
+				<tr class="cntne cntne-${v1.content_id}">
+					<th>Campaign</th>
+					<td>${v1.campaign_title}</td>
+				</tr>
+				<tr class="cntne cntne-${v1.content_id}">
+					<th>Industry</th>
+					<td>${v1.ind_name}</td>
+				</tr>
+				<tr class="cntne cntne-${v1.content_id}">
+					<th>Sub-Industry</th>
+					<td>${v1.subind_name}</td>
+				</tr>
+				<tr class="cntne cntne-${v1.content_id}">
+					<th>Advertiser</th>
+					<td>${v1.comp_name}</td>
+				</tr>
+			`;
 
-			tbcontent += '<li class="row cntne cntne-' + v1.content_id + '"><div class="col-md-4">Campaign</div><div class="col-md-8 text-primary ">' + v1.campaign_title + '</div></li>';
-			tbcontent += '<li class="row cntne cntne-' + v1.content_id + '"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">' + v1.ind_name + '</div></li>';
-			tbcontent += '<li class="row cntne cntne-' + v1.content_id + '"><div class="col-md-4">Sub Industry</div><div class="col-md-8 text-primary ">' + v1.subind_name + '</div></li>';
-			tbcontent += '<li class="row cntne cntne-' + v1.content_id + '"><div class="col-md-4">Advertiser</div><div class="col-md-8 text-primary ">' + v1.comp_name + '</div></li>';
-			//console.log(theData.owner);
-			// console.log('image_host',IMAGE_HOST);
-
-			html_img += '<div class="imgooh ' + is_hiding + '" id="img-' + v1.content_id + '"><img loading="lazy" src="' + localset + '" data-src="' + localset + '" class="wheelzoom imageooh" id="imageooh-' + v1.content_id + '"  width="512" height="320" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\' ;">\
-              <div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">\
-                  <input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePics('+ v1.content_id + ',\'' + v1.image_night + '\',\'' + v1.image_day + '\',\'' + theData.owner + '\',\'' + theData.no_site + '\',\'' + theData.no_cnv + '\');" id="switchpic-' + v1.content_id + '" name="switchpic" data-on-text="Night" data-off-text="Day">\
-              </div></div>';
+			html_img += `
+						<div class="imgooh ${is_hiding_image}" id="img-${v1.content_id}">
+							<img loading="lazy" src="${localset}" data-src="${localset}" class="wheelzoom imageooh" id="imageooh-${v1.content_id}" width="512" height="320" onError="this.onerror=null;this.src='assets/images/ooh-pictures/noimage.jpg';">
+              					<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
+								  <input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePics('${v1.content_id}','${v1.image_night}','${v1.image_day}','${theData.owner}','${theData.no_site}','${theData.no_cnv}');" id="switchpic-${v1.content_id}" name="switchpic" data-on-text="Night" data-off-text="Day">
+								</div>
+						</div>`;
+			imageBackup = html_img;
 			if ($.inArray(v1.year, yea) < 0) yea.push(v1.year);
 			if (typeof ymcont[v1.year + '-' + v1.month] == "undefined") ymcont[v1.year + '-' + v1.month] = [];
 			ymcont[v1.year + '-' + v1.month].push(v1.content_id);
@@ -453,8 +602,12 @@ function setDataDetail(data) {
 			whjm = k1;
 			idx++;
 		});
-
-		tbcontent += '</ul>';
+		tbcontent += '</table>';
+		var objectArr = Object.keys(ymcont);
+		if (objectArr.length > 0) {
+			var splitObject = objectArr[0].split('-');
+			// selectedDate = moment(objectArr[0] + '-01').format('YYYY-MM-DD');
+		}
 
 		var no = 0;
 		$.each(yea, function (k1, y1) {
@@ -472,14 +625,19 @@ function setDataDetail(data) {
 				var dishow = 'class="btn  btn-primary  btn-cilik" disabled';
 				if (typeof ymcont[y1 + '-' + km] !== "undefined") {
 					var is_active1 = '';// (idmx == 0) ? 'active' : '';
-					dishow = 'class="btn btn-primary  btn-cilik btnclk btnclk-' + y1 + '-' + km + ' ' + is_active1 + ' " id="btnclk-' + y1 + '-' + km + '" data-btnval="' + y1 + '-' + km + '" ';
+					dishow = 'class="btn btn-primary btn-cilik btnclk btnclk-' + y1 + '-' + km + ' ' + is_active1 + ' " id="btnclk-' + y1 + '-' + km + '" data-btnval="' + y1 + '-' + km + '" ';
 					var is_hiding = (idmx == 0) ? '' : 'hide';
-					btvid += '<div class="btn-group btvid ' + is_hiding + '" id="btvid-' + y1 + '-' + km + '" style="float:left;margin: 10px;" > ';
+					btvid += `<div class="btn-group btvid ${is_hiding}" id="btvid-${y1}-${km}" style="float:left;margin: 10px;">`;
 					var idxx = 0;
 					$.each(ymcont[y1 + '-' + km], function (k2, v2) {
 						if (idxx < 8) {
 							var is_active = (idxx == 0) ? 'active' : '';
-							btvid += '<button class="btn ' + is_active + ' btn-primary   btvidit btvidit-' + y1 + '-' + km + '-' + (k2 + 1) + '" id="btvidit-' + y1 + '-' + km + '-' + (k2 + 1) + '" data-btnval="' + v2 + '" >' + (k2 + 1) + '</button> ';
+							btvid += `<button 
+										style="margin-left: 0.5em;margin-right: 0.5em;border-radius: 0.25em;" 
+										class="btn ${is_active} btn-primary btvidit btvidit-${y1}-${km}-${(k2 + 1)}" 
+										id="btvidit-${y1}-${km}-${(k2 + 1)}" 
+										data-btnval="${v2}" >${(k2 + 1)}
+									  </button>`;
 						}
 						idxx++;
 					});
@@ -487,7 +645,11 @@ function setDataDetail(data) {
 					var sisa = max - idxx;
 					if (sisa > 0) {
 						for (i = idxx + 1; i <= max; i++) {
-							btvid += '<button class="btn  btn-primary" disabled >' + i + '</button> ';
+							btvid += `<button 
+										style="margin-left: 0.5em;margin-right: 0.5em;border-radius: 0.25em;" 
+										class="btn btn-primary" 
+										disabled>${i}
+									  </button>`;
 						}
 					}
 
@@ -503,155 +665,465 @@ function setDataDetail(data) {
 
 		rate_card = theData.pricelist_12bulan; //theData.harga_12bulan + theData.markup_12bulan + theData.pricelist_12bulan;
 		var strStatus = { 1: "Available", 2: "Contract end within 1 month", 3: "Contract more than 3 months", 4: "Contract end within 3 month", 5: "Expired" }
-		html += '\
-      <div class="row">\
-        <div class="col-md-6">\
-          <div class="row">\
-            <div class="image-crop col-md-12">\
-              '+ html_img + '\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-md-12">\
-              &nbsp;\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-md-2">\
-              <div class="form-group col-md-10">\
-                <select class="js-states form-control" id="tahun" style="width: 75px;height: 32px;">\
-                  '+ opye + '\
-                </select>\
-              </div>\
-            </div>\
-            <div class="col-md-10">\
-              '+ mntth + '\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-md-4">\
-              <button style="margin:10px;" class="btn  btn-info btn-small" onclick="showerpfoto(\''+ prismaphoto + '\');" > Show ERP Photo</button>\
-            </div>\
-            <div class="col-md-8">\
-            '+ btvid + '\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-md-12">\
-              <ul class="nav nav-tabs" id="myTab" role="tablist">\
-                <li class="nav-item">\
-                  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Info</a>\
-                </li>\
-                <li class="nav-item">\
-                  <a class="nav-link" id="content-tab" data-toggle="tab" href="#content" role="tab" aria-controls="content" aria-selected="false">Content</a>\
-                </li>\
-              </ul>\
-              <div class="tab-content" id="myTabContent">\
-                <div class="tab-pane fade  active" id="home" role="tabpanel" aria-labelledby="home-tab">\
-                  <div class="stats-info">\
-                    <ul class="list-unstyled uppercase">\
-					  <li class="row"><div class="col-md-4">Pemilik</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.owner + '</h5></div></li>\
-					  <li class="row"><div class="col-md-4">Canvasing ID</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_cnv + '</h5></div></li>\
-					  <li class="row"><div class="col-md-4">Nomor Site Prisma</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">'+ theData.no_site + '</h5></div></li>\
-                      <li class="row"><div class="col-md-4">Address</div><div class="col-md-8 text-primary ">'+ theData.address + '</div></li>\
-                      <li class="row"><div class="col-md-4">OOH Point</div><div class="col-md-8 text-primary ">'+ theData.latitude + ', ' + theData.longitude + '</div></li>\
-                      <li class="row"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">'+ theData.conthis[0].ind_name + '</div></li>\
-                      <li class="row"><div class="col-md-4">Sub Industry</div><div class="col-md-8 text-primary ">'+ theData.conthis[0].subind_name + '</div></li>\
-                      <li class="row"><div class="col-md-4">Size</div><div class="col-md-8 text-primary ">'+ theData.panjang + ' m X ' + theData.lebar + ' m, ' + theData.orientasi + ', ' + theData.lighting + '</div></li>\
-                      <li class="row"><div class="col-md-4">Road Class</div><div class="col-md-8 text-primary ">'+ theData.kelas_jalan + '</div></li>\
-                      <li class="row"><div class="col-md-4">View</div><div class="col-md-8 text-primary ">'+ theData.view + '</div></li>\
-                      <li class="row"><div class="col-md-4">AVG Daily Traffic</div><div class="col-md-8 text-primary ">'+ numberToMoney(theData.traffic) + '</div></li>\
-                      <li class="row"><div class="col-md-4">Status</div><div class="col-md-8 text-primary ">'+ strStatus[theData.ooh_status] + '</div></li>\
-                    </ul>\
-                  </div>\
-                </div>\
-                <div class="tab-pane fade" id="content" role="tabpanel" aria-labelledby="content-tab">'+ tbcontent + '</div>\
-              </div>\
-            </div>\
-          </div>\
-        </div>\
-        <div class="col-md-6">\
-          <div class="row">\
-            <div class="col-lg-6 col-md-6">\
-              <div class="panel info-box panel-white">\
-                <div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">\
-                  <div class="info-box-stats" style="float: none !important;">\
-                    <span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>\
-                    <p class="text-center"><span id="score">'+ numberToMoney(theData.vscore) + '</span></p>\
-                    <!--<center><h4 id="top_industry">()</h4></center>-->\
-                  </div>\
-                </div>\
-              </div>\
-            </div>\
-            <div class="col-lg-6 col-md-6">\
-              <div class="panel info-box panel-white">\
-                <div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">\
-                  <div class="info-box-stats" style="float: none !important;">\
-                    <span class="info-box-title text-center">Average Daily Traffic</span>\
-                    <p class="text-center"><span id="traffic">'+ numberToMoney(theData.traffic) + '</span></p>\
-                  </div>\
-                </div>\
-              </div>\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-lg-12 col-md-12">\
-              <div class="panel info-box panel-white">\
-                <div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">\
-                  <div class="info-box-stats" style="float: none !important;">\
-                    <span class="info-box-title text-center">Price</span>\
-                    <input type="hidden" name="no_site" id="no_site" value="'+ theData.no_site + '">\
-                    <p class="text-center"><span id="rate_card">Rp. '+ numberToMoney(rate_card) + '</span></p>\
-                    <center><h4 id="top_industry">per year</h4></center>\
-                  </div>\
-                </div>\
-              </div>\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-lg-12 col-md-12 text-right">\
-              <span class="fa fa-question" data-toggle="tooltip" data-placement="top" title="Site score is calculated based on outdoor physical condition, e.g.: viewing distance, viewing speed, total surrounding OOH, etc."></span>\
-            </div>\
-          </div>\
-          <div class="row">\
-            <div class="col-lg-6 col-md-6">\
-            <h3>Surrounding Area</h3>\
-            </div>\
-            <div class="col-lg-6 col-md-6">\
-              <div class="form-group row">\
-                <label class="col-sm-6 col-form-label" for="RadiusSelect" style="padding-top: 8px;">Filter Radius</label>\
-                <div class="col-sm-6">\
-                  <select class="form-control form-control-sm" id="RadiusSelect" data-sudistrict="'+ theData.sub_district + '" data-lng="' + theData.longitude + '" data-lat="' + theData.latitude + '" >\
-                    <option value="100" selected>100 m</option>\
-                    <option value="200" >200 m</option>\
-                    <option value="300" >300 m</option>\
-                    <option value="400" >400 m</option>\
-                    <option value="500" >500 m</option>\
-                    <option value="600" >600 m</option>\
-                    <option value="700" >700 m</option>\
-                    <option value="800" >800 m</option>\
-                    <option value="900" >900 m</option>\
-                    <option value="1000" >1000 m</option>\
-                  </select>\
-                </div>\
-              </div>\
-            </div>\
-            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-right: 15px;margin-left: 15px;">\
-              <div class="panel panel-default" id="panel_surounding_poi">\
-              </div>\
-            </div>\
-          </div>\
-          <input type="hidden" id="view_ooh_id" value="'+ theData.ooh_id + '">\
-          <input type="hidden" id="view_ooh_type" value="'+ theData.ooh_type + '">\
-          <button type="button" class="btn btn-success right" onclick="printOoh('+ theData.ooh_id + ')" data-toggle="modal" data-target=".ooh-print-modal">Print BAST</button>\
-        </div>\
-      </div>\
-    ';
+		// <div class="col-md-6">
+		// 						<div class="panel info-box panel-white">
+		// 							<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+		// 								<div class="info-box-stats" style="float: none !important;">
+		// 									<span class="info-box-title text-center">Average Daily Traffic</span>
+		// 									<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+		// 								</div>
+		// 							</div>
+		// 						</div>
+		// 					</div>
+
+		// 					<div class="col-md-6">
+		// 						<div class="panel info-box panel-white">
+		// 							<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+		// 								<div class="info-box-stats" style="float: none !important;">
+		// 									<span class="info-box-title text-center">Average Daily Traffic</span>
+		// 									<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+		// 								</div>
+		// 							</div>
+		// 						</div>
+		// 					</div>
+
+		// 					<div class="col-md-6">
+		// 						<div class="panel info-box panel-white">
+		// 							<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+		// 								<div class="info-box-stats" style="float: none !important;">
+		// 									<span class="info-box-title text-center">Average Daily Traffic</span>
+		// 									<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+		// 								</div>
+		// 							</div>
+		// 						</div>
+		// 					</div>
+		html += `
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="home-tab" data-toggle="tab" href="#informasi_dasar" role="tab">Informasi Dasar</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="contents-tab" data-toggle="tab" href="#contents" role="tab" >Content</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="poi-tab" data-toggle="tab" href="#poi" role="tab" >Point of Interest</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade active" id="informasi_dasar" role="tabpanel">
+				<div class="row">
+					<div class="col-md-6">
+						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImg('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+
+							<div class="col-md-6">
+								<div class="panel info-box panel-white">
+									<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+										<div class="info-box-stats" style="float: none !important;">
+											<span class="info-box-title text-center">Average Daily Traffic</span>
+											<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+	
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 1em;">
+					<div class="col-md-6">
+						<h4>Spesifikasi</h4>
+						<table class="table borderless">
+							<tr>
+								<th style="width: 20%;">Site Number</th>
+								<td>${theData.no_cnv}</td>
+							</tr>
+							<tr>
+								<th>Alamat</th>
+								<td>${theData.address}</td>
+							</tr>
+							<tr>
+								<th>OOH Point</th>
+								<td>${theData.latitude};${theData.longitude}</td>
+							</tr>
+							<tr>
+								<th>Road Class</th>
+								<td>${theData.kelas_jalan}</td>
+							</tr>
+							<tr>
+								<th>View</th>
+								<td>${theData.view}</td>
+							</tr>
+							<tr>
+								<th>Size</th>
+								<td>${theData.panjang} m X ${theData.lebar} m, ${theData.orientasi}, ${theData.lighting}</td>
+							</tr>
+							<tr>
+								<th>Status</th>
+								<td>${strStatus[theData.ooh_status]}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="contents" role="tabpanel"></div>
+			<div class="tab-pane fade" id="poi" role="tabpanel">
+				<div class="row">
+					<div class="col-lg-6 col-md-6">
+						<div class="form-group row">
+							<label class="col-sm-6 col-form-label" for="RadiusSelect" style="padding-top: 8px;">Filter Radius</label>
+							<div class="col-sm-6">
+							<select class="form-control form-control-sm" id="RadiusSelect" data-sudistrict="${theData.sub_district}" data-lng="${theData.longitude}" data-lat="${theData.latitude}" >
+								<option value="100" selected>100 m</option>
+								<option value="200" >200 m</option>
+								<option value="300" >300 m</option>
+								<option value="400" >400 m</option>
+								<option value="500" >500 m</option>
+								<option value="600" >600 m</option>
+								<option value="700" >700 m</option>
+								<option value="800" >800 m</option>
+								<option value="900" >900 m</option>
+								<option value="1000" >1000 m</option>
+							</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-right: 15px;margin-left: 15px;">
+						<div class="panel panel-default" id="panel_surounding_poi">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
+		<input type="hidden" id="view_ooh_id" value="${theData.ooh_id}">
+		<input type="hidden" id="view_ooh_type" value="${theData.ooh_type}">
+    `;
 
 	});
 
+	// 	<div class="row">
+	// 	<div class="col-md-6">
+	// 	  <div class="row">
+	// 		<div class="col-md-12">
+	// 			${html_img}
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-md-12">
+	// 		  &nbsp;
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-md-2">
+	// 		  <div class="form-group col-md-10">
+	// 			<select class="js-states form-control" id="tahun" style="width: 75px;height: 32px;">
+	// 			  ${opye}
+	// 			</select>
+	// 		  </div>
+	// 		</div>
+	// 		<div class="col-md-10">
+	// 		  ${mntth}
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-md-4">
+	// 		  <button style="margin:10px;" class="btn  btn-info btn-small" onclick="showerpfoto('${prismaphoto}');" > Show ERP Photo</button>
+	// 		</div>
+	// 		<div class="col-md-8">
+	// 			${btvid}
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-md-12">
+	// 		  <ul class="nav nav-tabs" id="myTab" role="tablist">
+	// 			<li class="nav-item">
+	// 			  <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Info</a>
+	// 			</li>
+	// 			<li class="nav-item">
+	// 			  <a class="nav-link" id="content-tab" data-toggle="tab" href="#content" role="tab" aria-controls="content" aria-selected="false">Content</a>
+	// 			</li>
+	// 		  </ul>
+	// 		  <div class="tab-content" id="myTabContent">
+	// 			<div class="tab-pane fade active" id="home" role="tabpanel" aria-labelledby="home-tab">
+	// 			  <div class="stats-info">
+	// 				<ul class="list-unstyled uppercase">
+	// 				  <li class="row"><div class="col-md-4">Pemilik</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">${theData.owner}</h5></div></li>
+	// 				  <li class="row"><div class="col-md-4">Canvasing ID</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">${theData.no_cnv}</h5></div></li>
+	// 				  <li class="row"><div class="col-md-4">Nomor Site Prisma</div><div class="col-md-8 text-primary"><h5 style="margin-top:3px;">${theData.no_site}</h5></div></li>
+	// 				  <li class="row"><div class="col-md-4">Address</div><div class="col-md-8 text-primary ">${theData.address}</div></li>
+	// 				  <li class="row"><div class="col-md-4">OOH Point</div><div class="col-md-8 text-primary ">${theData.latitude},${theData.longitude}</div></li>
+	// 				  <li class="row"><div class="col-md-4">Industry</div><div class="col-md-8 text-primary ">${theData.conthis[0].ind_name}</div></li>
+	// 				  <li class="row"><div class="col-md-4">Sub Industry</div><div class="col-md-8 text-primary ">${theData.conthis[0].subind_name}</div></li>
+	// 				  <li class="row"><div class="col-md-4">Size</div><div class="col-md-8 text-primary ">${theData.panjang} m X ${theData.lebar} m, ${theData.orientasi}, ${theData.lighting}</div></li>
+	// 				  <li class="row"><div class="col-md-4">Road Class</div><div class="col-md-8 text-primary ">${theData.kelas_jalan}</div></li>
+	// 				  <li class="row"><div class="col-md-4">View</div><div class="col-md-8 text-primary ">${theData.view}</div></li>
+	// 				  <li class="row"><div class="col-md-4">AVG Daily Traffic</div><div class="col-md-8 text-primary ">${numberToMoney(theData.traffic)}</div></li>
+	// 				  <li class="row"><div class="col-md-4">Status</div><div class="col-md-8 text-primary ">${strStatus[theData.ooh_status]}</div></li>
+	// 				</ul>
+	// 			  </div>
+	// 			</div>
+	// 			<div class="tab-pane fade" id="content" role="tabpanel" aria-labelledby="content-tab"></div>
+	// 		  </div>
+	// 		</div>
+	// 	  </div>
+	// 	</div>
+	// 	<div class="col-md-6">
+	// 	  <div class="row">
+	// 		<div class="col-lg-6 col-md-6">
+	// 		  <div class="panel info-box panel-white">
+	// 			<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+	// 			  <div class="info-box-stats" style="float: none !important;">
+	// 				<span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>
+	// 				<p class="text-center"><span id="score">${numberToMoney(theData.vscore)}</span></p>
+	// 			  </div>
+	// 			</div>
+	// 		  </div>
+	// 		</div>
+	// 		<div class="col-lg-6 col-md-6">
+	// 		  <div class="panel info-box panel-white">
+	// 			<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+	// 			  <div class="info-box-stats" style="float: none !important;">
+	// 				<span class="info-box-title text-center">Average Daily Traffic</span>
+	// 				<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+	// 			  </div>
+	// 			</div>
+	// 		  </div>
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-lg-12 col-md-12">
+	// 		  <div class="panel info-box panel-white">
+	// 			<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+	// 			  <div class="info-box-stats" style="float: none !important;">
+	// 				<span class="info-box-title text-center">Price</span>
+	// 				<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
+	// 				<p class="text-center"><span id="rate_card">Rp. ${numberToMoney(rate_card)}</span></p>
+	// 				<center><h4 id="top_industry">per year</h4></center>
+	// 			  </div>
+	// 			</div>
+	// 		  </div>
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-lg-12 col-md-12 text-right">
+	// 		  <span class="fa fa-question" data-toggle="tooltip" data-placement="top" title="Site score is calculated based on outdoor physical condition, e.g.: viewing distance, viewing speed, total surrounding OOH, etc."></span>
+	// 		</div>
+	// 	  </div>
+	// 	  <div class="row">
+	// 		<div class="col-lg-6 col-md-6">
+	// 		<h3>Surrounding Area</h3>
+	// 		</div>
+	// 		<div class="col-lg-6 col-md-6">
+	// 		  <div class="form-group row">
+	// 			<label class="col-sm-6 col-form-label" for="RadiusSelect" style="padding-top: 8px;">Filter Radius</label>
+	// 			<div class="col-sm-6">
+	// 			  <select class="form-control form-control-sm" id="RadiusSelect" data-sudistrict="${theData.sub_district}" data-lng="${theData.longitude}" data-lat="${theData.latitude}" >
+	// 				<option value="100" selected>100 m</option>
+	// 				<option value="200" >200 m</option>
+	// 				<option value="300" >300 m</option>
+	// 				<option value="400" >400 m</option>
+	// 				<option value="500" >500 m</option>
+	// 				<option value="600" >600 m</option>
+	// 				<option value="700" >700 m</option>
+	// 				<option value="800" >800 m</option>
+	// 				<option value="900" >900 m</option>
+	// 				<option value="1000" >1000 m</option>
+	// 			  </select>
+	// 			</div>
+	// 		  </div>
+	// 		</div>
+	// 	  </div>
+	// 	  <input type="hidden" id="view_ooh_id" value="${theData.ooh_id}">
+	// 	  <input type="hidden" id="view_ooh_type" value="${theData.ooh_type}">
+	// 	  <button type="button" class="btn btn-success right" onclick="printOoh('${theData.ooh_id}')" data-toggle="modal" data-target=".ooh-print-modal">Print BAST</button>
+	// 	</div>
+	//   </div>
+
 	$("#detail_ooh").html(html);
+	showingContents(resultData);
 	$(".ooh-detail-modal").modal("show");
+}
+
+function checkErrorImg(value, id) {
+	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+}
+
+function showingContents(data) {
+	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
+	console.log(data)
+	var html = `<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="exampleInputEmail1">Periode</label>
+							<input type="text" class="form-control" id="periodePicker" name="periodePicker">
+						</div>
+					</div>
+				</div>
+				<div id="showingDetailContent"></div>`;
+	$('#contents').html(html);
+
+	console.log(selectedDate);
+	$('#periodePicker').daterangepicker({
+		parentEl: ".ooh-detail-modal .modal-body",
+		singleDatePicker: true,
+		orientation: "top auto",
+		locale: {
+			format: "MMMM, YYYY",
+		},
+		autoclose: true,
+		startDate: moment(selectedDate).format('MMMM, YYYY'),
+		opens: "left",
+		drops: "down",
+		showDropdowns: true,
+		autoApply: true,
+	}, function (start, end) {
+		var startDate = start.format('YYYY-MM');
+		var endDate = end.format('YYYY-MM');
+
+		var getDetailContent = data.find((item) => item.dates === startDate);
+		if (typeof getDetailContent === 'undefined') return alert("Content tidak ada !");
+		showingDetailContent(getDetailContent);
+	});
+	showingDetailContent(data[0]);
+}
+
+function showingDetailContent(value) {
+	var { contents } = value;
+	var slot = '';
+	var dataContents = btoa(JSON.stringify(contents));
+	slot += `<div class="btn-group">`;
+
+	for (let i = 0; i < 8; i++) {
+		slot += `
+				<button 
+					style="margin-left: 0.50em;margin-right: 0.50em;border-radius: 0.25em;"
+					id="buttonSlot${i + 1}" 
+					onclick="changeSlot('${dataContents}', 
+										'${(typeof contents[i] !== 'undefined') ? contents[i].sorper : ''}', 
+										'${(typeof contents[i] !== 'undefined') ? contents[i].index : ''}', 
+										'buttonSlot${i + 1}')" 
+					class="btn btn-primary ${(typeof contents[i] === 'undefined' ? ' disabled ' : '')} ${(i === 0 ? ' btn-active-slot ' : '')}">
+					${i + 1}
+				</button>			
+			`;
+	}
+
+	slot += `</div>`;
+
+	var html = `<div class="row">
+					<div class="col-md-12">
+						<label for="">Slot</label>
+						<div class="form-group">
+							${slot}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="image-crop col-md-6" id="showImageOOH"></div>
+					<div class="image-crop col-md-6" id="showTableOOH"></div>
+				</div>`;
+
+	$('#showingDetailContent').html(html);
+
+	showingImageOOH(contents[0]);
+	showingTableOOH(contents[0]);
+}
+
+function showingTableOOH(contents) {
+	var html = `
+				<table class="table borderless">
+					<tr class="cntne cntne-${contents.content_id}">
+						<th colspan="2"><h3>Isi Content</h3></th>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Campaign</th>
+						<td>${contents.campaign_title}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Industry</th>
+						<td>${contents.ind_name}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Sub-Industry</th>
+						<td>${contents.subind_name}</td>
+					</tr>
+					<tr class="cntne cntne-${contents.content_id}">
+						<th>Advertiser</th>
+						<td>${contents.comp_name}</td>
+					</tr>
+				</table>
+				`;
+	$('#showTableOOH').html(html);
+}
+
+function changeSlot(contents, sorper, index, selector) {
+	if (sorper === '' && index === '') return;
+	var parsingContents = JSON.parse(atob(contents));
+	var selectObject = parsingContents.find((item) => item.sorper == sorper && item.index == index);
+	$("[id*='buttonSlot']").removeClass('btn-active-slot');
+	$(`#${selector}`).addClass('btn-active-slot');
+	showingImageOOH(selectObject);
+	showingTableOOH(selectObject);
+}
+
+function showingImageOOH(content) {
+	var image = '';
+	selectedPreviewOOHImage = {
+		image_day: content.image_day,
+		image_night: content.image_night
+	}
+	var url = 'assets/images/ooh-pictures/' + content.image_day;
+
+	image += `<div class="imgooh" id="showingPreviewImg">
+		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
+			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
+			<input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePicImageOOH(event)" id="switchpic" name="switchpic" data-on-text="Night" data-off-text="Day">
+			</div>
+	</div>`;
+
+	$('#showImageOOH').html(image);
+	$('.switchpic').bootstrapToggle({
+		on: 'Night',
+		off: 'Day',
+		size: 'mini',
+		onstyle: 'primary',
+		offstyle: 'default',
+		width: 54,
+	});
+
+	$('.switchpic').trigger("click");
+	wheelzoom(document.querySelectorAll('.wheelzoom-previewOoh'));
+}
+
+function changePicImageOOH(e) {
+	var checked = $('#switchpic').is(':checked');
+	console.log("CHANGE PIC", checked);
+	var url = 'assets/images/ooh-pictures/';
+	if (!checked) {
+		// Day
+		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
+		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+	} else {
+		// Night
+		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_night);
+		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+	}
+}
+
+function checkingImageIfError() {
+	var image = $("#imageoohPreview");
+	var asset = '';
+	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+
+	$('#imageoohPreview').attr('src', host_android + image.data('url'));
+	return;
 }
 
 function surrounding_poi(areaid, pointx, pointy, radius) {
@@ -944,9 +1416,15 @@ function fillTable(pointdrag) {
 							"lighting": v.lighting,
 							"reach": (v.reach === null) ? '0' : numberToMoney(v.reach),
 							"traffic": (v.traffic === null) ? '0' : numberToMoney(v.traffic),
-							"price": (rate_card === null) ? '0' : numberToMoney(rate_card),
+							// "price": (rate_card === null) ? '0' : numberToMoney(rate_card),
 							"action": (can_edit) ? "<a href=\"#\"  data-lvsd=\"edit-ooh\" onclick=\"editOoh('" + v.ooh_id + "')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "-",
-							"print": "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>"
+						}
+
+						if (parseInt(localStorage.prisma_level) !== 1) {
+							perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
+							perdata['print'] = "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>";
+						} else if (parseInt(localStorage.prisma_level) === 1) {
+							perdata['no_site'] = (v.no_site === null) ? 'Non Prisma' : 'Prisma';
 						}
 						datane.push(perdata);
 

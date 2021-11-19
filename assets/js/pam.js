@@ -39,6 +39,7 @@ function filterArea() {
 		success: function (data, textStatus, jqXHR) {
 			if (typeof data != 'object') { data = $.parseJSON(data); }
 			var option = "";
+
 			$.each(data.data, function (k, v) {
 				option += "<option value='" + v[0] + "'>" + v[1] + "</option>";
 			});
@@ -49,6 +50,7 @@ function filterArea() {
 			} else if (province == '' && city == '') {
 				$("#province").html('<option value="">All Province</option>' + option).selectpicker('refresh');
 			}
+			if($('#province').val() === '') return $("#city").html('<option value="">All City</option>').selectpicker('refresh');
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			errorHandler(jqXHR);
