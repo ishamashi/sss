@@ -185,7 +185,12 @@
 									<img class="img-circle avatar" src="assets/images/avatar1.png" width="40"
 										height="40" alt="">
 								</a>
-								<div id="profile_menu"></div>
+								<ul class="dropdown-menu dropdown-list" role="menu">
+									<li role="presentation"><a href="assets/docs/PRISMA - Help Document ver.1.0.docx"><i
+												class="fa fa-question m-r-xs"></i>Help</a></li>
+									<li role="presentation"><a href="logout.html"><i
+												class="fa fa-sign-out m-r-xs"></i>Log out</a></li>
+								</ul>
 							</li>
 						</ul><!-- Nav -->
 					</div><!-- Top Menu -->
@@ -205,23 +210,23 @@
 		<div class="page-inner">
 			<div id="main-wrapper" class="container">
 				<ul class="breadcrumb">
-					<li><a href="#">Master Data</a></li>
-					<li class="active">Master User</li>
+					<li><a href="#">Konfigurasi</a></li>
+					<li class="active">Version</li>
 				</ul>
 				<div class="row">
 					<div class="col-md-12">
 						<h2>
-							Master User
+							Konfigurasi
 						</h2>
 					</div>
 				</div>
 				<div class="form-horizontal">
 					<div class="panel panel-default tabs">
 						<ul class="nav nav-tabs" role="tablist">
-							<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">USER</a></li>
-							<li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">COMPANY</a></li>
+							<li class="active"><a href="#tab-cont" role="tab" data-toggle="tab">Version</a></li>
+							<!-- <li><a href="#tab-cmp" id="pancomp" role="tab" data-toggle="tab">COMPANY</a></li>
 							<li><a href="#tab-lvl" role="tab" data-toggle="tab">LEVEL</a></li>
-							<li><a href="#tab-client" role="tab" data-toggle="tab">CLIENT</a></li>
+							<li><a href="#tab-client" role="tab" data-toggle="tab">CLIENT</a></li> -->
 						</ul>
 						<div class="panel-body tab-content">
 							<div class="tab-pane active" id="tab-cont">
@@ -229,23 +234,19 @@
 									<div class="col-md-10"></div>
 									<div class="col-md-2">
 										<button class="btn btn-info btn-block" id="addUser" type="text"><span
-												class="fa fa-plus"></span> &nbsp; <b> ADD USER </b></button>
+												class="fa fa-plus"></span> &nbsp; <b> ADD VERSION </b></button>
 									</div>
 								</div>
 								<div class="col-md-12">
 									<div class="panel panel-default" style="padding: 10px;">
 										<div class="panel-body panel-body-table">
-											<table id="mstuser" style="border-bottom: 1px solid #E5E5E5;"
+											<table id="mst_version" style="border-bottom: 1px solid #E5E5E5;"
 												class="table table-bordered table-striped">
 												<thead>
 													<tr>
 														<th class="text-center" width="40">No</th>
-														<th class="text-center">User Name</th>
-														<th class="text-center">User Login</th>
-														<th class="text-center">Email</th>
-														<th class="text-center">Level</th>
-														<th class="text-center">Company</th>
-														<th class="text-center">Status</th>
+														<th class="text-center">Version</th>
+														<th class="text-center">Date</th>
 														<th class="text-center">Action</th>
 													</tr>
 												</thead>
@@ -383,7 +384,7 @@
 
 	<script type="text/javascript" src="assets/js/plugins.js"></script>
 
-	<script src="assets/js/pages/master-user.js"></script>
+	<script src="assets/js/pages/konfigurasi.js"></script>
 	<script src="assets/js/load-common.js"></script>
 
 	<!-- Lib Controller JS -->
