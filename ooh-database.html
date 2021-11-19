@@ -187,21 +187,12 @@
 						<ul class="nav navbar-nav navbar-right">
 
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle waves-effect waves-button waves-classic"
-									data-toggle="dropdown">
-									<span class="user-name" id="user-name" style="color: #fff;">User<i
-											class="fa fa-angle-down"></i></span>
-									<img class="img-circle avatar" src="assets/images/avatar1.png" width="40"
-										height="40" alt="">
+								<a href="#" class="dropdown-toggle waves-effect waves-button waves-classic" data-toggle="dropdown">
+									<span class="user-name"  id="user-name"  style="color: #fff;">User<i class="fa fa-angle-down"></i></span>
+									<img class="img-circle avatar" src="assets/images/avatar1.png" width="40" height="40" alt="">
 								</a>
-								<ul class="dropdown-menu dropdown-list" role="menu">
-
-									<li role="presentation"><a href="assets/docs/PRISMA - Help Document ver.1.0.docx"><i
-												class="fa fa-question m-r-xs"></i>Help</a></li>
-									<li role="presentation"><a href="logout.html"><i
-												class="fa fa-sign-out m-r-xs"></i>Log out</a></li>
-								</ul>
-							</li>
+								<div id="profile_menu"></div>
+							</li> 
 						</ul><!-- Nav -->
 					</div><!-- Top Menu -->
 				</div>
@@ -442,15 +433,73 @@
 								</div>
 							</div>
 						</div>
-					</div><!-- Main Wrapper -->
-					<div class="page-footer">
-						<div class="">
-							<p class="no-s">2019 &copy; Archernine. <span id="current_version"></span></p>
-						</div>
 					</div>
-				</div><!-- Page Inner -->
-			</main><!-- Page Content --> 
-			<div class="cd-overlay"></div>
+				</div>
+			</div><!-- Main Wrapper -->
+			<div class="page-footer">
+				<div class="container">
+					<p class="no-s">2019 &copy; Archernine.</p>
+				</div>
+			</div>
+		</div><!-- Page Inner -->
+	</main><!-- Page Content -->
+	<nav class="cd-nav-container" id="cd-nav">
+		<header>
+			<h3>Navigation</h3>
+			<a href="#0" class="cd-close-nav">Close</a>
+		</header>
+		<ul class="cd-nav list-unstyled">
+			<li class="cd-selected" data-menu="index">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-home"></i>
+					</span>
+					<p>Dashboard</p>
+				</a>
+			</li>
+			<li data-menu="profile">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-user"></i>
+					</span>
+					<p>Profile</p>
+				</a>
+			</li>
+			<li data-menu="inbox">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-envelope"></i>
+					</span>
+					<p>Mailbox</p>
+				</a>
+			</li>
+			<li data-menu="#">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-tasks"></i>
+					</span>
+					<p>Tasks</p>
+				</a>
+			</li>
+			<li data-menu="#">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-cog"></i>
+					</span>
+					<p>Settings</p>
+				</a>
+			</li>
+			<li data-menu="calendar">
+				<a href="javsacript:void(0);">
+					<span>
+						<i class="glyphicon glyphicon-calendar"></i>
+					</span>
+					<p>Calendar</p>
+				</a>
+			</li>
+		</ul>
+	</nav>
+	<div class="cd-overlay"></div>
 
 	<!-- modal -->
 	<div class="modal fade ooh-detail-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
