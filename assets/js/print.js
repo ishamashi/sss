@@ -1,6 +1,7 @@
 var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
+var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
 
 $(document).ready(function () {
 
@@ -562,6 +563,14 @@ function pricelist(oohid, oohsite) {
   });
 }
 
+function checkErrorImg(value, id) {
+  console.log("CHECK IMAGE", {value, id})
+  if(value != null){
+    $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+  }else{
+    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+  }
+}
 
 function setPrintOOH(data, contentid, theID) {
   var htmlprint = '';
@@ -601,8 +610,9 @@ function setPrintOOH(data, contentid, theID) {
     if (v.conthis.length > 0) {
       $.each(v.conthis, function (kk, vv) {
         if (vv.content_id == contentid) {
-          image_night = vv.image_night;
-          image_day = vv.image_day;
+          if(vv.image_day !== null) image_day = vv.image_day;
+
+          if(vv.image_night !== null) image_night = vv.image_night;          
 
           campaign = (vv.campaign_title === null) ? "-" : vv.campaign_title;
           industry = (vv.ind_name === null) ? "-" : vv.ind_name;
@@ -613,91 +623,104 @@ function setPrintOOH(data, contentid, theID) {
         }
       });
     }
-
-    htmlprint += '<div id="DIvIdToPrint3"  class="container-fluid div2print3 uppercase">' +
-      '<div class="row" style="height:45px;">' +
-      '<div class="col-md-9 prop-header"><h3 class="prop-header-title">' + v.address + '</h3></div>' +
-      '<div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>' +
-      '</div>' +
-      '<div class="row" style="margin-top:25px;">' +
-      '<div class="col-md-6 image-crop">' +
-      '<img class="wheelzoom img-fluid" id="image_distant_' + idooh + '" src="assets/images/ooh-pictures/' + image_night + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
-      '<img class="hide imgtoprint img-fluid" id="ori_image_distant_' + idooh + '" src="assets/images/ooh-pictures/' + image_night + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';" width="100%" height="420px"  >' +
-      '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >DAY VIEW</h3></div>' +
-      '</div>' +
-      '<div class="col-md-6 image-crop">' +
-      '<img class="wheelzoom img-fluid" id="image_close_' + idooh + '" src="assets/images/ooh-pictures/' + image_day + '"  onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
-      '<img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="assets/images/ooh-pictures/' + image_day + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px">' +
-      '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >NIGHT VIEW</h3></div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="row ">' +
-      '<div class="col-md-6" >' +
-      '<div class="col-md-12 box uppercase" style="min-height: 292px;">' +
-      '<h4>SITE INFORMATION</h4>' +
-      '<br>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Site Number</div>' +
-      '<div class="col-md-8">: ' + v.no_site + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Address</div>' +
-      '<div class="col-md-8">: ' + v.address + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Coordinate</div>' +
-      '<div class="col-md-8">: ' + v.latitude + ',' + v.longitude + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">View</div>' +
-      '<div class="col-md-8">: ' + v.view + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Type</div>' +
-      '<div class="col-md-8">: ' + v.otyp_name + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Size</div>' +
-      '<div class="col-md-8">: ' + panjang + ' m X ' + lebar + ' m, ' + v.orientasi + ', ' + v.lighting + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">AVG Daily Traffic</div>' +
-      '<div class="col-md-8">: ' + traffic + '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="col-md-6" >' +
-      '<div class="col-md-12 box uppercase" style="min-height: 292px;">' +
-      '<h4>SITE CONTENT</h4>' +
-      '<br>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Industry</div>' +
-      '<div class="col-md-8">: ' + industry + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Sub Industry</div>' +
-      '<div class="col-md-8">: ' + sub_industry + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Advertiser</div>' +
-      '<div class="col-md-8">: ' + advertiser + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Campaign</div>' +
-      '<div class="col-md-8">: ' + campaign + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Link Video</div>' +
-      '<div class="col-md-8">: ' + link_video + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Change Cover Date</div>' +
-      '<div class="col-md-8">: <label class="text_label" name="date_cover" id="date_cover" >' + tanggal_content + '</label>&nbsp;<span class="edit icon-pencil"></span> <input type="date" name="date_cover" id="date_cover" value="' + tanggal_content + '"  class="inputedit" > </div>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
+    // '<img class="wheelzoom img-fluid" id="image_distant_' + idooh + '" src="assets/images/ooh-pictures/' + image_night + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
+    // '<img class="hide imgtoprint img-fluid" id="ori_image_distant_' + idooh + '" src="assets/images/ooh-pictures/' + image_night + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';" width="100%" height="420px"  >' +
+    // '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >DAY VIEW</h3></div>' +
+    // '</div>' +
+    // '<div class="col-md-6 image-crop">' +
+    // '<img class="wheelzoom img-fluid" id="image_close_' + idooh + '" src="assets/images/ooh-pictures/' + image_day + '"  onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
+    // '<img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="assets/images/ooh-pictures/' + image_day + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px">' +
+    // '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >NIGHT VIEW</h3></div>' +
+    // this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\'
+    htmlprint += `
+      <div id="DIvIdToPrint3"  class="container-fluid div2print3 uppercase">
+        <div class="row" style="height:45px;">
+          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${v.address}</h3></div>
+            <div class="col-md-3 prop-header-logo" >
+              <img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" >
+            </div>
+          </div>
+          <div class="row" style="margin-top:25px;">
+            <div class="col-md-6 image-crop">
+              <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')"  width="100%" height="400px">
+                <div style="height: auto;" class="col-md-12 text-center prop-image-space">
+                  <h3 class="prop-image-title" style="margin-bottom: 0">DAY VIEW</h3>
+                </div>
+            </div>
+            <div class="col-md-6 image-crop">
+              <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')"  width="100%" height="400px">
+                <div style="height: auto;" class="col-md-12 text-center prop-image-space">
+                  <h3 class="prop-image-title" style="margin-bottom: 0">NIGHT VIEW</h3>
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6" >
+              <div class="col-md-12 box uppercase" style="min-height: 292px;">
+              <h4>SITE INFORMATION</h4>
+              <br>
+              <div class="row">
+                <div class="col-md-4">Site Number</div>
+                  <div class="col-md-8">: ${v.no_site}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">Address</div>
+                    <div class="col-md-8">: ${v.address}</div>
+                  </div>
+                <div class="row">
+                  <div class="col-md-4">Coordinate</div>
+                    <div class="col-md-8">: ${v.latitude},${v.longitude}</div>
+                  </div>
+                <div class="row">
+                  <div class="col-md-4">View</div>
+                    <div class="col-md-8">:  ${v.view}</div>
+                  </div>
+                  <div class="row">
+                  <div class="col-md-4">Type</div>
+                      <div class="col-md-8">: ${v.otyp_name}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">Size</div>
+                    <div class="col-md-8">: ${panjang}m X ${lebar}m, ${v.orientasi}, ${v.lighting}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">AVG Daily Traffic</div>
+                    <div class="col-md-8">: ${traffic}</div>
+                  </div>
+                </div>
+              </div>
+            <div class="col-md-6" >
+              <div class="col-md-12 box uppercase" style="min-height: 292px;">
+              <h4>SITE CONTENT</h4>
+              <br>
+              <div class="row">
+                <div class="col-md-4">Industry</div>
+                <div class="col-md-8">: ${industry}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">Sub Industry</div>
+                <div class="col-md-8">: ${sub_industry}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">Advertiser</div>
+                <div class="col-md-8">: ${advertiser}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">Campaign</div>
+                <div class="col-md-8">: ${campaign}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">Link Video</div>
+                <div class="col-md-8">: ${link_video}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">Change Cover Date</div>
+                <div class="col-md-8">: <label class="text_label" name="date_cover" id="date_cover" >${tanggal_content}</label>&nbsp;<span class="edit icon-pencil"></span> <input type="date" name="date_cover" id="date_cover" value="${tanggal_content}"  class="inputedit" > </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
     //console.log('debug html -> '+htmlprint);
     district_name = v.district_name;
     oohmark = {
