@@ -28,6 +28,13 @@ $(document).ready(function () {
 
 	$('#province').on('change', function () {
 		province = $(this).val();
+		if(province!=null) {
+			let change_province = province.toString();
+			// console.log('province', province);
+			// console.log('modif province', change_province)
+			// console.log('rubah', change_province.replace(/,/g,"+"))
+			province = change_province.replace(/,/g,";");
+		}
 		city = '';
 		filterArea();
 	});
@@ -66,10 +73,30 @@ $(document).ready(function () {
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
 
+		if(province!=null) {
+			let change_province = province.toString();
+			province = change_province.replace(/,/g,";");
+		}
+		
+		if(city!=null) {
+			let change_city 	= city.toString();
+			city = change_city.replace(/,/g,";");
+		}else{
+			city = '';
+		}
+
+
 		advertiser = $('#advertiser').val();
+
+		if(advertiser === null) {
+			advertiser = '';
+		}
 
 		if (industry === null) {
 			industry = '';
+		}else{
+			let change_industry = industry.toString();
+			industry = change_industry.replace(/,/g,";");
 		}
 
 		if (oohstatus === null) {
