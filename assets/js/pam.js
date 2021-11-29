@@ -48,7 +48,7 @@ function filterArea() {
 			} else if (province != '' && city != '') {
 
 			} else if (province == '' && city == '') {
-				$("#province").html('<option value="">All Province</option>' + option).selectpicker('refresh');
+				$("#province").html('<option value=""></option>' + option).selectpicker('refresh');
 			}
 			if($('#province').val() === '') return $("#city").html('<option value="">All City</option>').selectpicker('refresh');
 		},
