@@ -29,7 +29,7 @@ $(document).ready(function () {
 
   document.getElementById("btnPrint").onclick = function () {
     // wheelzoom can be removed from an element by calling 'wheelzoom.destroy'
-    document.querySelector('.wheelzoom').dispatchEvent(new CustomEvent('wheelzoom.destroy'));
+    // document.querySelector('.wheelzoom').dispatchEvent(new CustomEvent('wheelzoom.destroy'));
     printElement(document.getElementById("print-kita-donk"));
   }
 
@@ -124,7 +124,7 @@ function printDiv() {
 
 }
 
-function printPropOoh() {
+async function printPropOoh() {
 
   var data = [];
   /*
@@ -136,6 +136,7 @@ function printPropOoh() {
     //console.log($(this).val());
     data[i] = $(this).val();
   });
+  console.log("VAL", data);
   if (data) {
     //console.log(data);
     markerselectedprint = [];
@@ -143,67 +144,42 @@ function printPropOoh() {
     var count = data.length;
     var district_name = ($('#city option:selected').text() == 'All City') ? $('#province option:selected').text() : $('#city option:selected').text();
 
-    var htmlprintout = '<div id="DIvIdToPrint"  class="container-fluid div2print uppercase">' +
-      '<div class="row" style="height:45px;">' +
-      '<div class="col-md-9 prop-header"><h3 class="prop-header-title">OOH SITE OVERVIEW - ' + district_name + '</h3></div>' +
-      '<div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-12">' +
-      '<div id="map_overview" class="peta"></div>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
+    var htmlprintout = `
+      <div id="DIvIdToPrint" class="container-fluid div2print uppercase">
+        <div class="row" style="height:45px;">
+          <div class="col-md-9 prop-header">
+            <h3 class="prop-header-title">OOH SITE OVERVIEW - ${district_name}</h3>
+          </div>
+          <div class="col-md-3 prop-header-logo">
+            <img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div id="map_overview" class="peta"></div>
+          </div>
+        </div>
+      </div>`;
     //if(count > 2){
     $('#print_ooh_header').html(htmlprintout); //Kalo kurang dari 3 error
     //}
 
     var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     var labelIndex = 0;
-
+    var datahtml = "";
     $("#print_ooh").html('');
-    $.each(data, function (k, v) {
-      //console.log(v);
-      setTimeout(function () {
-        var datahtml = '';
-        $.ajax({
-          url: APIURL + "data/oohlib?ooh_id=" + v,
-          headers: {
-            "token": token_type + " " + token
-          },
-          type: "GET",
-          contentType: "application/json",
-          dataType: 'json',
-          processData: false,
-          cache: false,
-          timeout: 600000,
-          success: function (data, textStatus, jqXHR) {
-            if (typeof data != 'object') { data = $.parseJSON(data); }
-            var labelsmarker = labels[labelIndex++ % labels.length];
-            datahtml = setPrintOOHMulti(data.data, labelsmarker);
-            $("#print_ooh").append(datahtml);
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            errorHandler(jqXHR);
-          }
-        });
+    await Promise.all(
+      data.map(async (v) => {
+        var dataOOHLib = await getDataOOHLib(v).catch(err => err);
+        var labelsmarker = labels[labelIndex++ % labels.length];
+        datahtml = setPrintOOHMulti(dataOOHLib, labelsmarker);
+        $("#print_ooh").append(datahtml);
         html += datahtml;
-      }, 1000);
-      if (!--count) {
-        //want to call   after everything above is completed                       
-        //console.log('Abisss');
-        $(".ooh-print-modal").modal("show");
-
-        setTimeout(function () {
-          wheelzoom(document.querySelectorAll('.wheelzoom'));
-        }, 3000);
-      }
-    });
-    //console.log('HTML 690 -> '+html);
-    setTimeout(function () {
-
-      var count = markerselectedprint.length;
-      if (count > 2) {
+      })
+    ).then(() => {
+      $(".ooh-print-modal").modal("show");
+      console.log("markerselectedprint", markerselectedprint)
+      if (markerselectedprint.length > 2) {
         region = new Region(markerselectedprint);
         var centroid = region.centroid();
       } else {
@@ -213,11 +189,33 @@ function printPropOoh() {
         };
       }
       var zoomx = ($('#city option:selected').text() == 'All City') ? 10 : 12;
-
       overviewTitik(centroid, markerselectedprint, zoomx);
-    }, 3000);
-
+    });
   }
+}
+
+function getDataOOHLib(value) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: APIURL + "data/oohlib?ooh_id=" + value,
+      headers: {
+        "token": token_type + " " + token
+      },
+      type: "GET",
+      contentType: "application/json",
+      dataType: 'json',
+      processData: false,
+      cache: false,
+      timeout: 600000,
+      success: function (data, textStatus, jqXHR) {
+        if (typeof data != 'object') { data = $.parseJSON(data); }
+        resolve(data.data);
+      },
+      error: function (err) {
+        reject(err);
+      }
+    });
+  });
 }
 
 var mapprinter = [];
@@ -309,7 +307,8 @@ function setPrintOOHMulti(data, labelsmarker) {
       });
     }
 
-    var src_image = (v.ooh_origin === 'PRISMA') ? prismaphoto : 'assets/images/ooh-pictures/' + image_night;
+    // var src_image = (v.ooh_origin === 'PRISMA') ? prismaphoto : 'assets/images/ooh-pictures/' + image_night;
+    var src_image = (v.ooh_origin === 'PRISMA') ? image_day : image_night;
 
     var addinfo = '';
     if (v.ooh_type == 2) {
@@ -332,92 +331,93 @@ function setPrintOOHMulti(data, labelsmarker) {
       '';
     }
 
-    htmlprint += '<div id="DIvIdToPrint2"  class="container-fluid div2print2 uppercase">' +
-      '<div class="row" style="height:45px;">' +
-      '<div class="col-md-9 prop-header"><h3 class="prop-header-title">' + labelsmarker + '.  ' + v.address + '</h3></div>' +
-      '<div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-6 image-crop">' +
-      '<img class="wheelzoom img-fluid" id="image_distant_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
-      '<img class="hide imgtoprint img-fluid" id="ori_image_distant_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="420px">' +
-      '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >CLOSE VIEW</h3></div>' +
-      '</div>' +
-      '<div class="col-md-6 image-crop">' +
-      '<img class="wheelzoom img-fluid" id="image_close_' + idooh + '" src="' + src_image + '"  onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="256px">' +
-      '<img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px">' +
-      '<div class="col-md-12 text-center prop-image-space"><h3 class="prop-image-title" >DISTANCE VIEW</h3></div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="row ">' +
-      '<div class="col-md-6" >' +
-      '<div class="col-md-12 box">' +
-      '<h4>PRICE</h4>' +
-      '<p><b style="font-size:16px;" id="vratecard_12_' + idooh + '" >Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard" >' + ratecard + '</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="' + ratecard + '" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="year" style="width:60px;" class="inputedit" /></b></p>' +
-      '<p><b style="font-size:16px;" id="vratecard_1_' + idooh + '" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_1" >' + ratecard_1 + '</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="' + ratecard_1 + '" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_1" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="1 month" style="width:60px;" class="inputedit" /></b></p>' +
-      '<p><b style="font-size:16px;" id="vratecard_3_' + idooh + '" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_3" >' + ratecard_3 + '</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="' + ratecard_3 + '" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_3" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="3 months" style="width:60px;" class="inputedit" /></b></p>' +
-      '<p><b style="font-size:16px;" id="vratecard_6_' + idooh + '" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_6" >' + ratecard_6 + '</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="' + ratecard_6 + '" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_6" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="6 months" style="width:60px;" class="inputedit" /></b></p>' +
-      '<div class="row"><a class="btn btn-primary pull-right no-print" data-toggle="collapse" href="#pricetag_' + idooh + '" role="button" aria-expanded="false" aria-controls="collapseExample">Price Info</a></div>' +
-      '<div class="collapse no-print" id="pricetag_' + idooh + '"></div>' +
-      '</div>' +
-      '<div class="col-md-12 box uppercase" style="min-height: 292px;">' +
-      '<h4>SITE INFORMATION</h4>' +
-      '<br>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Site Number</div>' +
-      '<div class="col-md-8">: ' + v.no_site + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Address</div>' +
-      '<div class="col-md-8">: ' + v.address + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Coordinate</div>' +
-      '<div class="col-md-8">: ' + v.latitude + ',' + v.longitude + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">View</div>' +
-      '<div class="col-md-8">: ' + v.view + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Type</div>' +
-      '<div class="col-md-8">: ' + v.otyp_name + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Size</div>' +
-      '<div class="col-md-8">: ' + panjang + ' m X ' + lebar + ' m, ' + v.orientasi + ', ' + v.lighting + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">AVG Daily Traffic</div>' +
-      '<div class="col-md-8">: ' + traffic + '</div>' +
-      '</div>' +
-      '<div class="row">' +
-      '<div class="col-md-4">Surrounding POI</div>' +
-      '<div class="col-md-8">: <label class="text_label" name="surpoitext" id="surpoitext" >-</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="-"  id="surroundarea_' + idooh + '" class="inputedit" /></div>' +
-      '</div>' + addinfo +
-      '<div class="row">' +
-      '<div class="col-md-12">Notes :<br>' +
-      '<ul> ' +
-      '<li>First come, first serve</li>' + dkijakarta +
-      '<li><label class="text_label" name="notes" id="notes" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>' +
-      '<li><label class="text_label" name="notes2" id="notes2" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>' +
-      '<li><label class="text_label" name="notes3" id="notes3" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>' +
-      '</ul></div>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="col-md-6" >' +
-      '<div class="col-md-4">' +
-      '<div id="qrcode_' + v.ooh_id + '" class="qrcode" ></div>' +
-      '<p class="text-center" >Scan this location</p>' +
-      '</div>' +
-      '<div class="col-md-8"  >' +
-      '<div id="map_' + v.ooh_id + '" class="box mapbox" >' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
+    // <img class="hide imgtoprint img-fluid" id="ori_image_distant_${idooh}" src="${src_image}" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="420px"></img>
+    // <img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px"></img>
+    htmlprint +=
+      `<div id="DIvIdToPrint2"  class="container-fluid div2print2 uppercase">
+        <div class="row" style="height:45px;">
+          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${labelsmarker}.  ${v.address}</h3></div>
+          <div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 image-crop">
+            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${src_image}" onError="checkErrorImg('${src_image}', 'image_distant_${idooh}')"  width="100%" height="400px">
+            <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >CLOSE VIEW</h3></div>
+          </div>
+          <div class="col-md-6 image-crop">
+            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${src_image}"  onError="checkErrorImg('${src_image}', 'image_close_${idooh}')"  width="100%" height="400px">
+            <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >DISTANCE VIEW</h3></div>
+          </div>
+        </div>
+          <div class="row ">
+            <div class="col-md-6" >
+              <div class="col-md-12 box">
+              <h4>PRICE</h4>
+              <p><b style="font-size:16px;" id="vratecard_12_${idooh}" >Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard" >${ratecard}</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="${ratecard}" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="year" style="width:60px;" class="inputedit" /></b></p>
+              <p><b style="font-size:16px;" id="vratecard_1_${idooh}" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_1" >${ratecard_1}</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="${ratecard_1}" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_1" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="1 month" style="width:60px;" class="inputedit" /></b></p>
+              <p><b style="font-size:16px;" id="vratecard_3_${idooh}" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_3" >${ratecard_3}</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="${ratecard_3}" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_3" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="3 months" style="width:60px;" class="inputedit" /></b></p>
+              <p><b style="font-size:16px;" id="vratecard_6_${idooh}" class="hide no-print">Rp. <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecard" id="ratecard_6" >${ratecard_6}</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="${ratecard_6}" class="inputedit" style="width:150px;" /> per <label class="text_label" style="font-size:16px;font-weight:700;" name="ratecardperiod" id="ratecardperiod_6" >year</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="6 months" style="width:60px;" class="inputedit" /></b></p>
+              <div class="row"><a class="btn btn-primary pull-right no-print" data-toggle="collapse" href="#pricetag_${idooh}" role="button" aria-expanded="false" aria-controls="collapseExample">Price Info</a></div>
+                <div class="collapse no-print" id="pricetag_${idooh}"></div>
+              </div>
+              <div class="col-md-12 box uppercase" style="min-height: 292px;">
+                <h4>SITE INFORMATION</h4>
+                <br>
+                <div class="row">
+                  <div class="col-md-4">Site Number</div>
+                  <div class="col-md-8">: ${v.no_site}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">Address</div>
+                    <div class="col-md-8">: ${v.address}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">Coordinate</div>
+                  <div class="col-md-8">: ${v.latitude},${v.longitude}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">View</div>
+                  <div class="col-md-8">: ${v.view}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">Type</div>
+                  <div class="col-md-8">: ${v.otyp_name}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">Size</div>
+                  <div class="col-md-8">: ${panjang} m X ${lebar} m, ${v.orientasi}, ${v.lighting}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">AVG Daily Traffic</div>
+                  <div class="col-md-8">: ${traffic}</div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">Surrounding POI</div>
+                  <div class="col-md-8">: <label class="text_label" name="surpoitext" id="surpoitext" >-</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="-"  id="surroundarea_${idooh}" class="inputedit" /></div>
+                </div>${addinfo}
+                <div class="row">
+                  <div class="col-md-12">Notes :<br>
+                    <ul> 
+                      <li>First come, first serve</li>${dkijakarta}
+                      <li><label class="text_label" name="notes" id="notes" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>
+                      <li><label class="text_label" name="notes2" id="notes2" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>
+                      <li><label class="text_label" name="notes3" id="notes3" >Add note here..</label>&nbsp;<span class="edit icon-pencil"></span><input type="text" value="Add note here.." class="inputedit" /></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6" >
+            <div class="col-md-4">
+              <div id="qrcode_${v.ooh_id}" class="qrcode" ></div>
+              <p class="" >Scan this location</p>
+          </div>
+          <div class="col-md-8">
+            <div id="map_${v.ooh_id}" class="box mapbox" ></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
     //console.log('debug html -> '+htmlprint);
     district_name = v.district_name;
     oohmark = {
@@ -552,10 +552,6 @@ function pricelist(oohid, oohsite) {
       //html += '"></span>';
       html += '</div>'
       $("#pricetag_" + oohid).html(html);
-
-
-
-
     },
     error: function (jqXHR, textStatus, errorThrown) {
       errorHandler(jqXHR);
@@ -563,11 +559,15 @@ function pricelist(oohid, oohsite) {
   });
 }
 
-function checkErrorImg(value, id) {
-  console.log("CHECK IMAGE", {value, id})
-  if(value != null){
-    $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
-  }else{
+function checkErrorImg(value, id, event = null) {
+  console.log("CHECK IMAGE", { value, id, event });
+  if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+    return;
+  }
+  if (value != null) {
+    $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+  } else {
     $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
   }
 }
@@ -610,9 +610,9 @@ function setPrintOOH(data, contentid, theID) {
     if (v.conthis.length > 0) {
       $.each(v.conthis, function (kk, vv) {
         if (vv.content_id == contentid) {
-          if(vv.image_day !== null) image_day = vv.image_day;
+          if (vv.image_day !== null) image_day = vv.image_day;
 
-          if(vv.image_night !== null) image_night = vv.image_night;          
+          if (vv.image_night !== null) image_night = vv.image_night;
 
           campaign = (vv.campaign_title === null) ? "-" : vv.campaign_title;
           industry = (vv.ind_name === null) ? "-" : vv.ind_name;
