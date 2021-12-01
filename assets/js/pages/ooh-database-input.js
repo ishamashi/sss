@@ -15,18 +15,20 @@ $(function () {
     initialLoadData('ind');
     initialLoadData('subind');
     initialLoadData('adv');
-    filterArea();
+    // filterArea();
     filterKodeProduk();
     filterCompany();
 
-    $('#province').on('change', function () {
+    $('#provinceOOH').on('change', function () {
         province = $(this).find("option:selected").val();
         district = null;
         sub_district = null;
         filterArea(province, 'pr');
+        console.log("PROVINSIIII", province);
     });
 
     $('#district').on('change', function () {
+        console.log("CHANGE DISTRICT", district)
         district = $(this).find("option:selected").val();
         sub_district = null;
         filterArea(district, 'di');
@@ -48,9 +50,9 @@ $(function () {
         $('#contract_start').datepicker('setEndDate', maxDate);
     });
 
-
-
-    $('#sub_district').on('change', function () { sub_district = $(this).find("option:selected").val(); });
+    $('#sub_district').on('change', function () {
+        sub_district = $(this).find("option:selected").val();
+    });
 
     $('#datee').datepicker({
         format: "mm-yyyy",
@@ -256,20 +258,27 @@ $(function () {
     }
 
     //LOAD DATA IF EDIT DATA OOH HERE
-    setTimeout(function () {
-        if (localStorage.getItem('ooh_idx')) {
-            $('#ooh_id').val(localStorage.getItem('ooh_idx'));
-            console.log(localStorage.getItem('ooh_idx'));
-            setEditOoh(localStorage.getItem('ooh_idx'));
-        }
-    }, 1000);
+    if (localStorage.getItem('ooh_idx')) {
+        $('#ooh_id').val(localStorage.getItem('ooh_idx'));
+        console.log(localStorage.getItem('ooh_idx'));
+        setEditOoh(localStorage.getItem('ooh_idx'));
+    }
+    $('#nav-tab-list').html(html_list);
+    $('#content-tab-list').html(html_content);
+    // setTimeout(function () {
+    //     if (localStorage.getItem('ooh_idx')) {
+    //         $('#ooh_id').val(localStorage.getItem('ooh_idx'));
+    //         console.log(localStorage.getItem('ooh_idx'));
+    //         setEditOoh(localStorage.getItem('ooh_idx'));
+    //     }
+    // }, 1000);
 
 
     //console.log(html_content);
-    setTimeout(function () {
-        $('#nav-tab-list').html(html_list);
-        $('#content-tab-list').html(html_content);
-    }, 1000);
+    // setTimeout(function () {
+    //     $('#nav-tab-list').html(html_list);
+    //     $('#content-tab-list').html(html_content);
+    // }, 1000);
 
     setTimeout(function () {
         //Data - 1
@@ -673,7 +682,7 @@ function zeroleftpad(str, max) {
 
 
 function setEditOoh(ooh_id) {
-    loading();
+    // loading();
     $.ajax({
         cache: false,
         type: 'GET',
@@ -700,13 +709,18 @@ function setEditOoh(ooh_id) {
                 province = v.province;
                 district = v.district;
                 sub_district = v.sub_district;
+                console.log("OOH DATA PROVINCE", {
+                    province,
+                    district,
+                    sub_district
+                });
                 filterArea(v.province, 'pr');
-                setTimeout(function () {
-                    filterArea(v.district, 'di');
-                }, 1000);
-                setTimeout(function () {
-                    filterArea(v.sub_district, 'su');
-                }, 2000);
+                // setTimeout(function () {
+                //     filterArea(v.district, 'di');
+                // }, 1000);
+                // setTimeout(function () {
+                //     filterArea(v.sub_district, 'su');
+                // }, 2000);
 
 
                 $('#ooh_id_disabled').val(ooh_id);
@@ -876,10 +890,55 @@ function setTableContent1(datane) {
 
 }
 
-function filterArea(curr_val, lvl = 'pr') {
-    if (lvl === undefined) { lvl = 'pr'; }
-    if (curr_val === undefined) { curr_val = false; }
+function getDataFilterArea(data, curr_val = null) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            cache: false,
+            type: 'GET',
+            data: data,
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            url: APIURL + 'data/filterarea',
+            dataType: 'json',
+            // async: (curr_val == false) ? true : false,
+            success: function (data) {
+                if (typeof data != 'object') { data = $.parseJSON(data); }
+                var optionsAsString = "";
+                $.each(data.data, function (k, v) {
+                    var selected = '';
+                    if (curr_val) {
+                        if (v[0] == curr_val) {
+                            selected = 'selected';
+                        }
+                    }
+                    optionsAsString += "<option value='" + v[0] + "' " + selected + ">" + v[1] + "</option>";
+                });
+                resolve(optionsAsString);
+            },
+            error: function (err, textStatus, errorThrown) {
+                reject(err);
+                // if (jqXHR.status != 500) {
+                //     if (jqXHR.status == 400) {
+                //         window.location = "logout.html";
+                //     }
+                //     var strjson = JSON.parse(jqXHR.responseText);
+                // } else {
+                // }
+            }
+        });
+    });
+}
+
+async function filterArea(curr_val, lvl = 'pr') {
     var data = {};
+    var selector = "";
+    if (lvl === undefined) {
+        lvl = 'pr';
+    }
+
+    if (curr_val === undefined) {
+        curr_val = false;
+    }
+
     if (lvl == 'pr') {
         data = {};
     } else if (lvl == 'di') {
@@ -888,65 +947,44 @@ function filterArea(curr_val, lvl = 'pr') {
         data = { "province": province, "district": district };
     }
 
+    var dataOption = await getDataFilterArea(data, curr_val).catch(err => err);
 
-
-    $.ajax({
-        cache: false,
-        type: 'GET',
-        data: data,
-        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
-        url: APIURL + 'data/filterarea',
-        dataType: 'json',
-        async: (curr_val == false) ? true : false,
-        success: function (data) {
-            if (typeof data != 'object') { data = $.parseJSON(data); }
-            var optionsAsString = "";
-            $.each(data.data, function (k, v) {
-                var selected = '';
-                if (curr_val) {
-                    if (v[0] == curr_val) {
-                        selected = 'selected';
-                    }
-                }
-                optionsAsString += "<option value='" + v[0] + "' " + selected + ">" + v[1] + "</option>";
-            });
-
-            if (lvl == 'su') {
-                $('#sub_district').find('option').remove();
-                $('#sub_district').append('<option selected="selected" value="">All Sub District</option>' + optionsAsString);
-                if (curr_val) {
-                    sub_district = curr_val;
-                    $('select[name=sub_district]').val(curr_val);
-                }
-            } else if (lvl == 'di') {
-                $('#district').find('option').remove();
-                $('#district').append('<option selected="selected" value="">All District</option>' + optionsAsString);
-                if (curr_val) {
-                    district = curr_val;
-                    $('select[name=district]').val(curr_val);
-                }
-            } else {
-                $('#province').find('option').remove();
-                $('#province').append('<option selected="selected" value="">All Province</option>' + optionsAsString);
-                if (curr_val) {
-                    province = curr_val;
-                    $('select[name=province]').val(curr_val);
-                }
-
-            }
-
-            $('.select').selectpicker('refresh');
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (jqXHR.status != 500) {
-                if (jqXHR.status == 400) {
-                    window.location = "logout.html";
-                }
-                var strjson = JSON.parse(jqXHR.responseText);
-            } else {
-            }
-        }
+    if (lvl == 'su') {
+        $('#sub_district').find('option').remove();
+        $('#sub_district').append('<option selected="selected" value="">All Sub District</option>' + dataOption);
+        selector = "#sub_district";
+        // if (curr_val) {
+        //     sub_district = curr_val;
+        //     $('select[name=sub_district]').val(curr_val);
+        // }
+    } else if (lvl == 'di') {
+        $('#district').find('option').remove();
+        $('#district').append('<option selected="selected" value="">All District</option>' + dataOption);
+        selector = "#district";
+        // if (curr_val) {
+        //     district = curr_val;
+        //     $('select[name=district]').val(curr_val);
+        // }
+        filterArea(sub_district, "su");
+    } else {
+        $('#provinceOOH').find('option').remove();
+        $('#provinceOOH').append('<option selected="selected" value="">All Province</option>' + dataOption);
+        selector = "#provinceOOH";
+        // if (curr_val) {
+        //     province = curr_val;
+        //     $('select[name=province]').val(curr_val);
+        // }
+        filterArea(district, "di");
+    }
+    console.log("FILTER AREA", {
+        dataOption,
+        lvl,
+        curr_val,
+        selector
     });
+    $(selector).selectpicker('val', curr_val);
+    $(selector).selectpicker('refresh');
+    // $('.select').selectpicker('refresh');
 }
 
 function filterDataIndustry(lvl, value) {
