@@ -405,7 +405,7 @@ function filterIndustry(page = 'all') {
 			if (data.data.length > 0) { $('#industry').html('') }
 			var option = "";
 			if (page == 'oview') {
-				option += "<option value=''>All Industry</option>";
+				
 			}
 			$.each(data.data, function (k, v) {
 				option += "<option value='" + v[0] + "'>" + v[1] + "</option>";
