@@ -8,6 +8,13 @@ $( document ).ready(function() {
 
 	$('#province').on('change',function(){
     province = $(this).val();
+	if(province!=null) {
+		let change_province = province.toString();
+		// console.log('province', province);
+		// console.log('modif province', change_province)
+		// console.log('rubah', change_province.replace(/,/g,"+"))
+		province = change_province.replace(/,/g,";");
+	}
     city = '';
     filterArea();
   });
@@ -16,6 +23,18 @@ $( document ).ready(function() {
     province = $("#province").val();
     city = $("#city").val();
     type = $("#type").val();
+	if(province!=null) {
+		let change_province = province.toString();
+		province = change_province.replace(/,/g,";");
+	}
+	
+	if(city!=null) {
+		let change_city 	= city.toString();
+		city = change_city.replace(/,/g,";");
+	}else{
+		city = '';
+	}
+
     industry = $("#industry").val();
     fromDate = $("#fromDate").val();
     toDate = $("#toDate").val();
@@ -210,6 +229,8 @@ function setData(data) {
 	$("#top_district").text(sort_district[0][0]);
 	$("#top_district_count").text(numberToMoney(sort_district[0][1]));
 	$("#top_district_percent").text(Math.round(100*100*sort_district[0][1]/total_ooh)/100);
+	$("#fromDate").val(data.data.default_year_periode+'-01');
+	$("#toDate").val(data.data.default_year_periode+'-12');
 
 	SOVbyIndustry(top20_industry);
 	SOVbyAdvertiser(top20_advertiser);
