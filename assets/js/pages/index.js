@@ -26,6 +26,8 @@ $( document ).ready(function() {
 	if(province!=null) {
 		let change_province = province.toString();
 		province = change_province.replace(/,/g,";");
+	}else{
+		province = '';
 	}
 	
 	if(city!=null) {
@@ -231,7 +233,7 @@ function setData(data) {
 	$("#top_district_percent").text(Math.round(100*100*sort_district[0][1]/total_ooh)/100);
 	$("#fromDate").val(data.data.default_year_periode+'-01');
 	$("#toDate").val(data.data.default_year_periode+'-12');
-
+``
 	SOVbyIndustry(top20_industry);
 	SOVbyAdvertiser(top20_advertiser);
 	SOVbyOOHType(sort_type);
