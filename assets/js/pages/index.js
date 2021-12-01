@@ -40,8 +40,9 @@ $( document ).ready(function() {
     industry = $("#industry").val();
     fromDate = $("#fromDate").val();
     toDate = $("#toDate").val();
-	getData();
+	$(this).data('clicked', true);
 	storeFilterCache(province,city,type,industry,fromDate,toDate);
+	getData();
   });
 
 	$('#fromDate').datepicker({
@@ -200,6 +201,7 @@ function emptyData(){
 
 function setData(data) {
 	var total_ooh = data.data.total_ooh;
+	var total_content = data.data.total_ooh_content;
 	industry = data.data.industry;
 	advertiser = data.data.advertiser;
 	district = data.data.district;
@@ -231,9 +233,8 @@ function setData(data) {
 	$("#top_district").text(sort_district[0][0]);
 	$("#top_district_count").text(numberToMoney(sort_district[0][1]));
 	$("#top_district_percent").text(Math.round(100*100*sort_district[0][1]/total_ooh)/100);
-	$("#fromDate").val(data.data.default_year_periode+'-01');
-	$("#toDate").val(data.data.default_year_periode+'-12');
-``
+	$("#total_content").text(total_content);
+
 	SOVbyIndustry(top20_industry);
 	SOVbyAdvertiser(top20_advertiser);
 	SOVbyOOHType(sort_type);
