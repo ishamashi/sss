@@ -38,6 +38,13 @@ $( document ).ready(function() {
 	}
 
     industry = $("#industry").val();
+	if(industry!=null) {
+		let change_industry = industry.toString();
+		industry = change_industry.replace(/,/g,";");
+	}else{
+		industry = '';
+	}
+
     fromDate = $("#fromDate").val();
     toDate = $("#toDate").val();
 	$(this).data('clicked', true);
@@ -226,19 +233,28 @@ function setData(data) {
 	$("#total_ooh").text(numberToMoney(total_ooh));
 	$("#top_industry").text(sort_industry[0][0]);
 	$("#top_industry_count").text(numberToMoney(sort_industry[0][1]));
-	$("#top_industry_percent").text(Math.round(100*100*sort_industry[0][1]/total_ooh)/100);
+	$("#top_industry_percent").text(Math.round(100*100*sort_industry[0][1]/total_content)/100);
 	$("#top_advertiser").text(sort_advertiser[0][0]);
 	$("#top_advertiser_count").text(numberToMoney(sort_advertiser[0][1]));
-	$("#top_advertiser_percent").text(Math.round(100*100*sort_advertiser[0][1]/total_ooh)/100);
+	$("#top_advertiser_percent").text(Math.round(100*100*sort_advertiser[0][1]/total_content)/100);
 	$("#top_district").text(sort_district[0][0]);
 	$("#top_district_count").text(numberToMoney(sort_district[0][1]));
-	$("#top_district_percent").text(Math.round(100*100*sort_district[0][1]/total_ooh)/100);
+	$("#top_district_percent").text(Math.round(100*100*sort_district[0][1]/total_content)/100);
 	$("#total_content").text(total_content);
+	if($("#fromDate").val()=='') {
+		$("#fromDate").val(data.data.default_year_periode+'-01');
+		localStorage.setItem('filter_fromdate', $("#fromDate").val());
+	}
+
+	if($("#toDate").val()=='') {
+		$("#toDate").val(data.data.default_year_periode+'-12');
+		localStorage.setItem('filter_todate', $("#toDate").val());
+	}
 
 	SOVbyIndustry(top20_industry);
 	SOVbyAdvertiser(top20_advertiser);
 	SOVbyOOHType(sort_type);
-	SOVbyCity(district, city_advertiser,total_ooh);
+	SOVbyCity(district, city_advertiser,total_content);
 	getLastUpdate();
 }
 
