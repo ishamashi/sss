@@ -44,13 +44,13 @@ function filterArea() {
 				option += "<option value='" + v[0] + "'>" + v[1] + "</option>";
 			});
 			if (province != '' && city == '') {
-				$("#city").html('<option value="">All City</option>' + option).selectpicker('refresh');
+				$("#city").html(option).selectpicker('refresh');
 			} else if (province != '' && city != '') {
 
 			} else if (province == '' && city == '') {
-				$("#province").html('<option value=""></option>' + option).selectpicker('refresh');
+				$("#province").html(option).selectpicker('refresh');
 			}
-			if($('#province').val() === '') return $("#city").html('<option value="">All City</option>').selectpicker('refresh');
+			if($('#province').val() === '') return $("#city").html().selectpicker('refresh');
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			errorHandler(jqXHR);
