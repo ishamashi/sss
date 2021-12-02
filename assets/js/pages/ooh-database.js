@@ -8,6 +8,10 @@ var selectedPreviewOOHImage = {
 	image_day: null,
 	image_night: null,
 };
+var TempPrintBAST = {
+	content_id: null,
+	date: null,
+}
 
 $(document).ready(function () {
 	if (parseInt(localStorage.prisma_level) === 1) {
@@ -454,9 +458,9 @@ function printOoh(ooh_id) {
 			success: function (data, textStatus, jqXHR) {
 				$("#print_ooh").html('');
 				if (typeof data != 'object') { data = $.parseJSON(data); }
-				var contentid = $('button.btvidit.active').attr('data-btnval');
-				var theID = $('button.btvidit.active').attr('id');
-				var html = setPrintOOH(data.data, contentid, theID);
+				// var contentid = $('button.btvidit.active').attr('data-btnval');
+				// var theID = $('button.btvidit.active').attr('id');
+				var html = setPrintOOH(data.data, TempPrintBAST.content_id, TempPrintBAST.date);
 				$("#print_ooh").append(html);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -482,6 +486,7 @@ const RemoveDuplicatesDouble = (array, key1, key2) => {
 
 // OOH Detail Popup Window
 function setDataDetail(data) {
+	$("#detail_ooh").empty(); // clear data
 	var imgno = randomIntFromInterval(1, 3); // Math.floor(Math.random() * (4 - 1) ) + 1
 	var yea = [];
 	var ymcont = {};
@@ -492,6 +497,7 @@ function setDataDetail(data) {
 	var btvid = '';
 	var idx = 0;
 	var html = '';
+	var htmlLayanan = '';
 	var imageFront = {
 		image_day: null,
 		image_night: null
@@ -499,11 +505,11 @@ function setDataDetail(data) {
 	var tempCountThis = [];
 	var selectedDate = "";
 	var resultData = [];
-
+	var dataOOH = [];
 	var filterData = [];
 
-	console.log("DATA", { data });
 	$.each(data, function (idooh, theData) {
+		dataOOH = theData;
 		console.log({
 			theData
 		})
@@ -552,14 +558,15 @@ function setDataDetail(data) {
 				imageFront['image_night'] = v1.image_night;
 			}
 
-			if (imageFront.image_day !== null && typeof imageFront.image_day !== 'undefined') {
+			if ((imageFront.image_day !== null) && (typeof imageFront.image_day !== 'undefined')) {
 				imageFront = imageFront.image_day;
-			} else if (imageFront.image_night !== null && typeof imageFront.image_night !== 'undefined') {
+			} else if ((imageFront.image_night !== null) && (typeof imageFront.image_night !== 'undefined')) {
 				imageFront = imageFront.image_night;
+			} else {
+				imageFront = 'noimage.jpg';
 			}
 
 			var is_hiding_image = (idx == 0) ? '' : 'hide';
-			// var is_hiding_image = (idx == 0) ? '' : 'hide';
 
 			prismaphoto = ERP_HOST + 'assets/img/' + theData.no_site + '.jpg';
 
@@ -594,7 +601,6 @@ function setDataDetail(data) {
 								  <input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePics('${v1.content_id}','${v1.image_night}','${v1.image_day}','${theData.owner}','${theData.no_site}','${theData.no_cnv}');" id="switchpic-${v1.content_id}" name="switchpic" data-on-text="Night" data-off-text="Day">
 								</div>
 						</div>`;
-			imageBackup = html_img;
 			if ($.inArray(v1.year, yea) < 0) yea.push(v1.year);
 			if (typeof ymcont[v1.year + '-' + v1.month] == "undefined") ymcont[v1.year + '-' + v1.month] = [];
 			ymcont[v1.year + '-' + v1.month].push(v1.content_id);
@@ -697,6 +703,32 @@ function setDataDetail(data) {
 		// 							</div>
 		// 						</div>
 		// 					</div>
+		if (parseInt(localStorage.prisma_level) !== 1) {
+			htmlLayanan += `
+			<div class="col-lg-6 col-md-6">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+					<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>
+						<p class="text-center"><span id="score">${numberToMoney(theData.vscore)}</span></p>
+					</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-md-12">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+						<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Price</span>
+						<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
+						<p class="text-center"><span id="rate_card">Rp. ${numberToMoney(rate_card)}</span></p>
+						<center><h4 id="top_industry">per year</h4></center>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
+		}
 		html += `
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
@@ -729,8 +761,9 @@ function setDataDetail(data) {
 								</div>
 							</div>
 
+							${htmlLayanan}
+
 						</div>
-	
 					</div>
 				</div>
 
@@ -947,17 +980,39 @@ function setDataDetail(data) {
 	//   </div>
 
 	$("#detail_ooh").html(html);
-	showingContents(resultData);
+	showingContents(resultData, dataOOH);
 	$(".ooh-detail-modal").modal("show");
 }
 
-function checkErrorImg(value, id) {
-	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+// function checkErrorImg(selector, type) {
+// 	// $(`#${selector}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+// 	var asset = '';
+//     var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+//     var selected = $(`#${selector}`);
+
+//     if (typeof selected.data('url') !== 'undefined') {
+//         selected.attr('src', host_android + selected.data('url'));
+//     } else {
+//         selected.attr('src', asset);
+//     }
+//     return;
+// }
+
+function checkErrorImg(value, id, event = null) {
+	console.log("CHECK IMAGE", { value, id, event });
+	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+		return;
+	}
+	if (value != null) {
+		$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+	} else {
+		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	}
 }
 
-function showingContents(data) {
+function showingContents(data, dataOOH) {
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
-	console.log(data)
 	var html = `<div class="row">
 					<div class="col-md-4">
 						<div class="form-group">
@@ -965,11 +1020,17 @@ function showingContents(data) {
 							<input type="text" class="form-control" id="periodePicker" name="periodePicker">
 						</div>
 					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="">&nbsp;</label>
+							<br/>
+							<button type="button" class="btn btn-success" onclick="printOoh('${dataOOH.ooh_id}')" data-toggle="modal" data-target=".ooh-print-modal">Print BAST</button>
+						</div>
+					</div>
 				</div>
 				<div id="showingDetailContent"></div>`;
 	$('#contents').html(html);
 
-	console.log(selectedDate);
 	$('#periodePicker').daterangepicker({
 		parentEl: ".ooh-detail-modal .modal-body",
 		singleDatePicker: true,
@@ -999,8 +1060,18 @@ function showingDetailContent(value) {
 	var slot = '';
 	var dataContents = btoa(JSON.stringify(contents));
 	slot += `<div class="btn-group">`;
+	var orderedData = contents.sort((a, b) => a.index - b.index);
+
+	TempPrintBAST = {
+		content_id: orderedData[0].content_id,
+		date: orderedData[0].year + '-' + orderedData[0].month + '-1',
+	}
 
 	for (let i = 0; i < 8; i++) {
+		var date = "";
+		if (typeof contents[i] !== 'undefined') {
+			date = contents[i].year + '-' + contents[i].month + '-' + (i + 1);
+		}
 		slot += `
 				<button 
 					style="margin-left: 0.50em;margin-right: 0.50em;border-radius: 0.25em;"
@@ -1008,10 +1079,10 @@ function showingDetailContent(value) {
 					onclick="changeSlot('${dataContents}', 
 										'${(typeof contents[i] !== 'undefined') ? contents[i].sorper : ''}', 
 										'${(typeof contents[i] !== 'undefined') ? contents[i].index : ''}', 
-										'buttonSlot${i + 1}')" 
+										'buttonSlot${i + 1}', '${date}')" 
 					class="btn btn-primary ${(typeof contents[i] === 'undefined' ? ' disabled ' : '')} ${(i === 0 ? ' btn-active-slot ' : '')}">
 					${i + 1}
-				</button>			
+				</button>
 			`;
 	}
 
@@ -1063,12 +1134,16 @@ function showingTableOOH(contents) {
 	$('#showTableOOH').html(html);
 }
 
-function changeSlot(contents, sorper, index, selector) {
+function changeSlot(contents, sorper, index, selector, date) {
 	if (sorper === '' && index === '') return;
 	var parsingContents = JSON.parse(atob(contents));
 	var selectObject = parsingContents.find((item) => item.sorper == sorper && item.index == index);
 	$("[id*='buttonSlot']").removeClass('btn-active-slot');
 	$(`#${selector}`).addClass('btn-active-slot');
+	TempPrintBAST = {
+		content_id: selectObject.content_id,
+		date: date
+	}
 	showingImageOOH(selectObject);
 	showingTableOOH(selectObject);
 }
@@ -1080,7 +1155,6 @@ function showingImageOOH(content) {
 		image_night: content.image_night
 	}
 	var url = 'assets/images/ooh-pictures/' + content.image_day;
-
 	image += `<div class="imgooh" id="showingPreviewImg">
 		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
 			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
@@ -1104,7 +1178,13 @@ function showingImageOOH(content) {
 
 function changePicImageOOH(e) {
 	var checked = $('#switchpic').is(':checked');
-	console.log("CHANGE PIC", checked);
+	// console.log("CHANGE PIC", { checked, selectedPreviewOOHImage });
+	if (selectedPreviewOOHImage.image_day === null) {
+		selectedPreviewOOHImage.image_day = "noimage.jpg";
+	} else if (selectedPreviewOOHImage.image_night === null) {
+		selectedPreviewOOHImage.image_night = "noimage.jpg";
+	}
+
 	var url = 'assets/images/ooh-pictures/';
 	if (!checked) {
 		// Day
@@ -1121,8 +1201,11 @@ function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
 	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
-
-	$('#imageoohPreview').attr('src', host_android + image.data('url'));
+	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
+		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+		return;
+	}
+	$('#imageoohPreview').attr('src', host_android + image.data('url')).attr('fin', '1');;
 	return;
 }
 
