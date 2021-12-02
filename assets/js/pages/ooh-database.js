@@ -636,6 +636,7 @@ function setDataDetail(data) {
 			idx++;
 		});
 		tbcontent += '</table>';
+		console.log("IMAGE FRONT", imageFront);
 		var objectArr = Object.keys(ymcont);
 		if (objectArr.length > 0) {
 			var splitObject = objectArr[0].split('-');
@@ -772,7 +773,7 @@ function setDataDetail(data) {
 			<div class="tab-pane fade active" id="informasi_dasar" role="tabpanel">
 				<div class="row">
 					<div class="col-md-6">
-						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImg('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
+						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImgInfo('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
 					</div>
 					<div class="col-md-6">
 						<div class="row">
@@ -1009,6 +1010,7 @@ function setDataDetail(data) {
 	$("#detail_ooh").html(html);
 	showingContents(resultData, dataOOH);
 	$(".ooh-detail-modal").modal("show");
+	$("#imageFrontTest").removeAttr("fin");
 }
 
 // function checkErrorImg(selector, type) {
@@ -1025,14 +1027,14 @@ function setDataDetail(data) {
 //     return;
 // }
 
-function checkErrorImg(value, id, event = null) {
-	console.log("CHECK IMAGE", { value, id, event });
+function checkErrorImgInfo(value, id, event = null) {
+	console.log("CHECK IMAGE INFORMASI DASAR", { value, id, event });
 	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
 		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 		return;
 	}
 	if (value != null) {
-		$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+		$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
 	} else {
 		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 	}
@@ -1213,6 +1215,7 @@ function changePicImageOOH(e) {
 	}
 
 	var url = 'assets/images/ooh-pictures/';
+	$(`#imageoohPreview`).removeAttr('fin');
 	if (!checked) {
 		// Day
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
@@ -1227,7 +1230,8 @@ function changePicImageOOH(e) {
 function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
-	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+
+	var host_android = "http://mobile-prisma-api.com:7080/image/";
 	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
 		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 		return;
