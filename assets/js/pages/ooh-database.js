@@ -609,6 +609,7 @@ function setDataDetail(data) {
 			idx++;
 		});
 		tbcontent += '</table>';
+		console.log("IMAGE FRONT", imageFront);
 		var objectArr = Object.keys(ymcont);
 		if (objectArr.length > 0) {
 			var splitObject = objectArr[0].split('-');
@@ -982,6 +983,7 @@ function setDataDetail(data) {
 	$("#detail_ooh").html(html);
 	showingContents(resultData, dataOOH);
 	$(".ooh-detail-modal").modal("show");
+	$("#imageFrontTest").removeAttr("fin");
 }
 
 // function checkErrorImg(selector, type) {
