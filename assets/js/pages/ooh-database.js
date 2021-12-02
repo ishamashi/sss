@@ -1200,6 +1200,8 @@ function changePicImageOOH(e) {
 function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
+
+	$(`#imageoohPreview`).removeAttr('fin');
 	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
 	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
 		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
