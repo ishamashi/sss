@@ -1011,8 +1011,31 @@ function setDataDetail(data) {
 	$(".ooh-detail-modal").modal("show");
 }
 
-function checkErrorImg(value, id) {
-	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+// function checkErrorImg(selector, type) {
+// 	// $(`#${selector}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+// 	var asset = '';
+//     var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+//     var selected = $(`#${selector}`);
+
+//     if (typeof selected.data('url') !== 'undefined') {
+//         selected.attr('src', host_android + selected.data('url'));
+//     } else {
+//         selected.attr('src', asset);
+//     }
+//     return;
+// }
+
+function checkErrorImg(value, id, event = null) {
+	console.log("CHECK IMAGE", { value, id, event });
+	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+		return;
+	}
+	if (value != null) {
+		$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+	} else {
+		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	}
 }
 
 function showingContents(data, dataOOH) {
@@ -1065,7 +1088,7 @@ function showingDetailContent(value) {
 	var dataContents = btoa(JSON.stringify(contents));
 	slot += `<div class="btn-group">`;
 	var orderedData = contents.sort((a, b) => a.index - b.index);
-	
+
 	TempPrintBAST = {
 		content_id: orderedData[0].content_id,
 		date: orderedData[0].year + '-' + orderedData[0].month + '-1',
@@ -1073,7 +1096,7 @@ function showingDetailContent(value) {
 
 	for (let i = 0; i < 8; i++) {
 		var date = "";
-		if(typeof contents[i] !== 'undefined'){
+		if (typeof contents[i] !== 'undefined') {
 			date = contents[i].year + '-' + contents[i].month + '-' + (i + 1);
 		}
 		slot += `
@@ -1159,7 +1182,6 @@ function showingImageOOH(content) {
 		image_night: content.image_night
 	}
 	var url = 'assets/images/ooh-pictures/' + content.image_day;
-
 	image += `<div class="imgooh" id="showingPreviewImg">
 		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
 			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
@@ -1206,8 +1228,11 @@ function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
 	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
-
-	$('#imageoohPreview').attr('src', host_android + image.data('url'));
+	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
+		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+		return;
+	}
+	$('#imageoohPreview').attr('src', host_android + image.data('url')).attr('fin', '1');;
 	return;
 }
 
