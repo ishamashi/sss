@@ -703,30 +703,32 @@ function setDataDetail(data) {
 		// 							</div>
 		// 						</div>
 		// 					</div>
-		htmlLayanan += `
-		<div class="col-lg-6 col-md-6">
-		  <div class="panel info-box panel-white">
-			<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
-			  <div class="info-box-stats" style="float: none !important;">
-				<span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>
-				<p class="text-center"><span id="score">${numberToMoney(theData.vscore)}</span></p>
-			  </div>
-			</div>
-		  </div>
-		</div>
-		<div class="col-lg-12 col-md-12">
-			<div class="panel info-box panel-white">
-			<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
-				<div class="info-box-stats" style="float: none !important;">
-				<span class="info-box-title text-center">Price</span>
-				<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
-				<p class="text-center"><span id="rate_card">Rp. ${numberToMoney(rate_card)}</span></p>
-				<center><h4 id="top_industry">per year</h4></center>
+		if (parseInt(localStorage.prisma_level) !== 1) {
+			htmlLayanan += `
+			<div class="col-lg-6 col-md-6">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+					<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>
+						<p class="text-center"><span id="score">${numberToMoney(theData.vscore)}</span></p>
+					</div>
+					</div>
 				</div>
 			</div>
+			<div class="col-lg-12 col-md-12">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+						<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Price</span>
+						<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
+						<p class="text-center"><span id="rate_card">Rp. ${numberToMoney(rate_card)}</span></p>
+						<center><h4 id="top_industry">per year</h4></center>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
-		`;
+			`;
+		}
 		html += `
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
