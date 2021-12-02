@@ -1186,6 +1186,7 @@ function changePicImageOOH(e) {
 	}
 
 	var url = 'assets/images/ooh-pictures/';
+	$(`#imageoohPreview`).removeAttr('fin');
 	if (!checked) {
 		// Day
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
@@ -1200,6 +1201,7 @@ function changePicImageOOH(e) {
 function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
+
 	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
 	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
 		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
