@@ -1005,7 +1005,7 @@ function checkErrorImg(value, id, event = null) {
 		return;
 	}
 	if (value != null) {
-		$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+		$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
 	} else {
 		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 	}
@@ -1202,7 +1202,7 @@ function checkingImageIfError() {
 	var image = $("#imageoohPreview");
 	var asset = '';
 
-	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+	var host_android = "http://mobile-prisma-api.com:7080/image/";
 	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
 		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 		return;
