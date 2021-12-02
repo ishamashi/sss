@@ -746,7 +746,7 @@ function setDataDetail(data) {
 			<div class="tab-pane fade active" id="informasi_dasar" role="tabpanel">
 				<div class="row">
 					<div class="col-md-6">
-						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImg('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
+						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImgInfo('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
 					</div>
 					<div class="col-md-6">
 						<div class="row">
@@ -1000,8 +1000,8 @@ function setDataDetail(data) {
 //     return;
 // }
 
-function checkErrorImg(value, id, event = null) {
-	console.log("CHECK IMAGE", { value, id, event });
+function checkErrorImgInfo(value, id, event = null) {
+	console.log("CHECK IMAGE INFORMASI DASAR", { value, id, event });
 	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
 		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
 		return;
