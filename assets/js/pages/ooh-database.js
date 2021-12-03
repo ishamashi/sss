@@ -548,24 +548,22 @@ function setDataDetail(data) {
 		globalDataContentsOOH = resultData;
 
 		console.log("FIX COUNTHIS", { tempCountThis, filterData, resultData });
-
-		$.each(theData.conthis, function (k1, v1) {
-			if (v1.image_day !== null && v1.image_day != 'noimage.jpg') {
-				imageFront['image_day'] = v1.image_day;
-			}
-
-			if (v1.image_night !== null && v1.image_night != 'noimage.jpg') {
-				imageFront['image_night'] = v1.image_night;
-			}
-
-			if ((imageFront.image_day !== null) && (typeof imageFront.image_day !== 'undefined')) {
-				imageFront = imageFront.image_day;
-			} else if ((imageFront.image_night !== null) && (typeof imageFront.image_night !== 'undefined')) {
-				imageFront = imageFront.image_night;
+		if (tempCountThis.length > 0) {
+			// tempCountThis.length - 1
+			var getLastImage = tempCountThis[0];
+			if (getLastImage.image_day !== null && getLastImage.image_day !== 'noimage.jpg') {
+				imageFront = getLastImage.image_day;
+			} else if (getLastImage.image_night !== null && getLastImage.image_night !== 'noimage.jpg') {
+				imageFront = getLastImage.image_night;
 			} else {
 				imageFront = 'noimage.jpg';
 			}
-
+		} else {
+			imageFront = 'noimage.jpg';
+		}
+		console.log("GET IMAGE FRONT", imageFront);
+		
+		$.each(theData.conthis, function (k1, v1) {
 			var is_hiding_image = (idx == 0) ? '' : 'hide';
 
 			prismaphoto = ERP_HOST + 'assets/img/' + theData.no_site + '.jpg';
@@ -746,7 +744,7 @@ function setDataDetail(data) {
 			<div class="tab-pane fade active" id="informasi_dasar" role="tabpanel">
 				<div class="row">
 					<div class="col-md-6">
-						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImgInfo('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
+						<img src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom lazy" onError="checkErrorImgInfo('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
 					</div>
 					<div class="col-md-6">
 						<div class="row">
@@ -1000,17 +998,49 @@ function setDataDetail(data) {
 //     return;
 // }
 
-function checkErrorImgInfo(value, id, event = null) {
-	console.log("CHECK IMAGE INFORMASI DASAR", { value, id, event });
-	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
-		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-		return;
-	}
-	if (value != null) {
-		$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
-	} else {
-		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-	}
+function checkErrorImgInfo(value, id) {
+	console.log("CHECK IMAGE INFORMASI DASAR", { value, id });
+	checkOnLoadImage(id, value);
+	// var image = new Image();
+	// console.log("IMAGE", image);
+	// var srcimage2 = 'assets/images/ooh-pictures/' + value;
+	// var img = new Image();
+	// img.src = srcimage2;
+
+	// img.onload = function () {
+	// 	$(`#${id}`).attr('src', img.src);
+	// }
+
+	// img.onerror = function () {
+	// 	console.log('trying read image from server');
+	// 	srcimage2 = IMAGE_HOST + 'image/' + value;
+	// 	img = new Image();
+	// 	img.src = srcimage2;
+
+	// 	img.onload = function () {
+	// 		console.log('image from server mobile found');
+	// 		$(`#${id}`).attr('src', img.src);
+	// 	}
+
+	// 	img.onerror = function () {
+	// 		console.log('image from server mobile not found')
+	// 		srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+	// 		img = new Image();
+	// 		img.src = srcimage2;
+	// 		$(`#${id}`).attr('src', img.src);
+	// 	}
+	// }
+
+	// if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+	// 	$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// 	return;
+	// }
+
+	// if (value != null) {
+	// 	$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
+	// } else {
+	// 	$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// }
 }
 
 function showingContents(data, dataOOH) {
@@ -1158,7 +1188,7 @@ function showingImageOOH(content) {
 	}
 	var url = 'assets/images/ooh-pictures/' + content.image_day;
 	image += `<div class="imgooh" id="showingPreviewImg">
-		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
+		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh lazy" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
 			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
 			<input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePicImageOOH(event)" id="switchpic" name="switchpic" data-on-text="Night" data-off-text="Day">
 			</div>
@@ -1189,28 +1219,63 @@ function changePicImageOOH(e) {
 
 	var url = 'assets/images/ooh-pictures/';
 	$(`#imageoohPreview`).removeAttr('fin');
+	console.log("CHANGE PIC", {selectedPreviewOOHImage, checked});
 	if (!checked) {
 		// Day
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
-		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+		// $('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+		checkOnLoadImage('imageoohPreview', selectedPreviewOOHImage.image_day);
+		
 	} else {
 		// Night
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_night);
-		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+		// $('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+		checkOnLoadImage('imageoohPreview', selectedPreviewOOHImage.image_night);
 	}
 }
 
 function checkingImageIfError() {
 	var image = $("#imageoohPreview");
-	var asset = '';
-
-	var host_android = "http://mobile-prisma-api.com:7080/image/";
-	if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
-		$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-		return;
-	}
-	$('#imageoohPreview').attr('src', host_android + image.data('url')).attr('fin', '1');;
+	checkOnLoadImage('imageoohPreview', image.data('url'));
+	// var host_android = "http://mobile-prisma-api.com:7080/image/";
+	// if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
+	// 	$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// 	return;
+	// }
+	// $('#imageoohPreview').attr('src', host_android + image.data('url')).attr('fin', '1');;
 	return;
+}
+
+function checkOnLoadImage(id, value) {
+	var srcimage2 = 'assets/images/ooh-pictures/' + value;
+
+	var img = new Image();
+	img.src = srcimage2;
+
+	img.onload = function () {
+		console.log('image from server local found');
+		$(`#${id}`).attr('src', img.src);
+	}
+
+	img.onerror = function () {
+		console.log('trying read image from server');
+		srcimage2 = IMAGE_HOST + 'image/' + value;
+		img = new Image();
+		img.src = srcimage2;
+
+		img.onload = function () {
+			console.log('image from server mobile found');
+			$(`#${id}`).attr('src', img.src);
+		}
+
+		img.onerror = function () {
+			console.log('image from server mobile not found')
+			srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+			img = new Image();
+			img.src = srcimage2;
+			$(`#${id}`).attr('src', img.src);
+		}
+	}
 }
 
 function surrounding_poi(areaid, pointx, pointy, radius) {
