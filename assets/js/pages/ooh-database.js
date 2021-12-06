@@ -1253,26 +1253,34 @@ function checkOnLoadImage(id, value) {
 	img.src = srcimage2;
 
 	img.onload = function () {
-		console.log('image from server local found');
+		console.log('image from server local found', {
+			url: srcimage2
+		});
 		$(`#${id}`).attr('src', img.src);
 	}
 
 	img.onerror = function () {
-		console.log('trying read image from server');
 		srcimage2 = IMAGE_HOST + 'image/' + value;
+		console.log('trying read image from server', {
+			url: srcimage2
+		});
 		img = new Image();
 		img.src = srcimage2;
 
 		img.onload = function () {
-			console.log('image from server mobile found');
+			console.log('image from server mobile found', {
+				url: img.src
+			});
 			$(`#${id}`).attr('src', img.src);
 		}
 
 		img.onerror = function () {
-			console.log('image from server mobile not found')
 			srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
 			img = new Image();
 			img.src = srcimage2;
+			console.log('image from server mobile not found', {
+				url: srcimage2
+			});
 			$(`#${id}`).attr('src', img.src);
 		}
 	}
