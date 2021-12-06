@@ -1278,6 +1278,9 @@ function checkOnLoadImage(id, value) {
 
 	var img = new Image();
 	img.src = srcimage2;
+	console.log('trying read image from server local', {
+		url: srcimage2
+	});
 
 	img.onload = function () {
 		console.log('image from server local found', {
@@ -1288,7 +1291,7 @@ function checkOnLoadImage(id, value) {
 
 	img.onerror = function () {
 		srcimage2 = IMAGE_HOST + 'image/' + value;
-		console.log('trying read image from server', {
+		console.log('trying read image from server mobile', {
 			url: srcimage2
 		});
 		img = new Image();
