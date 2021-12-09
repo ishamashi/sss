@@ -772,7 +772,7 @@ function setDataDetail(data) {
 						<table class="table borderless">
 							<tr>
 								<th style="width: 20%;">Site Number</th>
-								<td>${theData.no_cnv}</td>
+								<td>${theData.no_site}</td>
 							</tr>
 							<tr>
 								<th>Alamat</th>
