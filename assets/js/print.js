@@ -297,13 +297,16 @@ function setPrintOOHMulti(data, labelsmarker) {
     if (v.conthis.length > 0) {
       //console.log('masuk sini');
       $.each(v.conthis, function (kk, vv) {
-        //console.log(vv.image_night);
+        console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
         //console.log(vv.image_day);
-        if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-          image_night = vv.image_night;
-          image_day = vv.image_day;
-          return false;
-        }
+        if (vv.image_day !== null) image_day = vv.image_day;
+        if (vv.image_night !== null) image_night = vv.image_night;
+
+        // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
+        //   image_night = vv.image_night;
+        //   image_day = vv.image_day;
+        //   return false;
+        // }
       });
     }
 
@@ -341,11 +344,11 @@ function setPrintOOHMulti(data, labelsmarker) {
         </div>
         <div class="row">
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${src_image}" onError="checkErrorImg('${src_image}', 'image_distant_${idooh}')"  width="100%" height="400px">
+            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')"  width="100%" height="400px">
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >CLOSE VIEW</h3></div>
           </div>
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${src_image}"  onError="checkErrorImg('${src_image}', 'image_close_${idooh}')"  width="100%" height="400px">
+            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')"  width="100%" height="400px">
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >DISTANCE VIEW</h3></div>
           </div>
         </div>
