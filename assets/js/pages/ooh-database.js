@@ -589,7 +589,7 @@ function setDataDetail(data) {
 			imageFront = 'noimage.jpg';
 		}
 		console.log("GET IMAGE FRONT", imageFront);
-		
+
 		$.each(theData.conthis, function (k1, v1) {
 			var is_hiding_image = (idx == 0) ? '' : 'hide';
 
@@ -851,6 +851,9 @@ function setDataDetail(data) {
 							</div>
 						</div>
 					</div>
+					<div class="col-lg-6 col-md-6">
+						<button onclick="downloadExcelPOI()" class="btn btn-primary">Download XLSX</button>
+					</div>
 				</div>
 				<div class="row">
 					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="margin-right: 15px;margin-left: 15px;">
@@ -1011,19 +1014,105 @@ function setDataDetail(data) {
 	$("#imageFrontTest").removeAttr("fin");
 }
 
-// function checkErrorImg(selector, type) {
-// 	// $(`#${selector}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
-// 	var asset = '';
-//     var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
-//     var selected = $(`#${selector}`);
+function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
+			headers: {
+				"token": token_type + " " + token
+			},
+			type: "POST",
+			contentType: "application/json",
+			dataType: 'json',
+			success: function ({data}) {
+				resolve(data);
+			},
+			error: function (err) {
+				reject(err);
+			}
+		});
+	});
+}
 
-//     if (typeof selected.data('url') !== 'undefined') {
-//         selected.attr('src', host_android + selected.data('url'));
-//     } else {
-//         selected.attr('src', asset);
-//     }
-//     return;
-// }
+async function downloadExcelPOI() {
+	var ooh_id = $('#view_ooh_id').val();
+	var selectRadius = $('#RadiusSelect');
+	var lat = selectRadius.data('lat');
+	var lng = selectRadius.data('lng');
+	var areaid = selectRadius.data('sudistrict');
+	var radius = selectRadius.val();
+
+	var dataPOI = await getDataSurroundPOI(ooh_id, lat, lng, areaid, radius).catch(err => err);
+	if(dataPOI.length < 1) return alert("Data tidak ada !");
+	console.log("DATA POI", {
+		data: dataPOI, 
+		param: {
+			ooh_id, 
+			lat,
+			lng,
+			areaid,
+			radius
+		}});
+	// return;
+	var wb = XLSX.utils.book_new();
+	wb.Props = {
+		Title: "SheetJS Tutorial",
+		Subject: "Test",
+		Author: "Red Stapler",
+		CreatedDate: new Date(2017, 12, 19)
+	};
+	wb.SheetNames.push("No Titik atau Canvasing");
+	var header = [
+		'No Titik',
+		'Canvasing ID',
+		'Type Product',
+		'Country',
+		'Province',
+		'City',
+		'Address',
+		'Radius',
+		'POI Category',
+		'POI Sub Category',
+		'POI Name'
+	];
+
+	var ws_data = [];
+
+	ws_data.push(header);
+	dataPOI.forEach((item) => {
+		var body = [
+			item['No_titik'],
+			item['Canvasing ID'],
+			item['Type_Product'],
+			item['Country'],
+			item['Province'],
+			item['City'],
+			item['POI_Address'],
+			item['Radius'],
+			item['POI_Category'],
+			item['POI_SubCategory'],
+			item['POI_Name'],
+		];
+		ws_data.push(body);
+	});
+
+	console.log("WS_DATA", ws_data);
+	// return;
+	var ws = XLSX.utils.aoa_to_sheet(ws_data);
+	wb.Sheets["No Titik atau Canvasing"] = ws;
+
+	var wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+
+	function s2ab(s)
+	{
+		var buf = new ArrayBuffer(s.length);
+		var view = new Uint8Array(buf);
+		for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+		return buf;
+	}
+
+	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - No Titik ${ooh_id} - Radius ${radius}m.xlsx`);
+}
 
 function checkErrorImgInfo(value, id) {
 	console.log("CHECK IMAGE INFORMASI DASAR", { value, id });
@@ -1246,13 +1335,13 @@ function changePicImageOOH(e) {
 
 	var url = 'assets/images/ooh-pictures/';
 	$(`#imageoohPreview`).removeAttr('fin');
-	console.log("CHANGE PIC", {selectedPreviewOOHImage, checked});
+	console.log("CHANGE PIC", { selectedPreviewOOHImage, checked });
 	if (!checked) {
 		// Day
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
 		// $('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
 		checkOnLoadImage('imageoohPreview', selectedPreviewOOHImage.image_day);
-		
+
 	} else {
 		// Night
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_night);
