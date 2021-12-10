@@ -1026,7 +1026,7 @@ async function downloadExcelPOI() {
 			areaid,
 			radius
 		}});
-	// return;
+
 	var wb = XLSX.utils.book_new();
 	wb.Props = {
 		Title: "SheetJS Tutorial",
@@ -1069,8 +1069,6 @@ async function downloadExcelPOI() {
 		ws_data.push(body);
 	});
 
-	console.log("WS_DATA", ws_data);
-	// return;
 	var ws = XLSX.utils.aoa_to_sheet(ws_data);
 	wb.Sheets["No Titik atau Canvasing"] = ws;
 
@@ -1084,7 +1082,7 @@ async function downloadExcelPOI() {
 		return buf;
 	}
 
-	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - No Titik ${ooh_id} - Radius ${radius}m.xlsx`);
+	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - Radius ${radius}m.xlsx`);
 }
 
 function checkErrorImgInfo(value, id) {
