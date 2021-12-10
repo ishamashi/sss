@@ -1114,7 +1114,7 @@ async function downloadExcelPOI() {
 	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - Radius ${radius}m.xlsx`);
 }
 
-function showingContents(data) {
+function showingContents(data, dataOOH) {
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
 	var html = `<div class="row">
 					<div class="col-md-4">
