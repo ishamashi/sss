@@ -187,21 +187,12 @@
 						<ul class="nav navbar-nav navbar-right">
 
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle waves-effect waves-button waves-classic"
-									data-toggle="dropdown">
-									<span class="user-name" id="user-name" style="color: #fff;">User<i
-											class="fa fa-angle-down"></i></span>
-									<img class="img-circle avatar" src="assets/images/avatar1.png" width="40"
-										height="40" alt="">
+								<a href="#" class="dropdown-toggle waves-effect waves-button waves-classic" data-toggle="dropdown">
+									<span class="user-name"  id="user-name"  style="color: #fff;">User<i class="fa fa-angle-down"></i></span>
+									<img class="img-circle avatar" src="assets/images/avatar1.png" width="40" height="40" alt="">
 								</a>
-								<ul class="dropdown-menu dropdown-list" role="menu">
-
-									<li role="presentation"><a href="assets/docs/PRISMA - Help Document ver.1.0.docx"><i
-												class="fa fa-question m-r-xs"></i>Help</a></li>
-									<li role="presentation"><a href="logout.html"><i
-												class="fa fa-sign-out m-r-xs"></i>Log out</a></li>
-								</ul>
-							</li>
+								<div id="profile_menu"></div>
+							</li> 
 						</ul><!-- Nav -->
 					</div><!-- Top Menu -->
 				</div>
@@ -209,54 +200,9 @@
 		</div><!-- Navbar -->
 		<div class="page-sidebar sidebar horizontal-bar">
 			<div class="page-sidebar-inner">
-				<ul class="menu accordion-menu">
-					<li class="nav-heading"><span>Navigation</span></li>
-					<li data-lv="index"><a href="index.html"><span class="menu-icon icon-speedometer"></span>
-							<p>Overview</p>
-						</a></li>
-					<li class="active" data-lv="ooh-database"><a href="ooh-database.html"><span
-								class="menu-icon icon-pointer"></span>
-							<p>OOH Database</p>
-						</a></li>
-					<li data-lv="optimization"><a href="optimization.html"><span
-								class="menu-icon icon-globe-alt"></span>
-							<p>Optimization</p>
-						</a></li>
-					<li data-lv="master-industry"><a href="#"><span class="menu-icon icon-equalizer"></span>
-							<p>Master Data</p>
-						</a>
-						<ul>
-							<li data-lv="master-industry"><a href="master-industry.html"><span
-										class="menu-icon icon-equalizer"></span>
-									<p>Master Industry</p>
-								</a></li>
-							<li data-lv="master-advertiser"><a href="master-advertiser.html"><span
-										class="menu-icon icon-equalizer"></span>
-									<p>Master Advertiser</p>
-								</a></li>
-							<li data-lv="master-pam"><a href="master-pam-industry.html"><span
-										class="menu-icon icon-equalizer"></span>
-									<p>Master PAM by Industry</p>
-								</a></li>
-							<li data-lv="ooh-canvasing"><a href="ooh-canvasing.html"><span
-										class="menu-icon icon-equalizer"></span>
-									<p>OOH Canvasing</p>
-								</a></li>
-							<li data-lv="master-kodeproduk"><a href="master-kodeproduk.html"><span
-										class="menu-icon icon-handbag"></span>
-									<p>Master Kode Produk</p>
-								</a></li>
-							<li data-lv="master-user"><a href="master-user.html"><span
-										class="menu-icon icon-equalizer"></span>
-									<p>Master User</p>
-								</a></li>
-							<li data-lv="request-delete"><a href="request-delete.html"><span
-										class="menu-icon icon-trash"></span>
-									<p>Request Delete</p>
-								</a></li>
-						</ul>
-					</li>
-				</ul>
+				<div id="menu_nav">
+					
+				</div>
 			</div><!-- Page Sidebar Inner -->
 			<div class="slimScrollBar"
 				style="background: rgb(204, 204, 204); width: 7px; position: absolute; top: 0px; opacity: 0.3; display: block; border-radius: 0px; z-index: 99; right: 0px; height: 30px;">
@@ -667,6 +613,16 @@
 	<script src="assets/js/pam.js"></script>
 
 	<script type="text/javascript" src="assets/js/plugins.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.min.js" integrity="sha512-W/mRQs9ZSFpF14X/4aRgQss7+HRsVXsph+Y6DGLeqIqK8IpO+rQz0ISUEXkTeeKF7tivoGv+Ru7SpocS/1qahg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/cpexcel.min.js" integrity="sha512-zSeWAJ1Y8Aq8pRvDTZLmSVj0jnFMv1aM8ivaabgg8+HoPoI24xfssw4z8RGStCfYfpP209XzCR/UZxgEIRVNwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/jszip.min.js" integrity="sha512-sMil1sfkywiM48feCfRwtIGJQ0W4r7469x298KhsITg4a9NAAxFF5SCdIoeXqtpgfAjGBoFCLNR+bDRG0z41ag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/shim.min.js" integrity="sha512-nPnkC29R0sikt0ieZaAkk28Ib7Y1Dz7IqePgELH30NnSi1DzG4x+envJAOHz8ZSAveLXAHTR3ai2E9DZUsT8pQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.core.min.js" integrity="sha512-PpJDFuW7O15/B/4AxmVhq+/iHZFhuVNncCXjixL5emyqWrYdjottUN06saglAiLtOap6XrqM169j2ps4c1L/qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.extendscript.min.js" integrity="sha512-rMl36pNJsBgX0JZjOL6Jo45wFHqIhsj5g5sThpL3x34jhSt7/jTCug4+TwkGaHOWUFEF+2BiSXI+hEveqwTTWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js" integrity="sha512-gtII6Z4fZyONX9GBrF28JMpodY4vIOI0lBjAtN/mcK7Pz19Mu1HHIRvXH6bmdChteGpEccxZxI0qxXl9anY60w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.js" integrity="sha512-3R6uDo0HJyeohNYClc3+0H9LtwCBi/p1OKdczMqN2RfT65EORWphe/pfkdwSCUgEb8ZX49iidAR4cBrwIqgV5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/amcharts/3.21.15/plugins/export/libs/FileSaver.js/FileSaver.min.js"></script>
 
 	<script src="assets/js/pages/ooh-database.js"></script>
 	<script src="assets/js/load-common.js"></script>
