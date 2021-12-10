@@ -1016,9 +1016,6 @@ function checkErrorImgInfo(value, id, event = null) {
 	}
 }
 
-<<<<<<< HEAD
-function showingContents(data, dataOOH) {
-=======
 function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
 	return new Promise((resolve, reject) => {
 		$.ajax({
@@ -1118,7 +1115,6 @@ async function downloadExcelPOI() {
 }
 
 function showingContents(data) {
->>>>>>> 17c662818be735aeaf52c84e80c93c38b50ac783
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
 	var html = `<div class="row">
 					<div class="col-md-4">
