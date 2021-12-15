@@ -1392,13 +1392,29 @@ function checkOnLoadImage(id, value) {
 		}
 
 		img.onerror = function () {
-			srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
-			img = new Image();
-			img.src = srcimage2;
-			console.log('image from server mobile not found', {
+			srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+			console.log('trying read image from server dev 120', {
 				url: srcimage2
 			});
-			$(`#${id}`).attr('src', img.src);
+			img = new Image();
+			img.src = srcimage2;
+
+			img.onload = function() {
+				console.log('image from server dev 120 found', {
+					url: img.src
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+
+			img.onerror = function() {
+				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+				img = new Image();
+				img.src = srcimage2;
+				console.log('image from server dev 120 not found', {
+					url: srcimage2
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
 		}
 	}
 }
