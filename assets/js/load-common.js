@@ -4,39 +4,24 @@ $(document).ready(function () {
     $("#menu_nav").load('navigation.html');
     $("#profile_menu").load('profile_menu.html');
     check_version();
+    // getLocation();
     $(".avatar").prop("src", "assets/images/avatar" + prisma_level + ".png");
 
- // set endpoint and your access key
-var ip = '103.78.81.226'
-var access_key = 'AIzaSyDYljKup01xzKCuslZtlkmLXZjQE26d25g';
+    // var x = document.getElementById("demo");
 
-// get the API result via jQuery.ajax
-// $.ajax({
-//     url: 'https://www.googleapis.com/geolocation/v1/geolocate?key='+access_key,   
-//     success: function(json) {
-
-//         // output the "capital" object inside "location"
-//         alert(json);
-        
-//     }
-// });
-
-// $.ajax({
-//     url: 'https://www.googleapis.com/geolocation/v1/geolocate?key='+access_key,
-//     data: JSON.stringify({ "considerIp": "true" }),
-//     type: 'POST',
-//     contentType: 'application/json',
-//     success: function(data) {
-//       if(data.location) {
-//         alert(data.location.lat + ', ' + data.location.lng);
-//       } else {
-//         alert('not found');
-//       }
-//     }
-//   });
-
-// function MY_FUNCTION () {
-//       }
+    // function getLocation() {
+    //   if (navigator.geolocation) {
+    //     navigator.geolocation.getCurrentPosition(showPosition);
+    //   } else { 
+    //     x.innerHTML = "Geolocation is not supported by this browser.";
+    //   }
+    // }
+    
+    // function showPosition(position) {
+    //     posisi = "Latitude: " + position.coords.latitude + 
+    //     "<br>Longitude: " + position.coords.longitude;
+    //     alert(posisi)
+    // }
 
     $("#jalan").autocomplete({
         source: function (request, response) {

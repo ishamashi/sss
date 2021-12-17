@@ -111,6 +111,18 @@
 		table.borderless th {
 			border: none !important;
 		}
+
+
+		img.lazy {
+			/* width: 700px;
+			height: 467px; */
+			display: block;
+
+			/* optional way, set loading as background */
+			background-image: url('assets/images/ooh-pictures/load-buffer.gif');
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+		}
 	</style>
 
 
@@ -219,7 +231,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="province" style="margin-left: 10px;"><b>Provinsi</b></label>
-												<select class="form-control" id="province" data-live-search="true">
+												<select class="form-control" id="province" multiple data-live-search="true">
 													<option value="">All Province</option>
 												</select>
 											</div>
@@ -227,7 +239,7 @@
 										<div class="col-md-3">
 											<div class="form-group">
 												<label for="province" style="margin-left: 10px;"><b>Kota</b></label>
-												<select class="form-control" id="city">
+												<select class="form-control" multiple data-live-search="true" id="city">
 													<option value="">All City</option>
 												</select>
 											</div>
@@ -254,7 +266,7 @@
 											<div class="form-group">
 												<label for="industry" style="margin-left: 10px;"><b>Jenis
 														Industri</b></label>
-												<select class="form-control" id="industry" multiple
+												<select class="form-control" id="industry" data-live-search="true" multiple
 													title="Select Industry"></select>
 											</div>
 										</div>
@@ -438,7 +450,7 @@
 			</div><!-- Main Wrapper -->
 			<div class="page-footer">
 				<div class="container">
-					<p class="no-s">2019 &copy; Archernine.</p>
+					<p class="no-s">2019 &copy; Archernine. <span id="current_version"></span></p> 
 				</div>
 			</div>
 		</div><!-- Page Inner -->
@@ -588,6 +600,8 @@
 	<script type="text/javascript" src="assets/plugins/datatables/js/dataTables.buttons.min.js"></script>
 	<script type="text/javascript" src="assets/plugins/datatables/js/buttons.html5.min.js"></script>
 
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
 
 
 	<!-- <script src="assets/js/modern.min.js"></script> -->
@@ -637,3 +651,4 @@
 </body>
 
 </html>
+<!-- End Page -->

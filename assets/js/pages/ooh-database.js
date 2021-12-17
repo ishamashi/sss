@@ -8,6 +8,10 @@ var selectedPreviewOOHImage = {
 	image_day: null,
 	image_night: null,
 };
+var TempPrintBAST = {
+	content_id: null,
+	date: null,
+}
 
 $(document).ready(function () {
 	if (parseInt(localStorage.prisma_level) === 1) {
@@ -24,6 +28,13 @@ $(document).ready(function () {
 
 	$('#province').on('change', function () {
 		province = $(this).val();
+		if(province!=null) {
+			let change_province = province.toString();
+			// console.log('province', province);
+			// console.log('modif province', change_province)
+			// console.log('rubah', change_province.replace(/,/g,"+"))
+			province = change_province.replace(/,/g,";");
+		}
 		city = '';
 		filterArea();
 	});
@@ -62,10 +73,30 @@ $(document).ready(function () {
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
 
+		if(province!=null) {
+			let change_province = province.toString();
+			province = change_province.replace(/,/g,";");
+		}
+		
+		if(city!=null) {
+			let change_city 	= city.toString();
+			city = change_city.replace(/,/g,";");
+		}else{
+			city = '';
+		}
+
+
 		advertiser = $('#advertiser').val();
+
+		if(advertiser === null) {
+			advertiser = '';
+		}
 
 		if (industry === null) {
 			industry = '';
+		}else{
+			let change_industry = industry.toString();
+			industry = change_industry.replace(/,/g,";");
 		}
 
 		if (oohstatus === null) {
@@ -454,9 +485,9 @@ function printOoh(ooh_id) {
 			success: function (data, textStatus, jqXHR) {
 				$("#print_ooh").html('');
 				if (typeof data != 'object') { data = $.parseJSON(data); }
-				var contentid = $('button.btvidit.active').attr('data-btnval');
-				var theID = $('button.btvidit.active').attr('id');
-				var html = setPrintOOH(data.data, contentid, theID);
+				// var contentid = $('button.btvidit.active').attr('data-btnval');
+				// var theID = $('button.btvidit.active').attr('id');
+				var html = setPrintOOH(data.data, TempPrintBAST.content_id, TempPrintBAST.date);
 				$("#print_ooh").append(html);
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -482,6 +513,7 @@ const RemoveDuplicatesDouble = (array, key1, key2) => {
 
 // OOH Detail Popup Window
 function setDataDetail(data) {
+	$("#detail_ooh").empty(); // clear data
 	var imgno = randomIntFromInterval(1, 3); // Math.floor(Math.random() * (4 - 1) ) + 1
 	var yea = [];
 	var ymcont = {};
@@ -492,6 +524,7 @@ function setDataDetail(data) {
 	var btvid = '';
 	var idx = 0;
 	var html = '';
+	var htmlLayanan = '';
 	var imageFront = {
 		image_day: null,
 		image_night: null
@@ -499,11 +532,11 @@ function setDataDetail(data) {
 	var tempCountThis = [];
 	var selectedDate = "";
 	var resultData = [];
-
+	var dataOOH = [];
 	var filterData = [];
 
-	console.log("DATA", { data });
 	$.each(data, function (idooh, theData) {
+		dataOOH = theData;
 		console.log({
 			theData
 		})
@@ -542,24 +575,23 @@ function setDataDetail(data) {
 		globalDataContentsOOH = resultData;
 
 		console.log("FIX COUNTHIS", { tempCountThis, filterData, resultData });
+		if (tempCountThis.length > 0) {
+			// tempCountThis.length - 1
+			var getLastImage = tempCountThis[0];
+			if (getLastImage.image_day !== null && getLastImage.image_day !== 'noimage.jpg') {
+				imageFront = getLastImage.image_day;
+			} else if (getLastImage.image_night !== null && getLastImage.image_night !== 'noimage.jpg') {
+				imageFront = getLastImage.image_night;
+			} else {
+				imageFront = 'noimage.jpg';
+			}
+		} else {
+			imageFront = 'noimage.jpg';
+		}
+		console.log("GET IMAGE FRONT", imageFront);
 
 		$.each(theData.conthis, function (k1, v1) {
-			if (v1.image_day !== null && v1.image_day != 'noimage.jpg') {
-				imageFront['image_day'] = v1.image_day;
-			}
-
-			if (v1.image_night !== null && v1.image_night != 'noimage.jpg') {
-				imageFront['image_night'] = v1.image_night;
-			}
-
-			if (imageFront.image_day !== null && typeof imageFront.image_day !== 'undefined') {
-				imageFront = imageFront.image_day;
-			} else if (imageFront.image_night !== null && typeof imageFront.image_night !== 'undefined') {
-				imageFront = imageFront.image_night;
-			}
-
 			var is_hiding_image = (idx == 0) ? '' : 'hide';
-			// var is_hiding_image = (idx == 0) ? '' : 'hide';
 
 			prismaphoto = ERP_HOST + 'assets/img/' + theData.no_site + '.jpg';
 
@@ -594,7 +626,6 @@ function setDataDetail(data) {
 								  <input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePics('${v1.content_id}','${v1.image_night}','${v1.image_day}','${theData.owner}','${theData.no_site}','${theData.no_cnv}');" id="switchpic-${v1.content_id}" name="switchpic" data-on-text="Night" data-off-text="Day">
 								</div>
 						</div>`;
-			imageBackup = html_img;
 			if ($.inArray(v1.year, yea) < 0) yea.push(v1.year);
 			if (typeof ymcont[v1.year + '-' + v1.month] == "undefined") ymcont[v1.year + '-' + v1.month] = [];
 			ymcont[v1.year + '-' + v1.month].push(v1.content_id);
@@ -603,6 +634,7 @@ function setDataDetail(data) {
 			idx++;
 		});
 		tbcontent += '</table>';
+		console.log("IMAGE FRONT", imageFront);
 		var objectArr = Object.keys(ymcont);
 		if (objectArr.length > 0) {
 			var splitObject = objectArr[0].split('-');
@@ -697,6 +729,32 @@ function setDataDetail(data) {
 		// 							</div>
 		// 						</div>
 		// 					</div>
+		if (parseInt(localStorage.prisma_level) !== 1) {
+			htmlLayanan += `
+			<div class="col-lg-6 col-md-6">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+					<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Site Score <span class="fa fa-question pull-right" data-html="true" data-toggle="tooltip" data-placement="top" title="" id="help_score"></span></span>
+						<p class="text-center"><span id="score">${numberToMoney(theData.vscore)}</span></p>
+					</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-md-12">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+						<div class="info-box-stats" style="float: none !important;">
+						<span class="info-box-title text-center">Price</span>
+						<input type="hidden" name="no_site" id="no_site" value="${theData.no_site}">
+						<p class="text-center"><span id="rate_card">Rp. ${numberToMoney(rate_card)}</span></p>
+						<center><h4 id="top_industry">per year</h4></center>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
+		}
 		html += `
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
@@ -713,7 +771,7 @@ function setDataDetail(data) {
 			<div class="tab-pane fade active" id="informasi_dasar" role="tabpanel">
 				<div class="row">
 					<div class="col-md-6">
-						<img loading="lazy" src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom imageooh" onError="checkErrorImg('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
+						<img src="assets/images/ooh-pictures/${imageFront}" class="wheelzoom lazy" onError="checkErrorImgInfo('${imageFront}', 'imageFrontTest')" id="imageFrontTest" width="512" height="320" />
 					</div>
 					<div class="col-md-6">
 						<div class="row">
@@ -729,8 +787,9 @@ function setDataDetail(data) {
 								</div>
 							</div>
 
+							${htmlLayanan}
+
 						</div>
-	
 					</div>
 				</div>
 
@@ -740,7 +799,7 @@ function setDataDetail(data) {
 						<table class="table borderless">
 							<tr>
 								<th style="width: 20%;">Site Number</th>
-								<td>${theData.no_cnv}</td>
+								<td>${theData.no_site}</td>
 							</tr>
 							<tr>
 								<th>Alamat</th>
@@ -950,12 +1009,9 @@ function setDataDetail(data) {
 	//   </div>
 
 	$("#detail_ooh").html(html);
-	showingContents(resultData);
+	showingContents(resultData, dataOOH);
 	$(".ooh-detail-modal").modal("show");
-}
-
-function checkErrorImg(value, id) {
-	$(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
+	$("#imageFrontTest").removeAttr("fin");
 }
 
 function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
@@ -978,6 +1034,29 @@ function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
 	});
 }
 
+<<<<<<< HEAD
+function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
+			headers: {
+				"token": token_type + " " + token
+			},
+			type: "POST",
+			contentType: "application/json",
+			dataType: 'json',
+			success: function ({data}) {
+				resolve(data);
+			},
+			error: function (err) {
+				reject(err);
+			}
+		});
+	});
+}
+
+=======
+>>>>>>> 149bf6f9eb50208707ac2cb3d9d6639d518e154f
 async function downloadExcelPOI() {
 	var ooh_id = $('#view_ooh_id').val();
 	var selectRadius = $('#RadiusSelect');
@@ -1056,9 +1135,57 @@ async function downloadExcelPOI() {
 	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - Radius ${radius}m.xlsx`);
 }
 
+<<<<<<< HEAD
 function showingContents(data) {
+=======
+function checkErrorImgInfo(value, id) {
+	console.log("CHECK IMAGE INFORMASI DASAR", { value, id });
+	checkOnLoadImage(id, value);
+	// var image = new Image();
+	// console.log("IMAGE", image);
+	// var srcimage2 = 'assets/images/ooh-pictures/' + value;
+	// var img = new Image();
+	// img.src = srcimage2;
+
+	// img.onload = function () {
+	// 	$(`#${id}`).attr('src', img.src);
+	// }
+
+	// img.onerror = function () {
+	// 	console.log('trying read image from server');
+	// 	srcimage2 = IMAGE_HOST + 'image/' + value;
+	// 	img = new Image();
+	// 	img.src = srcimage2;
+
+	// 	img.onload = function () {
+	// 		console.log('image from server mobile found');
+	// 		$(`#${id}`).attr('src', img.src);
+	// 	}
+
+	// 	img.onerror = function () {
+	// 		console.log('image from server mobile not found')
+	// 		srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+	// 		img = new Image();
+	// 		img.src = srcimage2;
+	// 		$(`#${id}`).attr('src', img.src);
+	// 	}
+	// }
+
+	// if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+	// 	$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// 	return;
+	// }
+
+	// if (value != null) {
+	// 	$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
+	// } else {
+	// 	$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// }
+}
+
+function showingContents(data, dataOOH) {
+>>>>>>> 149bf6f9eb50208707ac2cb3d9d6639d518e154f
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
-	console.log(data)
 	var html = `<div class="row">
 					<div class="col-md-4">
 						<div class="form-group">
@@ -1066,11 +1193,17 @@ function showingContents(data) {
 							<input type="text" class="form-control" id="periodePicker" name="periodePicker">
 						</div>
 					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="">&nbsp;</label>
+							<br/>
+							<button type="button" class="btn btn-success" onclick="printOoh('${dataOOH.ooh_id}')" data-toggle="modal" data-target=".ooh-print-modal">Print BAST</button>
+						</div>
+					</div>
 				</div>
 				<div id="showingDetailContent"></div>`;
 	$('#contents').html(html);
 
-	console.log(selectedDate);
 	$('#periodePicker').daterangepicker({
 		parentEl: ".ooh-detail-modal .modal-body",
 		singleDatePicker: true,
@@ -1100,8 +1233,18 @@ function showingDetailContent(value) {
 	var slot = '';
 	var dataContents = btoa(JSON.stringify(contents));
 	slot += `<div class="btn-group">`;
+	var orderedData = contents.sort((a, b) => a.index - b.index);
+
+	TempPrintBAST = {
+		content_id: orderedData[0].content_id,
+		date: orderedData[0].year + '-' + orderedData[0].month + '-1',
+	}
 
 	for (let i = 0; i < 8; i++) {
+		var date = "";
+		if (typeof contents[i] !== 'undefined') {
+			date = contents[i].year + '-' + contents[i].month + '-' + (i + 1);
+		}
 		slot += `
 				<button 
 					style="margin-left: 0.50em;margin-right: 0.50em;border-radius: 0.25em;"
@@ -1109,10 +1252,10 @@ function showingDetailContent(value) {
 					onclick="changeSlot('${dataContents}', 
 										'${(typeof contents[i] !== 'undefined') ? contents[i].sorper : ''}', 
 										'${(typeof contents[i] !== 'undefined') ? contents[i].index : ''}', 
-										'buttonSlot${i + 1}')" 
+										'buttonSlot${i + 1}', '${date}')" 
 					class="btn btn-primary ${(typeof contents[i] === 'undefined' ? ' disabled ' : '')} ${(i === 0 ? ' btn-active-slot ' : '')}">
 					${i + 1}
-				</button>			
+				</button>
 			`;
 	}
 
@@ -1164,12 +1307,16 @@ function showingTableOOH(contents) {
 	$('#showTableOOH').html(html);
 }
 
-function changeSlot(contents, sorper, index, selector) {
+function changeSlot(contents, sorper, index, selector, date) {
 	if (sorper === '' && index === '') return;
 	var parsingContents = JSON.parse(atob(contents));
 	var selectObject = parsingContents.find((item) => item.sorper == sorper && item.index == index);
 	$("[id*='buttonSlot']").removeClass('btn-active-slot');
 	$(`#${selector}`).addClass('btn-active-slot');
+	TempPrintBAST = {
+		content_id: selectObject.content_id,
+		date: date
+	}
 	showingImageOOH(selectObject);
 	showingTableOOH(selectObject);
 }
@@ -1181,9 +1328,8 @@ function showingImageOOH(content) {
 		image_night: content.image_night
 	}
 	var url = 'assets/images/ooh-pictures/' + content.image_day;
-
 	image += `<div class="imgooh" id="showingPreviewImg">
-		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
+		<img loading="lazy" src="${url}" data-src="${url}" data-url="${content.image_day}" class="wheelzoom-previewOoh imageooh lazy" id="imageoohPreview" width="512" height="320" onError="checkingImageIfError()">
 			<div class="row" style="margin: 5px 25px; overflow: auto;position: absolute;right: 0;top: 0px;z-index: 99;">
 			<input type="checkbox" data-toggle="toggle" selected class="switchpic" data-size="mini" onchange="changePicImageOOH(event)" id="switchpic" name="switchpic" data-on-text="Night" data-off-text="Day">
 			</div>
@@ -1205,26 +1351,99 @@ function showingImageOOH(content) {
 
 function changePicImageOOH(e) {
 	var checked = $('#switchpic').is(':checked');
-	console.log("CHANGE PIC", checked);
+	// console.log("CHANGE PIC", { checked, selectedPreviewOOHImage });
+	if (selectedPreviewOOHImage.image_day === null) {
+		selectedPreviewOOHImage.image_day = "noimage.jpg";
+	} else if (selectedPreviewOOHImage.image_night === null) {
+		selectedPreviewOOHImage.image_night = "noimage.jpg";
+	}
+
 	var url = 'assets/images/ooh-pictures/';
+	$(`#imageoohPreview`).removeAttr('fin');
+	console.log("CHANGE PIC", { selectedPreviewOOHImage, checked });
 	if (!checked) {
 		// Day
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_day);
-		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+		// $('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_day);
+		checkOnLoadImage('imageoohPreview', selectedPreviewOOHImage.image_day);
+
 	} else {
 		// Night
 		$('#imageoohPreview').data('url', selectedPreviewOOHImage.image_night);
-		$('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+		// $('#imageoohPreview').attr('src', url + selectedPreviewOOHImage.image_night);
+		checkOnLoadImage('imageoohPreview', selectedPreviewOOHImage.image_night);
 	}
 }
 
 function checkingImageIfError() {
 	var image = $("#imageoohPreview");
-	var asset = '';
-	var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
-
-	$('#imageoohPreview').attr('src', host_android + image.data('url'));
+	checkOnLoadImage('imageoohPreview', image.data('url'));
+	// var host_android = "http://mobile-prisma-api.com:7080/image/";
+	// if (typeof $(`#imageoohPreview`).attr('fin') !== 'undefined') {
+	// 	$(`#imageoohPreview`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+	// 	return;
+	// }
+	// $('#imageoohPreview').attr('src', host_android + image.data('url')).attr('fin', '1');;
 	return;
+}
+
+function checkOnLoadImage(id, value) {
+	var srcimage2 = 'assets/images/ooh-pictures/' + value;
+
+	var img = new Image();
+	img.src = srcimage2;
+	console.log('trying read image from server local', {
+		url: srcimage2
+	});
+
+	img.onload = function () {
+		console.log('image from server local found', {
+			url: srcimage2
+		});
+		$(`#${id}`).attr('src', img.src);
+	}
+
+	img.onerror = function () {
+		srcimage2 = IMAGE_HOST + 'image/' + value;
+		console.log('trying read image from server mobile', {
+			url: srcimage2
+		});
+		img = new Image();
+		img.src = srcimage2;
+
+		img.onload = function () {
+			console.log('image from server mobile found', {
+				url: img.src
+			});
+			$(`#${id}`).attr('src', img.src);
+		}
+
+		img.onerror = function () {
+			srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+			console.log('trying read image from server dev 120', {
+				url: srcimage2
+			});
+			img = new Image();
+			img.src = srcimage2;
+
+			img.onload = function() {
+				console.log('image from server dev 120 found', {
+					url: img.src
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+
+			img.onerror = function() {
+				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+				img = new Image();
+				img.src = srcimage2;
+				console.log('image from server dev 120 not found', {
+					url: srcimage2
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+		}
+	}
 }
 
 function surrounding_poi(areaid, pointx, pointy, radius) {
