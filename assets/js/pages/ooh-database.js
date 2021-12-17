@@ -1034,29 +1034,6 @@ function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
 	});
 }
 
-<<<<<<< HEAD
-function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
-	return new Promise((resolve, reject) => {
-		$.ajax({
-			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
-			headers: {
-				"token": token_type + " " + token
-			},
-			type: "POST",
-			contentType: "application/json",
-			dataType: 'json',
-			success: function ({data}) {
-				resolve(data);
-			},
-			error: function (err) {
-				reject(err);
-			}
-		});
-	});
-}
-
-=======
->>>>>>> 149bf6f9eb50208707ac2cb3d9d6639d518e154f
 async function downloadExcelPOI() {
 	var ooh_id = $('#view_ooh_id').val();
 	var selectRadius = $('#RadiusSelect');
@@ -1135,9 +1112,6 @@ async function downloadExcelPOI() {
 	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - Radius ${radius}m.xlsx`);
 }
 
-<<<<<<< HEAD
-function showingContents(data) {
-=======
 function checkErrorImgInfo(value, id) {
 	console.log("CHECK IMAGE INFORMASI DASAR", { value, id });
 	checkOnLoadImage(id, value);
@@ -1184,7 +1158,6 @@ function checkErrorImgInfo(value, id) {
 }
 
 function showingContents(data, dataOOH) {
->>>>>>> 149bf6f9eb50208707ac2cb3d9d6639d518e154f
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
 	var html = `<div class="row">
 					<div class="col-md-4">
