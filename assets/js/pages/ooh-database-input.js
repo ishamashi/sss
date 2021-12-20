@@ -682,7 +682,7 @@ function zeroleftpad(str, max) {
 
 
 function setEditOoh(ooh_id) {
-    // loading();
+    loading();
     $.ajax({
         cache: false,
         type: 'GET',
@@ -709,11 +709,11 @@ function setEditOoh(ooh_id) {
                 province = v.province;
                 district = v.district;
                 sub_district = v.sub_district;
-                console.log("OOH DATA PROVINCE", {
-                    province,
-                    district,
-                    sub_district
-                });
+                // console.log("OOH DATA PROVINCE", {
+                //     province,
+                //     district,
+                //     sub_district
+                // });
                 filterArea(v.province, 'pr');
                 // setTimeout(function () {
                 //     filterArea(v.district, 'di');
@@ -836,7 +836,7 @@ function setEditOoh(ooh_id) {
                 }
             }
 
-            loading(false);
+            // loading(false);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             if (jqXHR.status != 500) {

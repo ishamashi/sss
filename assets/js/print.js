@@ -291,20 +291,27 @@ function setPrintOOHMulti(data, labelsmarker) {
 
     prismaphoto = ERP_HOST + 'assets/img/' + v.no_site + '.jpg';
 
-
     var image_night = 'noimage.jpg';
     var image_day = 'noimage.jpg';
     if (v.conthis.length > 0) {
-      //console.log('masuk sini');
-      $.each(v.conthis, function (kk, vv) {
-        //console.log(vv.image_night);
-        //console.log(vv.image_day);
-        if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-          image_night = vv.image_night;
-          image_day = vv.image_day;
-          return false;
-        }
+      var filter = v.conthis.sort((a, b) => {
+        return parseInt(b.sorper) - parseInt(a.sorper);
       });
+      console.log("FILTER", { filter, conthis: v.conthis });
+      if (filter[0].image_day !== null) image_day = filter[0].image_day;
+      if (filter[0].image_night !== null) image_night = filter[0].image_day;
+      // $.each(v.conthis, function (kk, vv) {
+      //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
+      //   //console.log(vv.image_day);
+      //   if (vv.image_day !== null) image_day = vv.image_day;
+      //   if (vv.image_night !== null) image_night = vv.image_night;
+
+      //   // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
+      //   //   image_night = vv.image_night;
+      //   //   image_day = vv.image_day;
+      //   //   return false;
+      //   // }
+      // });
     }
 
     // var src_image = (v.ooh_origin === 'PRISMA') ? prismaphoto : 'assets/images/ooh-pictures/' + image_night;
@@ -341,11 +348,11 @@ function setPrintOOHMulti(data, labelsmarker) {
         </div>
         <div class="row">
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${src_image}" onError="checkErrorImg('${src_image}', 'image_distant_${idooh}')"  width="100%" height="400px">
+            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')"  width="100%" height="400px">
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >CLOSE VIEW</h3></div>
           </div>
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${src_image}"  onError="checkErrorImg('${src_image}', 'image_close_${idooh}')"  width="100%" height="400px">
+            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')"  width="100%" height="400px">
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >DISTANCE VIEW</h3></div>
           </div>
         </div>
@@ -560,15 +567,72 @@ function pricelist(oohid, oohsite) {
 }
 
 function checkErrorImg(value, id, event = null) {
-  console.log("CHECK IMAGE", { value, id, event });
-  if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
-    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-    return;
+  // console.log("CHECK IMAGE", { value, id, event });
+  // if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+  //   $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+  //   return;
+  // }
+  // if (value != null) {
+  //   $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+  // } else {
+  //   $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+  // }
+
+  var srcimage2 = 'assets/images/ooh-pictures/' + value;
+
+  var img = new Image();
+  img.src = srcimage2;
+  console.log('trying read image from server local', {
+    url: srcimage2
+  });
+
+  img.onload = function () {
+    console.log('image from server local found', {
+      url: srcimage2
+    });
+    $(`#${id}`).attr('src', img.src);
   }
-  if (value != null) {
-    $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
-  } else {
-    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+
+  img.onerror = function () {
+    srcimage2 = IMAGE_HOST + 'image/' + value;
+    console.log('trying read image from server mobile', {
+      url: srcimage2
+    });
+    img = new Image();
+    img.src = srcimage2;
+
+    img.onload = function () {
+      console.log('image from server mobile found', {
+        url: img.src
+      });
+      $(`#${id}`).attr('src', img.src);
+    }
+
+    img.onerror = function () {
+      srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+      console.log('trying read image from server dev 120', {
+        url: srcimage2
+      });
+      img = new Image();
+      img.src = srcimage2;
+
+      img.onload = function () {
+        console.log('image from server dev 120 found', {
+          url: img.src
+        });
+        $(`#${id}`).attr('src', img.src);
+      }
+
+      img.onerror = function () {
+        srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+        img = new Image();
+        img.src = srcimage2;
+        console.log('image from server dev 120 not found', {
+          url: srcimage2
+        });
+        $(`#${id}`).attr('src', img.src);
+      }
+    }
   }
 }
 
