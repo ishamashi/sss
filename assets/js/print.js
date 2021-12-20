@@ -291,23 +291,27 @@ function setPrintOOHMulti(data, labelsmarker) {
 
     prismaphoto = ERP_HOST + 'assets/img/' + v.no_site + '.jpg';
 
-
     var image_night = 'noimage.jpg';
     var image_day = 'noimage.jpg';
     if (v.conthis.length > 0) {
-      //console.log('masuk sini');
-      $.each(v.conthis, function (kk, vv) {
-        console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
-        //console.log(vv.image_day);
-        if (vv.image_day !== null) image_day = vv.image_day;
-        if (vv.image_night !== null) image_night = vv.image_night;
-
-        // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-        //   image_night = vv.image_night;
-        //   image_day = vv.image_day;
-        //   return false;
-        // }
+      var filter = v.conthis.sort((a, b) => {
+        return parseInt(b.sorper) - parseInt(a.sorper);
       });
+      console.log("FILTER", { filter, conthis: v.conthis });
+      if (filter[0].image_day !== null) image_day = filter[0].image_day;
+      if (filter[0].image_night !== null) image_night = filter[0].image_night;
+      // $.each(v.conthis, function (kk, vv) {
+      //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
+      //   //console.log(vv.image_day);
+      //   if (vv.image_day !== null) image_day = vv.image_day;
+      //   if (vv.image_night !== null) image_night = vv.image_night;
+
+      //   // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
+      //   //   image_night = vv.image_night;
+      //   //   image_day = vv.image_day;
+      //   //   return false;
+      //   // }
+      // });
     }
 
     // var src_image = (v.ooh_origin === 'PRISMA') ? prismaphoto : 'assets/images/ooh-pictures/' + image_night;
@@ -576,60 +580,60 @@ function checkErrorImg(value, id, event = null) {
 
   var srcimage2 = 'assets/images/ooh-pictures/' + value;
 
-	var img = new Image();
-	img.src = srcimage2;
-	console.log('trying read image from server local', {
-		url: srcimage2
-	});
+  var img = new Image();
+  img.src = srcimage2;
+  console.log('trying read image from server local', {
+    url: srcimage2
+  });
 
-	img.onload = function () {
-		console.log('image from server local found', {
-			url: srcimage2
-		});
-		$(`#${id}`).attr('src', img.src);
-	}
+  img.onload = function () {
+    console.log('image from server local found', {
+      url: srcimage2
+    });
+    $(`#${id}`).attr('src', img.src);
+  }
 
-	img.onerror = function () {
-		srcimage2 = IMAGE_HOST + 'image/' + value;
-		console.log('trying read image from server mobile', {
-			url: srcimage2
-		});
-		img = new Image();
-		img.src = srcimage2;
+  img.onerror = function () {
+    srcimage2 = IMAGE_HOST + 'image/' + value;
+    console.log('trying read image from server mobile', {
+      url: srcimage2
+    });
+    img = new Image();
+    img.src = srcimage2;
 
-		img.onload = function () {
-			console.log('image from server mobile found', {
-				url: img.src
-			});
-			$(`#${id}`).attr('src', img.src);
-		}
+    img.onload = function () {
+      console.log('image from server mobile found', {
+        url: img.src
+      });
+      $(`#${id}`).attr('src', img.src);
+    }
 
-		img.onerror = function () {
-			srcimage2 = `http://192.168.20.120:5000/image/${value}`;
-			console.log('trying read image from server dev 120', {
-				url: srcimage2
-			});
-			img = new Image();
-			img.src = srcimage2;
+    img.onerror = function () {
+      srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+      console.log('trying read image from server dev 120', {
+        url: srcimage2
+      });
+      img = new Image();
+      img.src = srcimage2;
 
-			img.onload = function() {
-				console.log('image from server dev 120 found', {
-					url: img.src
-				});
-				$(`#${id}`).attr('src', img.src);
-			}
+      img.onload = function () {
+        console.log('image from server dev 120 found', {
+          url: img.src
+        });
+        $(`#${id}`).attr('src', img.src);
+      }
 
-			img.onerror = function() {
-				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
-				img = new Image();
-				img.src = srcimage2;
-				console.log('image from server dev 120 not found', {
-					url: srcimage2
-				});
-				$(`#${id}`).attr('src', img.src);
-			}
-		}
-	}
+      img.onerror = function () {
+        srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+        img = new Image();
+        img.src = srcimage2;
+        console.log('image from server dev 120 not found', {
+          url: srcimage2
+        });
+        $(`#${id}`).attr('src', img.src);
+      }
+    }
+  }
 }
 
 function setPrintOOH(data, contentid, theID) {
