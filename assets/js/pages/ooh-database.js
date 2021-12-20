@@ -1037,38 +1037,7 @@ function setDataDetail(data) {
 	$("#imageFrontTest").removeAttr("fin");
 }
 
-<<<<<<< HEAD
-// function checkErrorImg(selector, type) {
-// 	// $(`#${selector}`).attr('src', IMAGE_HOST + 'image/optimize/' + value);
-// 	var asset = '';
-//     var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
-//     var selected = $(`#${selector}`);
-
-//     if (typeof selected.data('url') !== 'undefined') {
-//         selected.attr('src', host_android + selected.data('url'));
-//     } else {
-//         selected.attr('src', asset);
-//     }
-//     return;
-// }
-
-function checkErrorImgInfo(value, id, event = null) {
-	console.log("CHECK IMAGE INFORMASI DASAR", { value, id, event });
-	if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
-		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-		return;
-	}
-	if (value != null) {
-		$(`#${id}`).attr('src', IMAGE_HOST + 'image/' + value).attr('fin', '1');
-	} else {
-		$(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-	}
-}
-
-function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
-=======
 function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius) {
->>>>>>> 8abea322576b5fc41b656f8fb5eca379525f4752
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
@@ -1166,8 +1135,6 @@ async function downloadExcelPOI() {
 	saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), `Export Data Point Of Interest - Radius ${radius}m.xlsx`);
 }
 
-<<<<<<< HEAD
-=======
 function checkErrorImgInfo(value, id) {
 	console.log("CHECK IMAGE INFORMASI DASAR", { value, id });
 	checkOnLoadImage(id, value);
@@ -1213,7 +1180,6 @@ function checkErrorImgInfo(value, id) {
 	// }
 }
 
->>>>>>> 8abea322576b5fc41b656f8fb5eca379525f4752
 function showingContents(data, dataOOH) {
 	var selectedDate = moment(data[0].year + '-' + data[0].month + '-01').format('YYYY-MM-DD');
 	var html = `<div class="row">
