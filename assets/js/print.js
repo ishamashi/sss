@@ -563,16 +563,73 @@ function pricelist(oohid, oohsite) {
 }
 
 function checkErrorImg(value, id, event = null) {
-  console.log("CHECK IMAGE", { value, id, event });
-  if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
-    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-    return;
-  }
-  if (value != null) {
-    $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
-  } else {
-    $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
-  }
+  // console.log("CHECK IMAGE", { value, id, event });
+  // if (typeof $(`#${id}`).attr('fin') !== 'undefined') {
+  //   $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+  //   return;
+  // }
+  // if (value != null) {
+  //   $(`#${id}`).attr('src', IMAGE_HOST + 'image/optimize/' + value).attr('fin', '1');
+  // } else {
+  //   $(`#${id}`).attr('src', 'assets/images/ooh-pictures/noimage.jpg');
+  // }
+
+  var srcimage2 = 'assets/images/ooh-pictures/' + value;
+
+	var img = new Image();
+	img.src = srcimage2;
+	console.log('trying read image from server local', {
+		url: srcimage2
+	});
+
+	img.onload = function () {
+		console.log('image from server local found', {
+			url: srcimage2
+		});
+		$(`#${id}`).attr('src', img.src);
+	}
+
+	img.onerror = function () {
+		srcimage2 = IMAGE_HOST + 'image/' + value;
+		console.log('trying read image from server mobile', {
+			url: srcimage2
+		});
+		img = new Image();
+		img.src = srcimage2;
+
+		img.onload = function () {
+			console.log('image from server mobile found', {
+				url: img.src
+			});
+			$(`#${id}`).attr('src', img.src);
+		}
+
+		img.onerror = function () {
+			srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+			console.log('trying read image from server dev 120', {
+				url: srcimage2
+			});
+			img = new Image();
+			img.src = srcimage2;
+
+			img.onload = function() {
+				console.log('image from server dev 120 found', {
+					url: img.src
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+
+			img.onerror = function() {
+				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+				img = new Image();
+				img.src = srcimage2;
+				console.log('image from server dev 120 not found', {
+					url: srcimage2
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+		}
+	}
 }
 
 function setPrintOOH(data, contentid, theID) {
