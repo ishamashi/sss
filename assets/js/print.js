@@ -299,7 +299,7 @@ function setPrintOOHMulti(data, labelsmarker) {
       });
       console.log("FILTER", { filter, conthis: v.conthis });
       if (filter[0].image_day !== null) image_day = filter[0].image_day;
-      if (filter[0].image_night !== null) image_night = filter[0].image_night;
+      if (filter[0].image_night !== null) image_night = filter[0].image_day;
       // $.each(v.conthis, function (kk, vv) {
       //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
       //   //console.log(vv.image_day);
