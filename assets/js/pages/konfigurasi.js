@@ -26,7 +26,7 @@ function filterListUser() {
                     "1": no,
                     "2": v['version'],
                     "3": v['created_at'],
-                    "4": no==1 ? '<button class="btn btn-success btn-rounded" title="Edit User" onclick="edit_version(\'' + v['v_id'] + '\', \'' + v['version'] + '\')"><span class="fa fa-pencil"></span></button>' : '-'
+                    "4": '<button class="btn btn-success btn-rounded" title="Edit Version" onclick="edit_version(\'' + v['v_id'] + '\', \'' + v['version'] + '\')"><span class="fa fa-pencil"></span></button> <button class="btn btn-danger btn-rounded" title="Delete Version" onclick="delete_version(\'' + v['v_id'] + '\')"><span class="fa fa-times"></span></button>'
                 };
                 dattab.push(perdata);
                 no++;
@@ -159,7 +159,7 @@ function saveUser() {
                     confirmButtonText: "OK"
                 });
             }
-            filterListUser();
+            location.reload();
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -187,10 +187,75 @@ function saveUser() {
     });
 }
 
-
-
-
 function closeSwal() {
     swal.clickCancel();
+}
+
+
+function delete_version(idx) {
+    swal({
+        title: "Konfirmasi!",
+        html: "Apakah Anda Yakin Menghapus Versi Ini ? ",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes",
+        confirmButtonColor: "#ec6c62"
+    }).then(function (isConfirm) {
+        if (isConfirm.value) {
+            deleteYes(idx)
+        }
+    });
+}
+
+function deleteYes(idx) {
+    if (idx) {
+        $.ajax({
+            url: APIURL + "data/version?v_id=" + idx,
+            headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+            // data : {'idx' : idx, 'statind' : statind},
+            type: "DELETE",
+            success: function (data, textStatus, jqXHR) {
+                var result = data.data;
+                if (result) {
+                    swal({
+                        title: "Success!",
+                        text: "Version Deleted",
+                        type: "success",
+                        confirmButtonText: "OK"
+                    });
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: "Delete Versi Gagal",
+                        type: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+                location.reload();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status != 500) {
+                    var strjson = JSON.parse(jqXHR.responseText);
+                    swal({
+                        title: "Error",
+                        text: strjson.processMessage,
+                        type: "error",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Close"
+                    });
+                } else {
+                    swal({
+                        title: "Error",
+                        text: "Internal Server Error",
+                        type: "error",
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Close"
+                    }, function () {
+                        // location.reload();
+                    });
+                }
+            }
+        });
+    }
 }
 
