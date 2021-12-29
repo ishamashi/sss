@@ -824,10 +824,7 @@ function addClient(id, pardat) {
             + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<label class="pull-left"><b>Status</b></label>'
-            + '<br>'
             + '</div>'
-            + '</div>'
-            + '<div class="form-group">'
             + '<div class="col-md-12 col-xs-7">'
             + '<div class="pull-left">'
             + '<input type="radio" class="form-check-input" value="A" name="status" checked id="status"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
@@ -835,6 +832,7 @@ function addClient(id, pardat) {
             + '</div>'
             + '</div>'
             + '</div>'
+
             + '<br>'
             + '<h2 align="left">Layanan</h2>'
             + '<br>'
@@ -850,6 +848,40 @@ function addClient(id, pardat) {
             + '<select class="form-control" id="user_industry" name="user_industry[]" multiple required></select> '
             + '</div>'
             + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<label class="pull-left"><b>Site Score</b></label>'
+            + '</div>'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<div class="pull-left">'
+            + '<input type="radio" class="form-check-input" value="T" name="site_score" checked id="site_score"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="F" name="site_score" id="site_score"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<label class="pull-left"><b>Traffic</b></label>'
+            + '</div>'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<div class="pull-left">'
+            + '<input type="radio" class="form-check-input" value="TRUE" name="traffic" checked id="traffic"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="FALSE" name="traffic" id="traffic"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+            + '<div class="form-group">'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<label class="pull-left"><b>Price</b></label>'
+            + '</div>'
+            + '<div class="col-md-12 col-xs-7">'
+            + '<div class="pull-left">'
+            + '<input type="radio" class="form-check-input" value="TRUE" name="price" checked id="price"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;'
+            + '<input type="radio" class="form-check-input" value="FALSE" name="price" id="price"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+
             + '<div class="form-group">'
             + '<div class="col-md-9 col-xs-7">'
             + '<label class="pull-left"><b>Masa Layanan (Mulai)</b></label>'
@@ -2105,6 +2137,9 @@ function saveClient() {
     var start_date = $("#start_date").val();
     var end_date = $("#end_date").val();
     var address = $("#user_address").val();
+    var site_score = $("input[id='site_score']:checked").val();
+    var traffic = $("input[id='traffic']:checked").val();
+    var price_stat = $("input[id='price']:checked").val();
 
     var manageClient = {
         u_name: nama_client.trim(),
@@ -2117,6 +2152,9 @@ function saveClient() {
         l_ind: user_industry.join(';'),
         l_sdate: start_date,
         l_edate: end_date,
+        l_pricestat : price_stat,
+        l_scorestat : site_score,
+        l_trafficstat : traffic
     }
 
     $.ajax({

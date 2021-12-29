@@ -28,12 +28,12 @@ $(document).ready(function () {
 
 	$('#province').on('change', function () {
 		province = $(this).val();
-		if(province!=null) {
+		if (province != null) {
 			let change_province = province.toString();
 			// console.log('province', province);
 			// console.log('modif province', change_province)
 			// console.log('rubah', change_province.replace(/,/g,"+"))
-			province = change_province.replace(/,/g,";");
+			province = change_province.replace(/,/g, ";");
 		}
 		city = '';
 		filterArea();
@@ -73,30 +73,30 @@ $(document).ready(function () {
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
 
-		if(province!=null) {
+		if (province != null) {
 			let change_province = province.toString();
-			province = change_province.replace(/,/g,";");
+			province = change_province.replace(/,/g, ";");
 		}
-		
-		if(city!=null) {
-			let change_city 	= city.toString();
-			city = change_city.replace(/,/g,";");
-		}else{
+
+		if (city != null) {
+			let change_city = city.toString();
+			city = change_city.replace(/,/g, ";");
+		} else {
 			city = '';
 		}
 
 
 		advertiser = $('#advertiser').val();
 
-		if(advertiser === null) {
+		if (advertiser === null) {
 			advertiser = '';
 		}
 
 		if (industry === null) {
 			industry = '';
-		}else{
+		} else {
 			let change_industry = industry.toString();
-			industry = change_industry.replace(/,/g,";");
+			industry = change_industry.replace(/,/g, ";");
 		}
 
 		if (oohstatus === null) {
@@ -729,7 +729,23 @@ function setDataDetail(data) {
 		// 							</div>
 		// 						</div>
 		// 					</div>
-		if (parseInt(localStorage.prisma_level) !== 1) {
+		var decode_json = parseJwt(localStorage.prisma_token);
+
+		if (decode_json['traffic_status']) {
+			htmlLayanan += `
+			<div class="col-md-6">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+						<div class="info-box-stats" style="float: none !important;">
+							<span class="info-box-title text-center">Average Daily Traffic</span>
+							<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+						</div>
+					</div>
+				</div>
+			</div>`;
+		}
+
+		if (decode_json['score_status']) {
 			htmlLayanan += `
 			<div class="col-lg-6 col-md-6">
 				<div class="panel info-box panel-white">
@@ -740,7 +756,11 @@ function setDataDetail(data) {
 					</div>
 					</div>
 				</div>
-			</div>
+			</div>`;
+		}
+
+		if (decode_json['price_status']) {
+			htmlLayanan += `
 			<div class="col-lg-12 col-md-12">
 				<div class="panel info-box panel-white">
 					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
@@ -752,9 +772,9 @@ function setDataDetail(data) {
 						</div>
 					</div>
 				</div>
-			</div>
-			`;
+			</div>`;
 		}
+
 		html += `
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
@@ -775,20 +795,7 @@ function setDataDetail(data) {
 					</div>
 					<div class="col-md-6">
 						<div class="row">
-
-							<div class="col-md-6">
-								<div class="panel info-box panel-white">
-									<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
-										<div class="info-box-stats" style="float: none !important;">
-											<span class="info-box-title text-center">Average Daily Traffic</span>
-											<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
-										</div>
-									</div>
-								</div>
-							</div>
-
 							${htmlLayanan}
-
 						</div>
 					</div>
 				</div>
@@ -1014,7 +1021,7 @@ function setDataDetail(data) {
 	$("#imageFrontTest").removeAttr("fin");
 }
 
-function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
+function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius) {
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
@@ -1024,7 +1031,7 @@ function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
 			type: "POST",
 			contentType: "application/json",
 			dataType: 'json',
-			success: function ({data}) {
+			success: function ({ data }) {
 				resolve(data);
 			},
 			error: function (err) {
@@ -1043,16 +1050,17 @@ async function downloadExcelPOI() {
 	var radius = selectRadius.val();
 
 	var dataPOI = await getDataSurroundPOI(ooh_id, lat, lng, areaid, radius).catch(err => err);
-	if(dataPOI.length < 1) return alert("Data tidak ada !");
+	if (dataPOI.length < 1) return alert("Data tidak ada !");
 	console.log("DATA POI", {
-		data: dataPOI, 
+		data: dataPOI,
 		param: {
-			ooh_id, 
+			ooh_id,
 			lat,
 			lng,
 			areaid,
 			radius
-		}});
+		}
+	});
 
 	var wb = XLSX.utils.book_new();
 	wb.Props = {
@@ -1099,10 +1107,9 @@ async function downloadExcelPOI() {
 	var ws = XLSX.utils.aoa_to_sheet(ws_data);
 	wb.Sheets["No Titik atau Canvasing"] = ws;
 
-	var wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+	var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
 
-	function s2ab(s)
-	{
+	function s2ab(s) {
 		var buf = new ArrayBuffer(s.length);
 		var view = new Uint8Array(buf);
 		for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
@@ -2143,3 +2150,14 @@ function getVasQuestion(ooh_id, typeooh = 1) {
 
 
 }
+// console.log('decode', decode_json['traffic_status']);
+
+function parseJwt(token) {
+	var base64Url = token.split('.')[1];
+	var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
+
+	return JSON.parse(jsonPayload);
+};
