@@ -146,7 +146,7 @@ async function printPropOoh() {
     var htmlprintout = `
       <div id="DIvIdToPrint" class="container-fluid div2print uppercase">
         <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header">
+          <div class="col-md-9 prop-header" style="height: auto !important">
             <h3 class="prop-header-title">OOH SITE OVERVIEW - ${district_name}</h3>
           </div>
           <div class="col-md-3 prop-header-logo">
@@ -399,8 +399,8 @@ function setPrintOOHMulti(data, labelsmarker) {
     // <img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px"></img>
     htmlprint +=
       `<div id="DIvIdToPrint2"  class="container-fluid div2print2 uppercase">
-        <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${labelsmarker}.  ${v.address}</h3></div>
+        <div class="row" style="vertical-align: middle;display: flex;align-items: center;">
+          <div class="col-md-9 prop-header" style="height: auto !important;"><h3 class="prop-header-title">${labelsmarker}.  ${v.address}</h3></div>
           <div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>
         </div>
         <div class="row">
@@ -760,7 +760,7 @@ function setPrintOOH(data, contentid, theID) {
     htmlprint += `
       <div id="DIvIdToPrint3"  class="container-fluid div2print3 uppercase">
         <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${v.address}</h3></div>
+          <div class="col-md-9 prop-header"><h3 class="prop-header-title" style="height: auto !important">${v.address}</h3></div>
             <div class="col-md-3 prop-header-logo" >
               <img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" >
             </div>
