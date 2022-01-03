@@ -2,7 +2,7 @@ var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
 var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
-
+var apiKeyMap = "AIzaSyDYljKup01xzKCuslZtlkmLXZjQE26d25g";
 $(document).ready(function () {
 
   var $image = $(".image-crop > img");
@@ -104,7 +104,6 @@ $(document).ready(function () {
   });
 });
 
-
 function printDiv() {
 
   var divToPrint = document.getElementById('DivIdToPrint');
@@ -156,7 +155,7 @@ async function printPropOoh() {
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div id="map_overview" class="peta"></div>
+            <img id="map_overview" class="peta" />
           </div>
         </div>
       </div>`;
@@ -239,27 +238,85 @@ function lihatTitik(oohid, lat, lng, label) {
   });
 }
 
+function staticMap(oohid, lat, lng, label) {
+  // var staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap&key=" + apiKeyMap;
+
+  // //Set the Google Map Center.
+  // staticMapUrl += "?center=" + lat + "," + lng;
+  // //Set the Google Map Size.
+  // staticMapUrl += "&size=220x350";
+  // // https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/pin-m-a+ff0000(-73.7638,42.6564)/-73.7638,42.6564,13,0/600x300?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false
+
+  // //Set the Google Map Zoom.
+  // staticMapUrl += "&zoom=" + 18;
+
+  // //Set the Google Map Type.
+  // staticMapUrl += "&maptype=" + 'roadmap';
+
+  // //Loop and add Markers.
+  // for (var i = 0; i < markers.length; i++) {
+  //   staticMapUrl += "&markers=color:red|label:"+ label +"|" + lat + "," + lng;
+  // }
+
+  //Display the Image of Google Map.
+  var staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/pin-m-${label.toLowerCase()}+ff0000(${lng},${lat})/${lng},${lat},15,0/300x300?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false`;
+  var imgMap = document.getElementById("mapImg_" + oohid);
+  imgMap.src = staticMapUrl;
+  console.log("STATIC MAP", staticMapUrl);
+  imgMap.style.display = "block";
+}
+
 function overviewTitik(centroid, markers, zoomv = 11) {
 
   var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   var labelIndex = 0;
-  var mapoverview = new google.maps.Map(document.getElementById('map_overview'), {
-    zoom: zoomv,
-    mapTypeControl: false,
-    fullscreenControl: false,
-    panControl: false,
-    streetViewControl: false,
-    zoomControl: false,
-    center: new google.maps.LatLng(centroid.x, centroid.y),
+  var showMarkers = "";
+  // var mapoverview = new google.maps.Map(document.getElementById('map_overview'), {
+  //   zoom: zoomv,
+  //   mapTypeControl: false,
+  //   fullscreenControl: false,
+  //   panControl: false,
+  //   streetViewControl: false,
+  //   zoomControl: false,
+  //   center: new google.maps.LatLng(centroid.x, centroid.y),
+  // });
+
+  // $.each(markers, function (i, v) {
+  //   var oohMarker = new google.maps.Marker({
+  //     position: new google.maps.LatLng(v.x, v.y),
+  //     label: labels[labelIndex++ % labels.length],
+  //     map: mapoverview
+  //   });
+  // });
+
+  $.each(markers, function(i, v) {
+    showMarkers += `pin-m-${labels[labelIndex++ % labels.length].toLowerCase()}+ff0000(${v.y},${v.x})`
+    if(i !== (markers.length - 1)){
+      showMarkers += ',';
+    }
   });
 
-  $.each(markers, function (i, v) {
-    var oohMarker = new google.maps.Marker({
-      position: new google.maps.LatLng(v.x, v.y),
-      label: labels[labelIndex++ % labels.length],
-      map: mapoverview
-    });
-  });
+  
+  // ${centroid.y},${centroid.x},13,0
+  var staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/${showMarkers}/auto/1000x512?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false`;
+  var imgMap = document.getElementById("map_overview");
+  console.log("SHOWW", {showMarkers, staticMapUrl});
+  imgMap.src = staticMapUrl;
+  imgMap.style.display = "block";
+
+  // let div = document.getElementById('DIvIdToPrint2');
+
+  // // Use the html2canvas
+  // // function to take a screenshot
+  // // and append it
+  // // to the output div
+  // html2canvas(div).then(
+  //   function (canvas) {
+  //     console.log("CANVAS", {div,canvas});
+  //     document
+  //       .getElementById('mapsss')
+  //       .appendChild(canvas);
+  //   });
 }
 
 
@@ -420,11 +477,14 @@ function setPrintOOHMulti(data, labelsmarker) {
               <p class="" >Scan this location</p>
           </div>
           <div class="col-md-8">
-            <div id="map_${v.ooh_id}" class="box mapbox" ></div>
+            <div id="map_${v.ooh_id}" class="">
+              <img id="mapImg_${v.ooh_id}" style="border: 1.5px solid #a1a1a1;margin: 0.5em;">
+            </div>
           </div>
         </div>
       </div>
     </div>`;
+    // box mapbox
     //console.log('debug html -> '+htmlprint);
     district_name = v.district_name;
     oohmark = {
@@ -447,7 +507,8 @@ function setPrintOOHMulti(data, labelsmarker) {
         correctLevel: QRCode.CorrectLevel.H
       });
 
-      lihatTitik(v.ooh_id, v.latitude, v.longitude, labelsmarker);
+      // lihatTitik(v.ooh_id, v.latitude, v.longitude, labelsmarker);
+      staticMap(v.ooh_id, v.latitude, v.longitude, labelsmarker);
       surrounding_poi_onprint(v.ooh_id, v.sub_district, v.longitude, v.latitude, 100);
       pricelist(v.ooh_id, v.no_site);
 

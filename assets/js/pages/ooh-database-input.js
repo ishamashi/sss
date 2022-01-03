@@ -2287,11 +2287,11 @@ var mapDataScore = [
             {
                 "None": 5,
                 "1 Site": 4,
-                "2 Sites": 3,
-                "3 Sites": 2,
-                "4 Sites": 2,
-                "5 Sites": 2,
-                "6+ Sites": 1,
+                "2 Site": 3,
+                "3 Site": 2,
+                "4 Site": 2,
+                "5 Site": 2,
+                "6+ Site": 1,
             }
         ]
     },
