@@ -1665,54 +1665,95 @@ function getDataDetailLayanan(user_id) {
 
 function detailLayanan(dataParent, dataChild) {
     var data = JSON.parse(atob(dataChild));
-    // console.log("DETAIL LAYANAN", data);
+    console.log("DETAIL LAYANAN", data);
 
     var html = `
         <h3 class="m-0 text-left">Detail Layanan</h3>
         <hr/>
         <div class="row">
-            <div class="col-md-12">
-                <div class="form-horizontal">
-                    <div class="panel-body form-group-separated">
-                        <div class="form-group">
-                            <div class="col-md-12 col-xs-7">
-                                <label class="pull-left"><b>Nama Layanan</b></label>
-                                <input type="text" class="form-control" style="text-align:left" value="Layanan 1" required readonly> 
+            <form id="formUpdateclient" method="POST" enctype="multipart/form-data">
+                <input type="hidden" id="layanan_id">
+                <div class="col-md-12">
+                    <div class="form-horizontal">
+                        <div class="panel-body form-group-separated">
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Nama Layanan</b></label>
+                                    <input type="text" class="form-control" style="text-align:left" value="Layanan 1" required readonly> 
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="col-md-12 col-xs-7">
-                                <label class="pull-left"><b>Akses Provinsi</b></label>
-                                <select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple required readonly></select>
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Akses Provinsi</b></label>
+                                    <select class="form-control" id="user_provinsi" name="user_provinsi[]" multiple required readonly></select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="col-md-12 col-xs-7">
-                                <label class="pull-left"><b>Akses Industri</b></label>
-                                <select class="form-control" id="user_industry" name="user_industry[]" multiple required readonly></select>
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Akses Industri</b></label>
+                                    <select class="form-control" id="user_industry" name="user_industry[]" multiple required readonly></select>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="col-md-9 col-sm-6 col-xs-6">
-                                <label class="pull-left"><b>Masa Layanan</b></label>
-                                <input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>
+                            
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Site Score</b></label>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-left">
+                                        <input type="radio" class="form-check-input" value="TRUE" name="site_score" id="detail_site_score"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                        <input type="radio" class="form-check-input" value="FALSE" name="site_score" id="detail_site_score"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-3 col-sm-6 col-xs-6">
-                                <label class="pull-left"><b>Durasi</b></label>
-                                <input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" required readonly>
-                            </div>
-                        </div>
 
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Traffic</b></label>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-left">
+                                        <input type="radio" class="form-check-input" value="TRUE" name="traffic" id="detail_traffic"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                        <input type="radio" class="form-check-input" value="FALSE" name="traffic" id="detail_traffic"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                    </div>
+                                </div>
+                            </div>     
+                            
+                            <div class="form-group">
+                                <div class="col-md-12 col-xs-7">
+                                    <label class="pull-left"><b>Price</b></label>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="pull-left">
+                                        <input type="radio" class="form-check-input" value="TRUE" name="price" id="detail_price"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                        <input type="radio" class="form-check-input" value="FALSE" name="price" id="detail_price"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                    </div>
+                                </div>
+                            </div>             
+
+                            <div class="form-group">
+                                <div class="col-md-9 col-sm-6 col-xs-6">
+                                    <label class="pull-left"><b>Masa Layanan</b></label>
+                                    <input type="text" class="form-control date-picker" readonly name="masa_layanan" placeholder="Tanggal Mulai Layanan" id="masa_layanan" required>
+                                </div>
+                                <div class="col-md-3 col-sm-6 col-xs-6">
+                                    <label class="pull-left"><b>Durasi</b></label>
+                                    <input type="number" class="form-control" name="bulan_layanan" placeholder="Bulan" min="0" id="bulan_layanan" required readonly>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
         <hr>
         <div class="d-flex justify-content-end">
             <a href="javascript:void(0)" onclick="closeSwal()" class="btn btn-default btn-lg mx-1">Batal</a>
+            <a href="javascript:void(0)" onclick="updateLayanan()" id="btnSubmit" class="btn btn-primary btn-lg mx-1">Update</a>
         </div>
     `;
 
@@ -1739,6 +1780,15 @@ function detailLayanan(dataParent, dataChild) {
 
             aksesProvinsi('user_provinsi', selectedProvinsi, true);
             aksesIndustri('user_industry', selectedIndustry, true);
+            var nilai_price = (data.price_status)?'TRUE':'FALSE';
+            var nilai_score = (data.score_status)?'TRUE':'FALSE';
+            var nilai_trafic= (data.traffic_status)?'TRUE':'FALSE';
+
+            var value_price = 'F';
+            $("input[id=detail_price][value=" + nilai_price + "]").prop('checked', true);
+            $("input[id=detail_site_score][value=" + nilai_score + "]").prop('checked', true);
+            $("input[id=detail_traffic][value=" + nilai_trafic + "]").prop('checked', true);
+            $("#layanan_id").val(data.id);
         }
     });
 }
@@ -1788,6 +1838,43 @@ async function buatLayananBaru(base64) {
                                 <select class="form-control" id="user_industry" name="user_industry[]" multiple required></select>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Site Score</b></label>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="pull-left">
+                                    <input type="radio" class="form-check-input" value="T" name="site_score" checked id="site_score"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                    <input type="radio" class="form-check-input" value="F" name="site_score" id="site_score"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Traffic</b></label>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="pull-left">
+                                    <input type="radio" class="form-check-input" value="T" name="traffic" checked id="traffic"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                    <input type="radio" class="form-check-input" value="F" name="traffic" id="traffic"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                </div>
+                            </div>
+                        </div>     
+                        
+                        <div class="form-group">
+                            <div class="col-md-12 col-xs-7">
+                                <label class="pull-left"><b>Price</b></label>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="pull-left">
+                                    <input type="radio" class="form-check-input" value="T" name="price" checked id="price"><label class="form-check-label" > &nbsp;&nbsp;Aktif</label> &nbsp;&nbsp;
+                                    <input type="radio" class="form-check-input" value="F" name="price" id="price"><label class="form-check-label" > &nbsp;&nbsp;Tidak Aktif</label>
+                                </div>
+                            </div>
+                        </div>                        
+
 
                         <div class="form-group">
                             <div class="col-md-9 col-sm-6 col-xs-6">
@@ -1859,18 +1946,104 @@ function submitAddLayanan() {
     if (!form.checkValidity()) return alert('Harap lengkapi form !');
     if ($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan');
 
+    var site_score = $("input[id='site_score']:checked").val();
+    var traffic = $("input[id='traffic']:checked").val();
+    var price_stat = $("input[id='price']:checked").val();
+
     let data = {
         u_id: $('#user_id').val(),
         l_prov: $('#user_provinsi').val().join(';'),
         l_ind: $('#user_industry').val().join(';'),
         l_sdate: $('#start_date').val(),
         l_edate: $('#end_date').val(),
+        l_pricestat : price_stat,
+        l_scorestat : site_score,
+        l_trafficstat : traffic        
     }
+
+    console.log('data', data);
 
     $.ajax({
         url: APIURL + 'user/layanan',
         headers: { "Ip-Addr": IP, "token": "Bearer " + token },
         type: 'POST',
+        cache: false,
+        data: data,
+        dataType: 'json',
+        beforeSend: function () {
+            loading(true);
+            disabledButton('btnSubmit');
+        },
+        success: function (result, textStatus, jqXHR) {
+            loading(false);
+            disabledButton('btnSubmit', false);
+
+            if (result.processMessage === 'Success') {
+                swal({
+                    title: "Success!",
+                    text: "Layanan berhasil dibuat !",
+                    type: "success",
+                    confirmButtonText: "OK"
+                });
+            }
+            UserClient();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            loading(false);
+            disabledButton('btnSubmit', false);
+
+            if (jqXHR.status != 500) {
+                var strjson = JSON.parse(jqXHR.responseText);
+                swal({
+                    title: "Error",
+                    text: strjson.processMessage,
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                });
+            } else {
+                swal({
+                    title: "Error",
+                    text: "Internal Server Error",
+                    type: "error",
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Close"
+                }, function () {
+                    // location.reload();
+                });
+            }
+        }
+    });
+}
+
+function updateLayanan() {
+    var form = $("#formUpdateclient")[0];
+    if (!form.checkValidity()) return alert('Harap lengkapi form !');
+    if ($('#bulan_layanan').val() === '') return alert('Harap pilih masa layanan');
+
+    var site_score = $("input[id='detail_site_score']:checked").val();
+    var traffic = $("input[id='detail_traffic']:checked").val();
+    var price_stat = $("input[id='detail_price']:checked").val();
+    var layanan_id = $("#layanan_id").val();
+
+    let data = {
+        u_id: $('#user_id').val(),
+        l_prov: $('#user_provinsi').val().join(';'),
+        l_ind: $('#user_industry').val().join(';'),
+        l_sdate: $('#start_date').val(),
+        l_edate: $('#end_date').val(),
+        l_pricestat : price_stat,
+        l_scorestat : site_score,
+        l_trafficstat : traffic,
+        l_id: layanan_id        
+    }
+
+    console.log('data', data);
+
+    $.ajax({
+        url: APIURL + 'user/layanan',
+        headers: { "Ip-Addr": IP, "token": "Bearer " + token },
+        type: 'PUT',
         cache: false,
         data: data,
         dataType: 'json',
