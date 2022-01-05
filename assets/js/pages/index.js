@@ -77,14 +77,14 @@ $( document ).ready(function() {
 	});
 	
 	setTimeout(function() {
-		toastr.options = {
+		toastr.success('Welcome to PRISMA OOH Dashboard!', 'Hi, '+ name +'!', {
+			positionClass: "toast-top-right",
 			closeButton: true,
 			progressBar: true,
 			showMethod: 'fadeIn',
 			hideMethod: 'fadeOut',
 			timeOut: 5000
-		};
-		toastr.success('Wellcome to PRISMA OOH Dashboard!', 'Hi, '+ name +'!');
+		});
 	}, 1800);
 
 	var start = moment().subtract(29, 'days');
