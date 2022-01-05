@@ -104,6 +104,100 @@ $(document).ready(function () {
   });
 });
 
+function ScrollZoom(container, max_scale, factor) {
+  console.log("SCROLL ZOOM", { container, max_scale, factor });
+  var target = container.children().first()
+
+  console.log("TARGET", target);
+  var size = {
+    w: target.width(),
+    h: target.height()
+  }
+
+  var pos = { x: 0, y: 0 }
+  var scale = 1
+  var zoom_target = { x: 0, y: 0 }
+  var zoom_point = { x: 0, y: 0 }
+  var curr_tranform = target.css('transition')
+  var last_mouse_position = { x: 0, y: 0 }
+  var drag_started = 0
+
+  target.css('transform-origin', '0 0')
+  target.on("mousewheel DOMMouseScroll", scrolled)
+  target.on('mousemove', moved)
+  target.on('mousedown', function (event) {
+    console.log("DRAGGG", last_mouse_position);
+    drag_started = 1;
+    target.css({ 'cursor': 'move', 'transition': 'transform 0s' });
+    /* Save mouse position */
+    last_mouse_position = { x: event.pageX, y: event.pageY };
+  });
+
+  target.on('mouseup mouseout', function () {
+    drag_started = 0;
+    target.css({ 'cursor': 'default', 'transition': curr_tranform });
+  });
+
+  function scrolled(e) {
+    var offset = container.offset()
+    zoom_point.x = e.pageX - offset.left
+    zoom_point.y = e.pageY - offset.top
+
+    e.preventDefault();
+    var delta = e.delta || e.originalEvent.wheelDelta;
+    if (delta === undefined) {
+      //we are on firefox
+      delta = e.originalEvent.detail;
+    }
+    delta = Math.max(-1, Math.min(1, delta)) // cap the delta to [-1,1] for cross browser consistency
+
+    // determine the point on where the slide is zoomed in
+    zoom_target.x = (zoom_point.x - pos.x) / scale
+    zoom_target.y = (zoom_point.y - pos.y) / scale
+
+    // apply zoom
+    scale += delta * factor * scale
+    scale = Math.max(1, Math.min(max_scale, scale))
+
+    // calculate x and y based on zoom
+    pos.x = -zoom_target.x * scale + zoom_point.x
+    pos.y = -zoom_target.y * scale + zoom_point.y
+
+    update()
+  }
+
+  function moved(event) {
+    if (drag_started == 1) {
+      var current_mouse_position = { x: event.pageX, y: event.pageY };
+      var change_x = current_mouse_position.x - last_mouse_position.x;
+      var change_y = current_mouse_position.y - last_mouse_position.y;
+
+      /* Save mouse position */
+      last_mouse_position = current_mouse_position;
+      //Add the position change
+      pos.x += change_x;
+      pos.y += change_y;
+      console.log("MOVED", last_mouse_position);
+      update()
+    }
+  }
+
+  function update() {
+    // Make sure the slide stays in its container area when zooming out
+    if (pos.x > 0)
+      pos.x = 0
+    if (pos.x + size.w * scale < size.w)
+      pos.x = -size.w * (scale - 1)
+    if (pos.y > 0)
+      pos.y = 0
+    if (pos.y + size.h * scale < size.h)
+      pos.y = -size.h * (scale - 1)
+
+    target.css('transform', 'translate(' + (pos.x) + 'px,' + (pos.y) + 'px) scale(' + scale + ',' + scale + ')')
+  }
+}
+
+
 function printDiv() {
 
   var divToPrint = document.getElementById('DivIdToPrint');
@@ -289,18 +383,17 @@ function overviewTitik(centroid, markers, zoomv = 11) {
   //   });
   // });
 
-  $.each(markers, function(i, v) {
+  $.each(markers, function (i, v) {
     showMarkers += `pin-m-${labels[labelIndex++ % labels.length].toLowerCase()}+ff0000(${v.y},${v.x})`
-    if(i !== (markers.length - 1)){
+    if (i !== (markers.length - 1)) {
       showMarkers += ',';
     }
   });
 
-  
+
   // ${centroid.y},${centroid.x},13,0
   var staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/${showMarkers}/auto/1000x512?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false`;
   var imgMap = document.getElementById("map_overview");
-  console.log("SHOWW", {showMarkers, staticMapUrl});
   imgMap.src = staticMapUrl;
   imgMap.style.display = "block";
 
@@ -355,19 +448,24 @@ function setPrintOOHMulti(data, labelsmarker) {
         return parseInt(b.sorper) - parseInt(a.sorper);
       });
       console.log("FILTER", { filter, conthis: v.conthis });
-      if (filter[0].image_day !== null) image_day = filter[0].image_day;
-      if (filter[0].image_night !== null) image_night = filter[0].image_day;
+      // if (filter[0].image_day !== null) image_day = filter[0].image_day;
+      // if (filter[0].image_night !== null) image_night = filter[0].image_day;
+
       // $.each(v.conthis, function (kk, vv) {
       //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
       //   //console.log(vv.image_day);
       //   if (vv.image_day !== null) image_day = vv.image_day;
       //   if (vv.image_night !== null) image_night = vv.image_night;
 
-      //   // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-      //   //   image_night = vv.image_night;
-      //   //   image_day = vv.image_day;
-      //   //   return false;
-      //   // }
+      if ((filter[0].image_day !== '') && (filter[0].image_day !== 'noimage.jpg') && (filter[0].image_day !== null)) {
+        image_day = filter[0].image_day;
+        image_night = filter[0].image_day;
+      }
+
+      if (((filter[0].image_day === '') || (filter[0].image_day === 'noimage.jpg') && (filter[0].image_day === null)) || (filter[0].image_night !== '') && (filter[0].image_night !== 'noimage.jpg') && (filter[0].image_night !== null)) {
+        image_day = filter[0].image_night;
+        image_night = filter[0].image_night;
+      }
       // });
     }
 
@@ -397,6 +495,8 @@ function setPrintOOHMulti(data, labelsmarker) {
 
     // <img class="hide imgtoprint img-fluid" id="ori_image_distant_${idooh}" src="${src_image}" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="420px"></img>
     // <img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px"></img>
+    // <div id="img-slider" style="width: 100%;height: 400px;overflow: hidden;">
+    //           <div style="width:100%;height:400px;transition: transform .3s;"></div>
     htmlprint +=
       `<div id="DIvIdToPrint2"  class="container-fluid div2print2 uppercase">
         <div class="row" style="vertical-align: middle;display: flex;align-items: center;">
@@ -405,11 +505,15 @@ function setPrintOOHMulti(data, labelsmarker) {
         </div>
         <div class="row">
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')"  width="100%" height="400px">
+              <div style="cursor: grab;display: flex;align-items: center;justify-content: center;overflow: hidden;">
+                <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')" style="position: relative;display: flex;align-items: center; width: 100%">
+              </div>
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >CLOSE VIEW</h3></div>
           </div>
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')"  width="100%" height="400px">
+            <div style="cursor: grab;display: flex;align-items: center;justify-content: center;overflow: hidden;">
+              <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')" style="position: relative;display: flex;align-items: center; width: 100%">
+            </div>
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >DISTANCE VIEW</h3></div>
           </div>
         </div>
