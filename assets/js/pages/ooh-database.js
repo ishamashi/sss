@@ -752,7 +752,23 @@ function setDataDetail(data) {
 		// 							</div>
 		// 						</div>
 		// 					</div>
-		if (parseInt(localStorage.prisma_level) !== 1) {
+		var decode_json = parseJwt(localStorage.prisma_token);
+
+		if (decode_json['traffic_status']) {
+			htmlLayanan += `
+			<div class="col-md-6">
+				<div class="panel info-box panel-white">
+					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
+						<div class="info-box-stats" style="float: none !important;">
+							<span class="info-box-title text-center">Average Daily Traffic</span>
+							<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
+						</div>
+					</div>
+				</div>
+			</div>`;
+		}
+
+		if (decode_json['score_status']) {
 			htmlLayanan += `
 			<div class="col-lg-6 col-md-6">
 				<div class="panel info-box panel-white">
@@ -763,7 +779,11 @@ function setDataDetail(data) {
 					</div>
 					</div>
 				</div>
-			</div>
+			</div>`;
+		}
+
+		if (decode_json['price_status']) {
+			htmlLayanan += `
 			<div class="col-lg-12 col-md-12">
 				<div class="panel info-box panel-white">
 					<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
@@ -775,9 +795,9 @@ function setDataDetail(data) {
 						</div>
 					</div>
 				</div>
-			</div>
-			`;
+			</div>`;
 		}
+
 		html += `
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
@@ -798,20 +818,7 @@ function setDataDetail(data) {
 					</div>
 					<div class="col-md-6">
 						<div class="row">
-
-							<div class="col-md-6">
-								<div class="panel info-box panel-white">
-									<div class="panel-body" style="margin-top: -15px;margin-bottom: -15px;">
-										<div class="info-box-stats" style="float: none !important;">
-											<span class="info-box-title text-center">Average Daily Traffic</span>
-											<p class="text-center"><span id="traffic">${numberToMoney(theData.traffic)}</span></p>
-										</div>
-									</div>
-								</div>
-							</div>
-
 							${htmlLayanan}
-
 						</div>
 					</div>
 				</div>
@@ -2182,3 +2189,14 @@ function getVasQuestion(ooh_id, typeooh = 1) {
 
 
 }
+// console.log('decode', decode_json['traffic_status']);
+
+function parseJwt(token) {
+	var base64Url = token.split('.')[1];
+	var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
+
+	return JSON.parse(jsonPayload);
+};
