@@ -291,23 +291,27 @@ function setPrintOOHMulti(data, labelsmarker) {
 
     prismaphoto = ERP_HOST + 'assets/img/' + v.no_site + '.jpg';
 
-
     var image_night = 'noimage.jpg';
     var image_day = 'noimage.jpg';
     if (v.conthis.length > 0) {
-      //console.log('masuk sini');
-      $.each(v.conthis, function (kk, vv) {
-        console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
-        //console.log(vv.image_day);
-        if (vv.image_day !== null) image_day = vv.image_day;
-        if (vv.image_night !== null) image_night = vv.image_night;
-
-        // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-        //   image_night = vv.image_night;
-        //   image_day = vv.image_day;
-        //   return false;
-        // }
+      var filter = v.conthis.sort((a, b) => {
+        return parseInt(b.sorper) - parseInt(a.sorper);
       });
+      console.log("FILTER", { filter, conthis: v.conthis });
+      if (filter[0].image_day !== null) image_day = filter[0].image_day;
+      if (filter[0].image_night !== null) image_night = filter[0].image_day;
+      // $.each(v.conthis, function (kk, vv) {
+      //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
+      //   //console.log(vv.image_day);
+      //   if (vv.image_day !== null) image_day = vv.image_day;
+      //   if (vv.image_night !== null) image_night = vv.image_night;
+
+      //   // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
+      //   //   image_night = vv.image_night;
+      //   //   image_day = vv.image_day;
+      //   //   return false;
+      //   // }
+      // });
     }
 
     // var src_image = (v.ooh_origin === 'PRISMA') ? prismaphoto : 'assets/images/ooh-pictures/' + image_night;

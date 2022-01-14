@@ -28,12 +28,12 @@ $(document).ready(function () {
 
 	$('#province').on('change', function () {
 		province = $(this).val();
-		if(province!=null) {
+		if (province != null) {
 			let change_province = province.toString();
 			// console.log('province', province);
 			// console.log('modif province', change_province)
 			// console.log('rubah', change_province.replace(/,/g,"+"))
-			province = change_province.replace(/,/g,";");
+			province = change_province.replace(/,/g, ";");
 		}
 		city = '';
 		filterArea();
@@ -73,30 +73,30 @@ $(document).ready(function () {
 		industry = $("#industry").val();
 		ownership = $("#owner").val();
 
-		if(province!=null) {
+		if (province != null) {
 			let change_province = province.toString();
-			province = change_province.replace(/,/g,";");
+			province = change_province.replace(/,/g, ";");
 		}
-		
-		if(city!=null) {
-			let change_city 	= city.toString();
-			city = change_city.replace(/,/g,";");
-		}else{
+
+		if (city != null) {
+			let change_city = city.toString();
+			city = change_city.replace(/,/g, ";");
+		} else {
 			city = '';
 		}
 
 
 		advertiser = $('#advertiser').val();
 
-		if(advertiser === null) {
+		if (advertiser === null) {
 			advertiser = '';
 		}
 
 		if (industry === null) {
 			industry = '';
-		}else{
+		} else {
 			let change_industry = industry.toString();
-			industry = change_industry.replace(/,/g,";");
+			industry = change_industry.replace(/,/g, ";");
 		}
 
 		if (oohstatus === null) {
@@ -310,7 +310,7 @@ function setData(data) {
 		/* "action":  (v['ooh_origin'] === 'ARCHERNINE') ? "<a href=\"#\" onclick=\"editOoh('"+v['ooh_id']+"')\" data-toggle=\"modal\" data-target=\".ooh-edit-modal\"><span class=\"menu-icon icon-pencil\" title=\"Edit OOH\"></span></a>" : "", */
 		if (parseInt(localStorage.prisma_level) !== 1) {
 			perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
-			perdata['print'] = "<label class=\"switch switch-small \"><input class=\"printprop\" type=\"checkbox\" value=\"" + v['ooh_id'] + "\" /><span></span></label>";
+			perdata['print'] = `<label class="switch switch-small"><input onchange="changePropPrint()" class="printprop" type="checkbox" value="${v['ooh_id']}" /><span></span></label>`;
 		} else if (parseInt(localStorage.prisma_level) === 1) {
 			perdata['no_site'] = (v['no_site'] === null) ? 'Non Prisma' : 'Prisma';
 		}
@@ -331,19 +331,6 @@ function setData(data) {
 
 	setTableContent(datane);
 	create_ooh(pointdata, 'yes');
-
-	$(".printprop").change(function () {
-		if ($('.printprop:checked').length > 0) {
-			//do something
-			$('#printPropOoh').css({ color: '#222' });
-		}
-
-		if ($('.printprop:checked').length === 0) {
-			//do something
-			$('#printPropOoh').css({ color: '#a2a2a2' });
-		}
-	});
-
 }
 
 function setTableContent(datane) {
@@ -415,13 +402,13 @@ function setTableContent(datane) {
 	});
 
 
-	$('.printprop').bootstrapToggle({
-		on: 'Yes',
-		off: 'No',
-		size: 'mini',
-		onstyle: 'primary',
-		offstyle: 'default'
-	});
+	// $('.printprop').bootstrapToggle({
+	// 	on: 'Yes',
+	// 	off: 'No',
+	// 	size: 'mini',
+	// 	onstyle: 'primary',
+	// 	offstyle: 'default'
+	// });
 
 	$('.traffic').bootstrapToggle({
 		on: 'Show Traffic',
@@ -430,6 +417,42 @@ function setTableContent(datane) {
 		onstyle: 'primary',
 		offstyle: 'default'
 	});
+}
+
+setInterval(() => {
+	$('.printprop').bootstrapToggle({
+		on: 'Yes',
+		off: 'No',
+		size: 'mini',
+		onstyle: 'primary',
+		offstyle: 'default'
+	});
+}, 300);
+
+$(".printprop").on('change', function () {
+	console.log("PRINTPROP", $(this).val());
+	if ($('.printprop:checked').length > 0) {
+		//do something
+		$('#printPropOoh').css({ color: '#222' });
+	}
+
+	if ($('.printprop:checked').length === 0) {
+		//do something
+		$('#printPropOoh').css({ color: '#a2a2a2' });
+	}
+});
+
+function changePropPrint() {
+	console.log("CHECK", $('.printprop').is(':checked'));
+	if ($('.printprop:checked').length > 0) {
+		//do something
+		$('#printPropOoh').css({ color: '#222' });
+	}
+
+	if ($('.printprop:checked').length === 0) {
+		//do something
+		$('#printPropOoh').css({ color: '#a2a2a2' });
+	}
 }
 
 function zoomMarker(ooh_id) {
@@ -1014,7 +1037,7 @@ function setDataDetail(data) {
 	$("#imageFrontTest").removeAttr("fin");
 }
 
-function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
+function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius) {
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: APIURL + `data/surroundpoi?oid=${ooh_id}&lng=${lng}&lat=${lat}&areaid=${areaid}&radius=${radius}`,
@@ -1024,7 +1047,7 @@ function getDataSurroundPOI(ooh_id, lat, lng, areaid, radius){
 			type: "POST",
 			contentType: "application/json",
 			dataType: 'json',
-			success: function ({data}) {
+			success: function ({ data }) {
 				resolve(data);
 			},
 			error: function (err) {
@@ -1043,16 +1066,17 @@ async function downloadExcelPOI() {
 	var radius = selectRadius.val();
 
 	var dataPOI = await getDataSurroundPOI(ooh_id, lat, lng, areaid, radius).catch(err => err);
-	if(dataPOI.length < 1) return alert("Data tidak ada !");
+	if (dataPOI.length < 1) return alert("Data tidak ada !");
 	console.log("DATA POI", {
-		data: dataPOI, 
+		data: dataPOI,
 		param: {
-			ooh_id, 
+			ooh_id,
 			lat,
 			lng,
 			areaid,
 			radius
-		}});
+		}
+	});
 
 	var wb = XLSX.utils.book_new();
 	wb.Props = {
@@ -1099,10 +1123,9 @@ async function downloadExcelPOI() {
 	var ws = XLSX.utils.aoa_to_sheet(ws_data);
 	wb.Sheets["No Titik atau Canvasing"] = ws;
 
-	var wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
+	var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
 
-	function s2ab(s)
-	{
+	function s2ab(s) {
 		var buf = new ArrayBuffer(s.length);
 		var view = new Uint8Array(buf);
 		for (var i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
@@ -1399,14 +1422,14 @@ function checkOnLoadImage(id, value) {
 			img = new Image();
 			img.src = srcimage2;
 
-			img.onload = function() {
+			img.onload = function () {
 				console.log('image from server dev 120 found', {
 					url: img.src
 				});
 				$(`#${id}`).attr('src', img.src);
 			}
 
-			img.onerror = function() {
+			img.onerror = function () {
 				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
 				img = new Image();
 				img.src = srcimage2;
@@ -1715,7 +1738,7 @@ function fillTable(pointdrag) {
 
 						if (parseInt(localStorage.prisma_level) !== 1) {
 							perdata['price'] = (rate_card === null) ? '0' : numberToMoney(rate_card);
-							perdata['print'] = "<label class=\"switch switch-small\"><input class=\"printprop\" type=\"checkbox\" value=\"" + v.ooh_id + "\" /><span></span></label>";
+							perdata['print'] = `<label class="switch switch-small"><input onchange="changePropPrint()" class="printprop" type="checkbox" value="${v.ooh_id}" /><span></span></label>`;
 						} else if (parseInt(localStorage.prisma_level) === 1) {
 							perdata['no_site'] = (v.no_site === null) ? 'Non Prisma' : 'Prisma';
 						}

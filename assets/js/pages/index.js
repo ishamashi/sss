@@ -230,7 +230,7 @@ function setData(data) {
 	for (var n in type) { sort_type.push([n, type[n]]); }
 	sort_type.sort(function(a, b) { return b[1] - a[1]; });
 
-	$("#total_ooh").text(numberToMoney(total_ooh));
+	$("#total_ooh").text(numberToMoney(total_content));
 	$("#top_industry").text(sort_industry[0][0]);
 	$("#top_industry_count").text(numberToMoney(sort_industry[0][1]));
 	$("#top_industry_percent").text(Math.round(100*100*sort_industry[0][1]/total_content)/100);
@@ -254,7 +254,7 @@ function setData(data) {
 	SOVbyIndustry(top20_industry);
 	SOVbyAdvertiser(top20_advertiser);
 	SOVbyOOHType(sort_type);
-	SOVbyCity(district, city_advertiser,total_content);
+	SOVbyCity(district, city_advertiser,total_ooh);
 	getLastUpdate();
 }
 
