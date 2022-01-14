@@ -13,6 +13,22 @@ var TempPrintBAST = {
 	date: null,
 }
 
+// $('#btnRefresh').on('click', function () {
+// 	window.addEventListener('keypress', (event) => {
+// 		console.log("You have pressed key: ", event.key);
+// 		$("#inputRefresh").trigger(event.key);
+// 	});
+
+// 	window.addEventListener('keydown', (event) => {
+// 		console.log(`key: ${event.key} has been pressed down`);
+// 		// reff.val(event.key);
+// 	});
+
+// 	window.addEventListener('keyup', (event) => {
+// 		console.log(`key: ${event.key} has been released`);
+// 	});
+// });
+
 $(document).ready(function () {
 	if (parseInt(localStorage.prisma_level) === 1) {
 		$('#table-price-ooh, #table-print-ooh').remove();
