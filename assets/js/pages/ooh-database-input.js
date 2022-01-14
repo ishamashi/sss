@@ -1,4 +1,5 @@
 var industry = [];
+var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
 var sub_industry = [];
 var advertiser = [];
 var arrindustry = [];
@@ -467,23 +468,68 @@ $(function () {
 
 });
 
-function checkingImageIfError(selector, type = 'day') {
-    var asset = '';
-    var host_android = "http://mobile-prisma-api.com:7080/image/optimize/";
+function checkingImageIfError(selector, value = '') {
     var selected = $(`#${selector}`);
+    checkOnLoadImage(selector, selected.data('url'));
+}
 
-    if (type === 'day') {
-        asset = 'assets/images/ooh-pictures/noimage.jpg';
-    } else {
-        asset = 'assets/images/ooh-pictures/noimage2.jpg';
-    }
+function checkOnLoadImage(id, value) {
+	var srcimage2 = 'assets/images/ooh-pictures/' + value;
 
-    if (typeof selected.data('url') !== 'undefined') {
-        selected.attr('src', host_android + selected.data('url'));
-    } else {
-        selected.attr('src', asset);
-    }
-    return;
+	var img = new Image();
+	img.src = srcimage2;
+	console.log('trying read image from server local', {
+		url: srcimage2
+	});
+
+	img.onload = function () {
+		console.log('image from server local found', {
+			url: srcimage2
+		});
+		$(`#${id}`).attr('src', img.src);
+	}
+
+	img.onerror = function () {
+		srcimage2 = IMAGE_HOST + 'image/' + value;
+		console.log('trying read image from server mobile', {
+			url: srcimage2
+		});
+		img = new Image();
+		img.src = srcimage2;
+
+		img.onload = function () {
+			console.log('image from server mobile found', {
+				url: img.src
+			});
+			$(`#${id}`).attr('src', img.src);
+		}
+
+		img.onerror = function () {
+			srcimage2 = `http://192.168.20.120:5000/image/${value}`;
+			console.log('trying read image from server dev 120', {
+				url: srcimage2
+			});
+			img = new Image();
+			img.src = srcimage2;
+
+			img.onload = function () {
+				console.log('image from server dev 120 found', {
+					url: img.src
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+
+			img.onerror = function () {
+				srcimage2 = 'assets/images/ooh-pictures/noimage.jpg';
+				img = new Image();
+				img.src = srcimage2;
+				console.log('image from server dev 120 not found', {
+					url: srcimage2
+				});
+				$(`#${id}`).attr('src', img.src);
+			}
+		}
+	}
 }
 
 function activeTab(tab) {
@@ -613,13 +659,13 @@ function showContentByMonth(monthyear) {
                 $('#datee').val(zeroleftpad(vv.month, 2) + '-' + vv.year);
                 //console.log(idx+' - '+vv.industry);
                 $.each(vv, function (k2, v2) {
-                    // console.log("Rendering Image...", {
-                    //     tipe: k2,
-                    //     index: idx,
-                    //     src: v2
-                    // });
                     if ($('#' + k2 + '' + idx + '').length) {
                         if (k2 == 'image_day' || k2 == 'image_night') {
+                            console.log("Rendering Image...", {
+                                tipe: k2,
+                                index: idx,
+                                src: v2
+                            });
                             var localset = ''; //'http://192.168.56.106/prisma-frontend/';
                             $('#preview_' + k2 + '' + idx + '').attr('src', localset + 'assets/images/ooh-pictures/' + v2).attr('data-url', v2);
                             $('#' + k2 + '' + idx + '').text(v2);
@@ -2287,11 +2333,11 @@ var mapDataScore = [
             {
                 "None": 5,
                 "1 Site": 4,
-                "2 Sites": 3,
-                "3 Sites": 2,
-                "4 Sites": 2,
-                "5 Sites": 2,
-                "6+ Sites": 1,
+                "2 Site": 3,
+                "3 Site": 2,
+                "4 Site": 2,
+                "5 Site": 2,
+                "6+ Site": 1,
             }
         ]
     },
