@@ -2,7 +2,7 @@ var markerselectedprint = new Array();
 var center_lat = '';
 var center_lng = '';
 var IMAGE_HOST = "http://mobile-prisma-api.com:7080/";
-
+var apiKeyMap = "AIzaSyDYljKup01xzKCuslZtlkmLXZjQE26d25g";
 $(document).ready(function () {
 
   var $image = $(".image-crop > img");
@@ -104,6 +104,99 @@ $(document).ready(function () {
   });
 });
 
+function ScrollZoom(container, max_scale, factor) {
+  console.log("SCROLL ZOOM", { container, max_scale, factor });
+  var target = container.children().first()
+
+  console.log("TARGET", target);
+  var size = {
+    w: target.width(),
+    h: target.height()
+  }
+
+  var pos = { x: 0, y: 0 }
+  var scale = 1
+  var zoom_target = { x: 0, y: 0 }
+  var zoom_point = { x: 0, y: 0 }
+  var curr_tranform = target.css('transition')
+  var last_mouse_position = { x: 0, y: 0 }
+  var drag_started = 0
+
+  target.css('transform-origin', '0 0')
+  target.on("mousewheel DOMMouseScroll", scrolled)
+  target.on('mousemove', moved)
+  target.on('mousedown', function (event) {
+    console.log("DRAGGG", last_mouse_position);
+    drag_started = 1;
+    target.css({ 'cursor': 'move', 'transition': 'transform 0s' });
+    /* Save mouse position */
+    last_mouse_position = { x: event.pageX, y: event.pageY };
+  });
+
+  target.on('mouseup mouseout', function () {
+    drag_started = 0;
+    target.css({ 'cursor': 'default', 'transition': curr_tranform });
+  });
+
+  function scrolled(e) {
+    var offset = container.offset()
+    zoom_point.x = e.pageX - offset.left
+    zoom_point.y = e.pageY - offset.top
+
+    e.preventDefault();
+    var delta = e.delta || e.originalEvent.wheelDelta;
+    if (delta === undefined) {
+      //we are on firefox
+      delta = e.originalEvent.detail;
+    }
+    delta = Math.max(-1, Math.min(1, delta)) // cap the delta to [-1,1] for cross browser consistency
+
+    // determine the point on where the slide is zoomed in
+    zoom_target.x = (zoom_point.x - pos.x) / scale
+    zoom_target.y = (zoom_point.y - pos.y) / scale
+
+    // apply zoom
+    scale += delta * factor * scale
+    scale = Math.max(1, Math.min(max_scale, scale))
+
+    // calculate x and y based on zoom
+    pos.x = -zoom_target.x * scale + zoom_point.x
+    pos.y = -zoom_target.y * scale + zoom_point.y
+
+    update()
+  }
+
+  function moved(event) {
+    if (drag_started == 1) {
+      var current_mouse_position = { x: event.pageX, y: event.pageY };
+      var change_x = current_mouse_position.x - last_mouse_position.x;
+      var change_y = current_mouse_position.y - last_mouse_position.y;
+
+      /* Save mouse position */
+      last_mouse_position = current_mouse_position;
+      //Add the position change
+      pos.x += change_x;
+      pos.y += change_y;
+      console.log("MOVED", last_mouse_position);
+      update()
+    }
+  }
+
+  function update() {
+    // Make sure the slide stays in its container area when zooming out
+    if (pos.x > 0)
+      pos.x = 0
+    if (pos.x + size.w * scale < size.w)
+      pos.x = -size.w * (scale - 1)
+    if (pos.y > 0)
+      pos.y = 0
+    if (pos.y + size.h * scale < size.h)
+      pos.y = -size.h * (scale - 1)
+
+    target.css('transform', 'translate(' + (pos.x) + 'px,' + (pos.y) + 'px) scale(' + scale + ',' + scale + ')')
+  }
+}
+
 
 function printDiv() {
 
@@ -147,7 +240,7 @@ async function printPropOoh() {
     var htmlprintout = `
       <div id="DIvIdToPrint" class="container-fluid div2print uppercase">
         <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header">
+          <div class="col-md-9 prop-header" style="height: auto !important">
             <h3 class="prop-header-title">OOH SITE OVERVIEW - ${district_name}</h3>
           </div>
           <div class="col-md-3 prop-header-logo">
@@ -156,7 +249,7 @@ async function printPropOoh() {
         </div>
         <div class="row">
           <div class="col-md-12">
-            <div id="map_overview" class="peta"></div>
+            <img id="map_overview" class="peta" />
           </div>
         </div>
       </div>`;
@@ -239,27 +332,84 @@ function lihatTitik(oohid, lat, lng, label) {
   });
 }
 
+function staticMap(oohid, lat, lng, label) {
+  // var staticMapUrl = "https://maps.googleapis.com/maps/api/staticmap&key=" + apiKeyMap;
+
+  // //Set the Google Map Center.
+  // staticMapUrl += "?center=" + lat + "," + lng;
+  // //Set the Google Map Size.
+  // staticMapUrl += "&size=220x350";
+  // // https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/pin-m-a+ff0000(-73.7638,42.6564)/-73.7638,42.6564,13,0/600x300?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false
+
+  // //Set the Google Map Zoom.
+  // staticMapUrl += "&zoom=" + 18;
+
+  // //Set the Google Map Type.
+  // staticMapUrl += "&maptype=" + 'roadmap';
+
+  // //Loop and add Markers.
+  // for (var i = 0; i < markers.length; i++) {
+  //   staticMapUrl += "&markers=color:red|label:"+ label +"|" + lat + "," + lng;
+  // }
+
+  //Display the Image of Google Map.
+  var staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/pin-m-${label.toLowerCase()}+ff0000(${lng},${lat})/${lng},${lat},15,0/300x300?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false`;
+  var imgMap = document.getElementById("mapImg_" + oohid);
+  imgMap.src = staticMapUrl;
+  console.log("STATIC MAP", staticMapUrl);
+  imgMap.style.display = "block";
+}
+
 function overviewTitik(centroid, markers, zoomv = 11) {
 
   var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   var labelIndex = 0;
-  var mapoverview = new google.maps.Map(document.getElementById('map_overview'), {
-    zoom: zoomv,
-    mapTypeControl: false,
-    fullscreenControl: false,
-    panControl: false,
-    streetViewControl: false,
-    zoomControl: false,
-    center: new google.maps.LatLng(centroid.x, centroid.y),
-  });
+  var showMarkers = "";
+  // var mapoverview = new google.maps.Map(document.getElementById('map_overview'), {
+  //   zoom: zoomv,
+  //   mapTypeControl: false,
+  //   fullscreenControl: false,
+  //   panControl: false,
+  //   streetViewControl: false,
+  //   zoomControl: false,
+  //   center: new google.maps.LatLng(centroid.x, centroid.y),
+  // });
+
+  // $.each(markers, function (i, v) {
+  //   var oohMarker = new google.maps.Marker({
+  //     position: new google.maps.LatLng(v.x, v.y),
+  //     label: labels[labelIndex++ % labels.length],
+  //     map: mapoverview
+  //   });
+  // });
 
   $.each(markers, function (i, v) {
-    var oohMarker = new google.maps.Marker({
-      position: new google.maps.LatLng(v.x, v.y),
-      label: labels[labelIndex++ % labels.length],
-      map: mapoverview
-    });
+    showMarkers += `pin-m-${labels[labelIndex++ % labels.length].toLowerCase()}+ff0000(${v.y},${v.x})`
+    if (i !== (markers.length - 1)) {
+      showMarkers += ',';
+    }
   });
+
+
+  // ${centroid.y},${centroid.x},13,0
+  var staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/static/${showMarkers}/auto/1000x512?access_token=pk.eyJ1IjoiaXJ3YW5tYXVsYW5hMjQ4IiwiYSI6ImNqeG14d2VqMjA1ZHUzY3B3cHoxb3N6MWgifQ.Y5k4WC_sdqlH_pkWPSxz3Q&attribution=false&logo=false`;
+  var imgMap = document.getElementById("map_overview");
+  imgMap.src = staticMapUrl;
+  imgMap.style.display = "block";
+
+  // let div = document.getElementById('DIvIdToPrint2');
+
+  // // Use the html2canvas
+  // // function to take a screenshot
+  // // and append it
+  // // to the output div
+  // html2canvas(div).then(
+  //   function (canvas) {
+  //     console.log("CANVAS", {div,canvas});
+  //     document
+  //       .getElementById('mapsss')
+  //       .appendChild(canvas);
+  //   });
 }
 
 
@@ -298,19 +448,24 @@ function setPrintOOHMulti(data, labelsmarker) {
         return parseInt(b.sorper) - parseInt(a.sorper);
       });
       console.log("FILTER", { filter, conthis: v.conthis });
-      if (filter[0].image_day !== null) image_day = filter[0].image_day;
-      if (filter[0].image_night !== null) image_night = filter[0].image_day;
+      // if (filter[0].image_day !== null) image_day = filter[0].image_day;
+      // if (filter[0].image_night !== null) image_night = filter[0].image_day;
+
       // $.each(v.conthis, function (kk, vv) {
       //   console.log("IMAGE", { image_day: vv.image_day, image_night: vv.image_night });
       //   //console.log(vv.image_day);
       //   if (vv.image_day !== null) image_day = vv.image_day;
       //   if (vv.image_night !== null) image_night = vv.image_night;
 
-      //   // if ((vv.image_night !== '') && (vv.image_night !== 'noimage.jpg')) {
-      //   //   image_night = vv.image_night;
-      //   //   image_day = vv.image_day;
-      //   //   return false;
-      //   // }
+      if ((filter[0].image_day !== '') && (filter[0].image_day !== 'noimage.jpg') && (filter[0].image_day !== null)) {
+        image_day = filter[0].image_day;
+        image_night = filter[0].image_day;
+      }
+
+      if (((filter[0].image_day === '') || (filter[0].image_day === 'noimage.jpg') && (filter[0].image_day === null)) || (filter[0].image_night !== '') && (filter[0].image_night !== 'noimage.jpg') && (filter[0].image_night !== null)) {
+        image_day = filter[0].image_night;
+        image_night = filter[0].image_night;
+      }
       // });
     }
 
@@ -340,19 +495,25 @@ function setPrintOOHMulti(data, labelsmarker) {
 
     // <img class="hide imgtoprint img-fluid" id="ori_image_distant_${idooh}" src="${src_image}" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"  width="100%" height="420px"></img>
     // <img class="hide imgtoprint img-fluid" id="ori_image_close_' + idooh + '" src="' + src_image + '" onError="this.onerror=null;this.src=\'assets/images/ooh-pictures/noimage.jpg\';"   width="100%" height="420px"></img>
+    // <div id="img-slider" style="width: 100%;height: 400px;overflow: hidden;">
+    //           <div style="width:100%;height:400px;transition: transform .3s;"></div>
     htmlprint +=
       `<div id="DIvIdToPrint2"  class="container-fluid div2print2 uppercase">
-        <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${labelsmarker}.  ${v.address}</h3></div>
+        <div class="row" style="vertical-align: middle;display: flex;align-items: center;">
+          <div class="col-md-9 prop-header" style="height: auto !important;"><h3 class="prop-header-title">${labelsmarker}.  ${v.address}</h3></div>
           <div class="col-md-3 prop-header-logo" ><img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" ></div>
         </div>
         <div class="row">
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')"  width="100%" height="400px">
+              <div style="cursor: grab;display: flex;align-items: center;justify-content: center;overflow: hidden;">
+                <img class="img-fluid" id="image_distant_${idooh}" src="assets/images/ooh-pictures/${image_day}" onError="checkErrorImg('${image_day}', 'image_distant_${idooh}')" style="position: relative;display: flex;align-items: center; width: 100%">
+              </div>
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >CLOSE VIEW</h3></div>
           </div>
           <div class="col-md-6 image-crop">
-            <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')"  width="100%" height="400px">
+            <div style="cursor: grab;display: flex;align-items: center;justify-content: center;overflow: hidden;">
+              <img class="img-fluid" id="image_close_${idooh}" src="assets/images/ooh-pictures/${image_night}"  onError="checkErrorImg('${image_night}', 'image_close_${idooh}')" style="position: relative;display: flex;align-items: center; width: 100%">
+            </div>
             <div class="col-md-12 text-center prop-image-space" style="height: auto;"><h3 class="prop-image-title" style="margin-bottom: 0 !important" >DISTANCE VIEW</h3></div>
           </div>
         </div>
@@ -420,11 +581,14 @@ function setPrintOOHMulti(data, labelsmarker) {
               <p class="" >Scan this location</p>
           </div>
           <div class="col-md-8">
-            <div id="map_${v.ooh_id}" class="box mapbox" ></div>
+            <div id="map_${v.ooh_id}" class="">
+              <img id="mapImg_${v.ooh_id}" style="border: 1.5px solid #a1a1a1;margin: 0.5em;">
+            </div>
           </div>
         </div>
       </div>
     </div>`;
+    // box mapbox
     //console.log('debug html -> '+htmlprint);
     district_name = v.district_name;
     oohmark = {
@@ -447,7 +611,8 @@ function setPrintOOHMulti(data, labelsmarker) {
         correctLevel: QRCode.CorrectLevel.H
       });
 
-      lihatTitik(v.ooh_id, v.latitude, v.longitude, labelsmarker);
+      // lihatTitik(v.ooh_id, v.latitude, v.longitude, labelsmarker);
+      staticMap(v.ooh_id, v.latitude, v.longitude, labelsmarker);
       surrounding_poi_onprint(v.ooh_id, v.sub_district, v.longitude, v.latitude, 100);
       pricelist(v.ooh_id, v.no_site);
 
@@ -699,7 +864,7 @@ function setPrintOOH(data, contentid, theID) {
     htmlprint += `
       <div id="DIvIdToPrint3"  class="container-fluid div2print3 uppercase">
         <div class="row" style="height:45px;">
-          <div class="col-md-9 prop-header"><h3 class="prop-header-title">${v.address}</h3></div>
+          <div class="col-md-9 prop-header"><h3 class="prop-header-title" style="height: auto !important">${v.address}</h3></div>
             <div class="col-md-3 prop-header-logo" >
               <img src="assets/images/Logo_Prisma_Baru2.png" style="height:52px;" alt="" >
             </div>

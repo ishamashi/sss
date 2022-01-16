@@ -14,7 +14,6 @@ $(function () {
 		to: 35,
 		step: 1
 	});
-
 });
 
 function numberToMoney(number) {
@@ -22,7 +21,6 @@ function numberToMoney(number) {
 	else if (number === null) { return '0' }
 	else { return number.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"); }
 }
-
 
 function filterArea() {
 	$.ajax({
@@ -50,7 +48,7 @@ function filterArea() {
 			} else if (province == '' && city == '') {
 				$("#province").html(option).selectpicker('refresh');
 			}
-			if($('#province').val() === '') return $("#city").html().selectpicker('refresh');
+			if ($('#province').val() === '') return $("#city").html().selectpicker('refresh');
 		},
 		error: function (jqXHR, textStatus, errorThrown) {
 			errorHandler(jqXHR);
@@ -166,7 +164,7 @@ function setTableContent(idne, colome, datane) {
 	} else {
 		$(idne).DataTable().destroy();
 	}
-	if (idne == '#archieve_del' || idne=='#request_del') {
+	if (idne == '#archieve_del' || idne == '#request_del') {
 		$(idne).DataTable({
 			dom: 'Bfrtip',
 			buttons: [
@@ -405,7 +403,7 @@ function filterIndustry(page = 'all') {
 			if (data.data.length > 0) { $('#industry').html('') }
 			var option = "";
 			if (page == 'oview') {
-				
+
 			}
 			$.each(data.data, function (k, v) {
 				option += "<option value='" + v[0] + "'>" + v[1] + "</option>";
@@ -492,3 +490,59 @@ function keyup_formatMoney(x) {
 	var n = parseInt(val, 10);
 	$(x).val(n.toLocaleString());
 }
+
+function getDataVersion() {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: APIURL + "data/version",
+			headers: {
+				"token": token_type + " " + token
+			},
+			type: "GET",
+			contentType: "application/json",
+			dataType: 'json',
+			success: function (result) {
+				resolve(result);
+			},
+			error: function (err) {
+				reject(err);
+			}
+		});
+	});
+}
+
+var globalVersion;
+setTimeout(() => {
+	(async function () {
+		let version = await getDataVersion().catch(err => err);
+		if ((version.processMessage === 'Success' && localStorage.getItem('version') !== null)) {
+			var ver = version.data[0].version;
+			globalVersion = ver;
+			if (localStorage.getItem('version') !== ver) {
+				toastr.info('Mohon refresh website dengan menekan tombol <br><b>CTRL + SHIFT + R</b>', 'Update Information', {
+					"closeButton": false,
+					"debug": false,
+					"newestOnTop": false,
+					"progressBar": true,
+					"positionClass": "toast-top-right",
+					"preventDuplicates": false,
+					"onclick": null,
+					"showDuration": "300",
+					"hideDuration": "1000",
+					"timeOut": "5000",
+					"extendedTimeOut": "1000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut",
+				});
+			}
+		}
+	})();
+}, 1000)
+
+window.addEventListener("keydown", function (zEvent) {
+	if (zEvent.ctrlKey && zEvent.shiftKey && (zEvent.key === "r" || zEvent.key === "R")) {  // case sensitive
+		localStorage.setItem('version', globalVersion);
+	}
+});
