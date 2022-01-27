@@ -151,7 +151,193 @@ class Home extends React.Component {
     }
 }
 
-const Location = ({nextStep, prevStep}) => {
+const Environment = ({ prevStep, handleChange, values }) => {
+    return(
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className="col-md-10">
+                <h3>Environment</h3>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 1</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 1" />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 2</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 2" />
+                    </div>
+                </div>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 3</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 3" />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 4</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 4" />
+                    </div>
+                </div>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 5</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 5" />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 6</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 6" />
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 7</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 7" />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lingkungan 8</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 8" />
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-end">
+                    <button style={{ marginLeft: '.5em', marginRight: '.5em' }} onClick={(e) => {
+                        e.preventDefault();
+                        prevStep();
+                    }} className="btn btn-secondary">Prev</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
+    return(
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className="col-md-10">
+                <h3>Spesification</h3>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Jumlah Sisi</label>
+                        <select className="form-control select" id="province" name="province"></select>
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Jumlah Titik</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <div className="col-md-6" style={{paddingLeft: '0'}}>
+                            <label className="control-label bold">Panjang</label>
+                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                        </div>
+                        <div className="col-md-6">
+                            <label className="control-label bold">Lebar</label>
+                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Longitude" />
+                        </div>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Orientasi</label>
+                        <select className="form-control select" id="province" name="province"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Lighting</label>
+                        <select className="form-control select" id="province" name="province"></select>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <div className="col-md-6" style={{paddingLeft: '0'}}>
+                            <label className="control-label bold">Traffic</label>
+                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                        </div>
+                        <div className="col-md-6" style={{marginTop: '25px'}}>
+                            <button className="btn btn-primary">Peta</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Score</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Score" />
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Fixing</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Competition</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Visible Distance</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Angle of Vision</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Obstruction</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Street Lite</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Road Type</label>
+                        <select className="form-control select" id="fixing" name="fixing"></select>
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">OOH Status</label>
+                        <div style={{ display: 'grid' }}>
+                            <label className="check">
+                                <input type="radio" className="iradio" checked="checked" value="1" id="ooh_status" name="ooh_status" /> 
+                                Active
+                            </label>
+                            <label className="check">
+                                <input type="radio" className="iradio" value="2" id="ooh_status" name="ooh_status" />
+                                Inactive
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-end">
+                    <button style={{ marginLeft: '.5em', marginRight: '.5em' }} onClick={(e) => {
+                        e.preventDefault();
+                        prevStep();
+                    }} className="btn btn-secondary">Prev</button>
+                    <button style={{ marginLeft: '.5em'}} onClick={(e) => {
+                        e.preventDefault();
+                        nextStep();
+                    }} className="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const Location = ({nextStep, prevStep, handleChange, values}) => {
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -160,6 +346,71 @@ const Location = ({nextStep, prevStep}) => {
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Province</label>
                         <select className="form-control select" id="province" name="province"></select>
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">City / State</label>
+                        <select className="form-control select" id="city" name="city"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">District</label>
+                        <select className="form-control select" id="city" name="city"></select>
+                    </div>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Address</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Address" />
+                    </div>
+                </div>
+
+                <div className="form-group">
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <div className="col-md-5" style={{paddingLeft: '0'}}>
+                            <label className="control-label bold">Latitude</label>
+                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                        </div>
+                        <div className="col-md-5">
+                            <label className="control-label bold">Longitude</label>
+                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Longitude" />
+                        </div>
+                        <div className="col-md-2" style={{marginTop: '25px'}}>
+                            <label className="control-label bold">&nbsp;</label>
+                            <button className="btn btn-primary">Peta</button>
+                        </div>
+                    </div>
+                    
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">View</label>
+                        <input type="text" className="form-control" readOnly defaultValue={'1'} placeholder="View" />
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-end">
+                    <button style={{ marginLeft: '.5em', marginRight: '.5em' }} onClick={(e) => {
+                        e.preventDefault();
+                        prevStep();
+                    }} className="btn btn-secondary">Prev</button>
+                    <button style={{ marginLeft: '.5em'}} onClick={(e) => {
+                        e.preventDefault();
+                        nextStep();
+                    }} className="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const GeneralInfo = ({nextStep, handleChange, values}) => {
+    return(
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className="col-md-10">
+                <h3>General Info</h3>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">OOH ID</label>
+                        <input type="text" className="form-control" readOnly defaultValue={'1'} placeholder="OOH ID" id="ooh_id_disabled" />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
@@ -185,12 +436,28 @@ const Location = ({nextStep, prevStep}) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Kode Produk</label>
-                        <select className="form-control select" id="kode_produk" name="kode_produk"></select>
+                        <select 
+                            className="form-control select" 
+                            id="kode_produk" 
+                            name="kode_produk" 
+                            onChange={() => handleChange('kode_produk')}
+                            defaultValue={values.kode_produk}
+                        >
+                        </select>
                     </div>
                     
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Tipe Produk</label>
-                        <select className="form-control select" id="type_produk" name="type_produk">
+                        <select 
+                            className="form-control select" 
+                            id="type_produk" 
+                            name="type_produk"
+                            onChange={(e) => handleChange({
+                                type: 'kode_produk',
+                                value: e.target.value
+                            })}
+                            defaultValue={values.type_produk}
+                            >
                             <option value="H">Horizontal</option>
                             <option value="V">Vertical</option>
                             <option value="H/FL">Horizontal - Frontlite</option>
@@ -224,39 +491,15 @@ const Location = ({nextStep, prevStep}) => {
                         </div>
                     </div>
                 </div>
-
-
-                {/* <div className="form-group">
-                    <label className="col-md-3 control-label">Propinsi</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="provinceOOH" name="province"></select>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Kota</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="district" name="district"></select>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Kecamatan</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="sub_district" name="sub_district"></select>
-                    </div>
-                </div> */}
-                    <div className="d-flex justify-content-end">
-                        <button style={{ marginLeft: '.5em', marginRight: '.5em' }} onClick={(e) => {
-                            e.preventDefault();
-                            prevStep();
-                        }} className="btn btn-secondary">Prev</button>
-                        <button style={{ marginLeft: '.5em'}} onClick={(e) => {
-                            e.preventDefault();
-                            nextStep();
-                        }} className="btn btn-primary">Next</button>
-                    </div>
+                <div className="d-flex justify-content-end">
+                    <button onClick={(e) => {
+                        e.preventDefault();
+                        nextStep();
+                    }} className="btn btn-primary">Next</button>
                 </div>
             </div>
-    )
+        </div>
+    );
 }
 class Info extends React.Component {
     constructor(props){
@@ -312,6 +555,23 @@ class Info extends React.Component {
                         values={values}
                     />
                 )
+            case 3:
+                return(
+                    <Spesification
+                        nextStep={this.nextStep}
+                        prevStep={this.prevStep}
+                        handleChange={this.handleChange}
+                        values={values}
+                    />
+                )
+                case 4:
+                    return(
+                        <Environment
+                            prevStep={this.prevStep}
+                            handleChange={this.handleChange}
+                            values={values}
+                        />
+                    )
             default:
                 break;
         }
@@ -754,128 +1014,6 @@ class Request extends React.Component {
         )
     }
 }
-
-const GeneralInfo = ({nextStep, handleChange, values}) => {
-    return(
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <div className="col-md-10">
-                <h3>General Info</h3>
-                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">OOH ID</label>
-                        <input type="text" className="form-control" readOnly defaultValue={'1'} placeholder="OOH ID" id="ooh_id_disabled" />
-                    </div>
-
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Canvasing ID</label>
-                        <input type="text" disabled="" className="form-control" placeholder="Canvasing ID" id="no_cnv_disabled" name="no_cnv_disabled" />
-                    </div>
-                </div>
-
-                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">PRISMA ID</label>
-                        <input type="text" className="form-control" placeholder="PRISMA ID" id="no_site" name="no_site" />
-                    </div>
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Owner</label>
-                        <select className="form-control select" id="ownerOOH" name="ownerOOH">
-                            <option value="PRISMA">PRISMA</option>
-                            <option value="NON-PRISMA">NON-PRISMA</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Kode Produk</label>
-                        <select 
-                            className="form-control select" 
-                            id="kode_produk" 
-                            name="kode_produk" 
-                            onChange={() => handleChange('kode_produk')}
-                            defaultValue={values.kode_produk}
-                        >
-                        </select>
-                    </div>
-                    
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Tipe Produk</label>
-                        <select 
-                            className="form-control select" 
-                            id="type_produk" 
-                            name="type_produk"
-                            onChange={(e) => handleChange({
-                                type: 'kode_produk',
-                                value: e.target.value
-                            })}
-                            defaultValue={values.type_produk}
-                            >
-                            <option value="H">Horizontal</option>
-                            <option value="V">Vertical</option>
-                            <option value="H/FL">Horizontal - Frontlite</option>
-                            <option value="V/FL">Vertical - Frontlite</option>
-                            <option value="H/BL">Horizontal - Backlite</option>
-                            <option value="V/BL">Vertical - Backlite</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Tipe OOH</label>
-                        <select className="form-control select" id="ooh_type" name="ooh_type"></select>
-                    </div>
-
-                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">OOH Status</label>
-                        <div style={{ display: 'grid' }}>
-                            <label className="check">
-                                <input type="radio" className="iradio" checked="checked" value="1" id="ooh_status" name="ooh_status" /> 
-                                Available
-                            </label>
-                            <label className="check">
-                                <input type="radio" className="iradio" value="2" id="ooh_status" name="ooh_status" />
-                                Tersewa
-                            </label>
-                            <label className="check"><input type="radio" className="iradio" value="3" id="ooh_status" name="ooh_status" />
-                                Expired
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-
-                {/* <div className="form-group">
-                    <label className="col-md-3 control-label">Propinsi</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="provinceOOH" name="province"></select>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Kota</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="district" name="district"></select>
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-md-3 control-label">Kecamatan</label>
-                    <div className="col-md-9">
-                        <select className="form-control select" id="sub_district" name="sub_district"></select>
-                    </div>
-                </div> */}
-                {/* <button className="btn btn-outline-primary">Prev</button> */}
-                    <div className="d-flex justify-content-end">
-                        <button onClick={(e) => {
-                            e.preventDefault();
-                            nextStep();
-                        }} className="btn btn-primary">Next</button>
-                    </div>
-                </div>
-            </div>
-    );
-}
-
 class App extends React.Component {
     render(){
         const Link = ReactRouterDOM.Link;
