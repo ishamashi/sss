@@ -1,3 +1,489 @@
+class Score extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            review: [{
+                title: 'Ukuran OOH',
+                values: [{
+                    name: 'quest001',
+                    text: '< 6 m2',
+                    value: 1
+                },{
+                    name: 'quest001',
+                    text: '6 - 12 m2',
+                    value: 2
+                },{
+                    name: 'quest001',
+                    text: '13 - 24 m2',
+                    value: 3
+                },{
+                    name: 'quest001',
+                    text: '25 - 31 m2',
+                    value: 4
+                },{
+                    name: 'quest001',
+                    text: '> 32 m2',
+                    value: 5
+                }]
+            },{
+                title: 'Jumlah OOH di sekitar',
+                values: [{
+                    name: 'quest002',
+                    text: '> 7',
+                    value: 1
+                },{
+                    name: 'quest002',
+                    text: '5 - 7',
+                    value: 2
+                },{
+                    name: 'quest002',
+                    text: '3 - 5',
+                    value: 3
+                },{
+                    name: 'quest002',
+                    text: '2',
+                    value: 4
+                },{
+                    name: 'quest002',
+                    text: '1',
+                    value: 5
+                }]
+            },{
+                title: 'Lokasi OOH',
+                values: [{
+                    name: 'quest003',
+                    text: 'Pemukiman',
+                    value: 1
+                },{
+                    name: 'quest003',
+                    text: 'Public Transport Stations',
+                    value: 2
+                },{
+                    name: 'quest003',
+                    text: 'Perkantoran',
+                    value: 3
+                },{
+                    name: 'quest003',
+                    text: 'Hangout Place',
+                    value: 4
+                },{
+                    name: 'quest003',
+                    text: 'Landmark',
+                    value: 5
+                }]
+            },{
+                title: 'Arah pandang ke OOH',
+                values: [{
+                    name: 'quest004',
+                    text: 'Cross Opposite',
+                    value: 1
+                },{
+                    name: 'quest004',
+                    text: 'Kanan jalan',
+                    value: 2
+                },{
+                    name: 'quest004',
+                    text: 'Paralel',
+                    value: 3
+                },{
+                    name: 'quest004',
+                    text: 'Kiri jalan',
+                    value: 4
+                },{
+                    name: 'quest004',
+                    text: 'Frontal / Jarak pandang lebar',
+                    value: 5
+                }]
+            },{
+                title: 'Posisi OOH',
+                values: [{
+                    name: 'quest005',
+                    text: 'Sisi Jalan',
+                    value: 1
+                },{
+                    name: 'quest005',
+                    text: 'Tikungan Jalan',
+                    value: 2
+                },{
+                    name: 'quest005',
+                    text: 'Trotoar',
+                    value: 3
+                },{
+                    name: 'quest005',
+                    text: 'Pertigaan/persimpangan jalan, termasuk perempatan jalan yang tidak memiliki lampu merah',
+                    value: 4
+                },{
+                    name: 'quest005',
+                    text: 'Perempatan Lampu Merah',
+                    value: 5
+                }]
+            },{
+                title: 'Jarak pandang ke OOH',
+                values: [{
+                    name: 'quest006',
+                    text: '< 10 m',
+                    value: 1
+                },{
+                    name: 'quest006',
+                    text: '10 - 24 m',
+                    value: 2
+                },{
+                    name: 'quest006',
+                    text: '25 - 49 m',
+                    value: 3
+                },{
+                    name: 'quest006',
+                    text: '50 - 99 m',
+                    value: 4
+                },{
+                    name: 'quest006',
+                    text: '> 100 m',
+                    value: 5
+                }]
+            },{
+                title: 'Traffic',
+                values: [{
+                    name: 'quest007',
+                    text: '< 20,000 vehicle/day',
+                    value: 1
+                },{
+                    name: 'quest007',
+                    text: '20,000 - 50,000 vehicle/day',
+                    value: 2
+                },{
+                    name: 'quest007',
+                    text: '50,001 - 80,000 vehicle/day',
+                    value: 3
+                },{
+                    name: 'quest007',
+                    text: '80,001 - 100,000 vehicle/day',
+                    value: 4
+                },{
+                    name: 'quest007',
+                    text: '> 100,000 vehicle/day',
+                    value: 5
+                }]
+            },{
+                title: 'Rata-rata kecepatan kendaraan',
+                values: [{
+                    name: 'quest008',
+                    text: '< 60 km/jam',
+                    value: 1
+                },{
+                    name: 'quest008',
+                    text: '40 - 60 km/jam',
+                    value: 2
+                },{
+                    name: 'quest008',
+                    text: '20 - 40 km/jam',
+                    value: 3
+                },{
+                    name: 'quest008',
+                    text: '10 - 20 km/jam',
+                    value: 4
+                },{
+                    name: 'quest008',
+                    text: '> 10 km/jam',
+                    value: 5
+                }]
+            },{
+                title: 'Jarak dengan OOH competitor',
+                values: [{
+                    name: 'quest009',
+                    text: '81 - 150 m',
+                    value: 1
+                },{
+                    name: 'quest009',
+                    text: '30 - 80 m',
+                    value: 2
+                },{
+                    name: 'quest009',
+                    text: '81 - 150 m',
+                    value: 3
+                },{
+                    name: 'quest009',
+                    text: '151 - 200 m',
+                    value: 4
+                },{
+                    name: 'quest009',
+                    text: '> 200 m',
+                    value: 5
+                }]
+            },{
+                title: 'Clear view (dari pohon, kabel, OOH lain, dll)',
+                values: [{
+                    name: 'quest010',
+                    text: '80%',
+                    value: 1
+                },{
+                    name: 'quest010',
+                    text: '85%',
+                    value: 2
+                },{
+                    name: 'quest010',
+                    text: '90%',
+                    value: 3
+                },{
+                    name: 'quest010',
+                    text: '95%',
+                    value: 4
+                },{
+                    name: 'quest010',
+                    text: '100%',
+                    value: 5
+                }]
+            },{
+                title: 'Kelas Jalan',
+                values: [{
+                    name: 'quest011',
+                    text: 'Lingkungan',
+                    value: 1
+                },{
+                    name: 'quest011',
+                    text: 'Ekonomi 2',
+                    value: 2
+                },{
+                    name: 'quest011',
+                    text: 'Ekonomi 1',
+                    value: 3
+                },{
+                    name: 'quest011',
+                    text: 'Premium Area',
+                    value: 4
+                },{
+                    name: 'quest011',
+                    text: 'Protokol',
+                    value: 5
+                }]
+            }],
+        }
+    }
+
+    render(){
+        return(
+            <div>
+                <table className="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Point Review</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            this.state.review.map((item, index) => {
+                                return(
+                                    <tr key={index}>
+                                        <td>{item.title}</td>
+                                         {item.values.map((subItem, subIndex) => {
+                                             return (
+                                                 <td key={subIndex}>
+                                                     <label className="check">
+                                                         <input type="radio" className="iradio" value={subItem.value} name={subItem.name} /> 
+                                                         {subItem.text}
+                                                     </label>
+                                                 </td>
+                                             )
+                                         })}
+                                    </tr>
+                                )
+                            })
+                        }
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+}
+class Content extends React.Component {
+    constructor(props){
+        super(props);
+    }
+
+    render(){
+        return(
+            <div>
+                <h3>Content</h3>
+                <div className="form-group">
+                    <div className="col-md-4" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Period</label>
+                        <input type="text" className="form-control" id="province" name="" />
+                    </div>
+                </div>
+
+                <h4>Slot</h4>
+                <div>
+                    <button className="btn btn-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>1</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>2</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>3</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>4</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>5</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>6</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>7</button>
+                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>8</button>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'start' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Contract</label>
+                        <select className="form-control select" id="contract" name="contract"></select>
+                    </div>
+
+                    <div className="col-md-3" style={{ paddingLeft: '1em', paddingRight: '1em', display: 'grid' }}>
+                        <label className="control-label bold">&nbsp;</label>
+                        <input type="button" className="btn btn-primary" value="Reset Button"/>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Industry</label>
+                        <select className="form-control select" id="contract" name="contract"></select>
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Sub-Industry</label>
+                        <select className="form-control select" id="contract" name="contract"></select>
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Advertiser</label>
+                        <select className="form-control select" id="contract" name="contract"></select>
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Brand</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Campaign Title</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                        <label className="control-label bold">Link Video</label>
+                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                    </div>
+                </div>
+
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em', display: 'grid' }}>
+                        <label className="control-label bold text-left">Daytime Image</label>
+                        <img src="https://placeimg.com/640/480/any" style={{width: '200px'}} />
+                        <input type="file" className="form-control" style={{marginTop: '.3em'}} />
+                    </div>
+
+                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em', display: 'grid' }}>
+                        <label className="control-label bold text-left">Nighttime Image</label>
+                        <img src="https://placeimg.com/640/480/any" style={{width: '200px'}} />
+                        <input type="file" className="form-control" style={{marginTop: '.3em'}} />
+                    </div>
+                </div>
+
+            </div>
+        );
+    }
+}
+
+class ContractList extends React.Component {
+    constructor(props){
+        super(props);
+    }
+
+    renderTable(){
+        $('#dataTableContract').dataTable({            
+            destroy: true,
+            ordering: false,
+            columnDefs: [
+                { "width": "1%", "targets": 0 },
+                // { "width": "5%", "targets": 9 },
+            ],
+        });
+    }
+
+    openModal(){
+        $('#modalContract').modal('show');
+    }
+
+    componentDidUpdate(){
+        this.renderTable();
+    }
+
+    render(){
+        const rows = [];
+        return(
+            <div className="col-md-12">
+                <h3>Contract List</h3>
+                <div style={{ display: 'flex', justifyContent: 'end' }}>
+                    <button className="btn btn-primary" onClick={() => this.openModal()}>Add Contract</button>
+                </div>
+                <br />
+                <table id="dataTableContract" style={{borderBottom: '1px solid #E5E5E5'}} className="table table-sm table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th className="text-center" width="1%">No</th>
+                            <th className="">Client</th>
+                            <th className="">Start Date</th>
+                            <th className="">End Date</th>
+                            <th className="">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <div className="modal fade" tabIndex="-1" role="dialog" id="modalContract">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header" style={{borderBottom: '1px solid #ddd !important'}}>
+                                <button type="button" className="close" data-dismiss="modal"><span>&times;</span></button>
+                                <h3 className="modal-title" id="">Add Contract</h3>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                        <label className="control-label bold">Client</label>
+                                        <select className="form-control select" id="province" name="province"></select>
+                                    </div>
+                                </div>
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                        <label className="control-label bold">Start Date</label>
+                                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                                    </div>
+
+                                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                        <label className="control-label bold">End Date</label>
+                                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                                    </div>
+                                </div>
+                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                        <label className="control-label bold">Remarks</label>
+                                        <textarea className="form-control" id="province" name="province"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                                <button type="button" className="btn btn-primary">Add Contract</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>     
+        );
+    }
+}
+
 class Table extends React.Component {
     constructor(props){
         super(props);
@@ -994,13 +1480,13 @@ class Request extends React.Component {
                             </div>
 
                             <div className="tab-pane" id="tab-contract">
-                                <div>Contract</div>
+                                <ContractList />
                             </div>
                             <div className="tab-pane" id="tab-content">
-                                <div>Content</div>
+                                <Content />
                             </div>
                             <div className="tab-pane" id="tab-score">
-                                <div>Score</div>
+                                <Score />
                             </div>
                         </div>
                     </div>
