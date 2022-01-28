@@ -1,3 +1,5 @@
+import services from "../services/services";
+
 class Score extends React.Component {
     constructor(props){
         super(props);
@@ -509,18 +511,20 @@ class Table extends React.Component {
         const rows = this.props.data.map((item, index) => {
             return (
                 <tr key={index}>
-                    <td>{item.no}</td>
+                    <td>{(parseInt(index) + 1)}</td>
                     <td>{item.no_cnv}</td>
-                    <td>{item.prisma_id}</td>
-                    <td>{item.district}</td>
+                    <td>{item.no_site}</td>
+                    <td>{item.district_name}</td>
                     <td>{item.address}</td>
-                    <td>{item.type}</td>
-                    <td>{item.size}</td>
+                    <td>{item.otyp_name}</td>
+                    <td>{item.panjang + 'x' + item.lebar + 'm'}</td>
                     <td>{item.traffic}</td>
-                    <td>{item.price}</td>
+                    <td>{numberToMoney(item.pricelist_12bulan)}</td>
                     <td>
-                        <Link to={`/request/${this.props.type}/${index}`}>
-                            <button className='btn btn-primary'>TEST</button>
+                        <Link to={`/request/${this.props.type}/${item.ooh_id}`}>
+                            <button className='btn btn-primary'>
+                                <span className="menu-icon icon-pencil" title="Edit"></span>
+                            </button>
                         </Link>
                     </td>
                 </tr>
@@ -571,8 +575,17 @@ class Home extends React.Component {
         }
     }
 
-    getDataTable(){
-        var data = [{
+    async getDataTable(tab){
+        let data = [];
+        let result = await services.getDataRequestValidation(tab);
+        
+        $.each(result.data, function(index, value){
+            data.push(value);
+        });
+        
+        console.log("DATA", {result, tab, data});
+        return data;
+        var temp = [{
             "no": "1",
             "no_cnv": "2312312",
             "prisma_id": "TEST AA",
@@ -597,23 +610,23 @@ class Home extends React.Component {
             "action": "",
           }];
         
-          return data;
+          return temp;
     }
 
-    componentDidMount(){
+    async componentDidMount(){
         this.setState({
             tab: this.state.tab,
             header: this.state.header,
-            dataTable: this.getDataTable(this.state.tab),
-        })
+            dataTable: await this.getDataTable(this.state.tab),
+        });
     }
 
-    handleClick(tab){
+    async handleClick(tab){
         this.setState({
             tab: tab,
             header: this.state.header,
-            dataTable: this.getDataTable(tab),
-        })
+            dataTable: await this.getDataTable(tab),
+        });
     }
 
     render(){
@@ -990,10 +1003,18 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
 class Info extends React.Component {
     constructor(props){
         super(props);
+        console.log("PROPS", props);
+        const { data } = props;
         this.state = {
             step: 1,
-            email: 'test@mail.com',
-            kode_produk: '',
+            ooh_id: data.ooh_id,
+            kode_produk: data.kode_produk,
+            owner: data.owner,
+            no_site: data.no_site,
+            ooh_type: data.ooh_type,
+            no_cnv: data.no_cnv,
+            ooh_status: data.ooh_status,
+            type_produk: data.type_produk
         }
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
@@ -1021,8 +1042,8 @@ class Info extends React.Component {
     }
 
     render(){
-        const { email } = this.state;
-        const values = { email };
+        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk } = this.state;
+        console.log('VALUES', values)
         switch (this.state.step) {
             case 1:
                 return (
@@ -1066,14 +1087,24 @@ class Info extends React.Component {
 class Request extends React.Component {
     constructor(props){
         super(props)
+        this.state = {
+            dataOOH: {}
+        }
     }
+
+    async componentDidMount(){
+        const { ooh_id } = this.props.match.params;
+        let data = await services.getDataOOHID(ooh_id);
+        console.log('DATA OOH ID', data);
+        this.setState({
+            dataOOH: data
+        });
+    }
+
     render(){
         const Link = ReactRouterDOM.Link;
-        const { type, no_cnv } = this.props.match.params;
-        console.log({
-            type,
-            no_cnv
-        });
+        const { no_cnv, ooh_id, no_site, view, kode_produk, address, owner, district, ooh_type, sub_district, ooh_status, type_produk } = this.state.dataOOH;
+        var dataInfo = { no_cnv, ooh_id, kode_produk, no_site, view, address, owner, ooh_type, district, sub_district, ooh_status, type_produk };
         return(
             <div>
                 <h1>Request Validation: { type }</h1>
@@ -1109,7 +1140,9 @@ class Request extends React.Component {
                         </ul>
                         <div className="panel-body tab-content">
                             <div className="tab-pane active" id="tab-info">
-                                <Info />
+                                {typeof dataInfo.ooh_id !== 'undefined' && (
+                                    <Info data={dataInfo} />
+                                )}
                                 {/* <form className="form-horizontal" id="forminfo">
                                     <div className="wizard">
                                         <div id="step-1">
@@ -1508,7 +1541,7 @@ class App extends React.Component {
         return(
             <ReactRouterDOM.HashRouter>
                 <Route exact path="/" component={Home} />
-                <Route path="/request/:type/:no_cnv" component={Request} />
+                <Route path="/request/:type/:ooh_id" component={Request} />
             </ReactRouterDOM.HashRouter>
         )
     }
