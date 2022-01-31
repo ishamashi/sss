@@ -924,23 +924,23 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">OOH ID</label>
-                        <input type="text" className="form-control" readOnly defaultValue={'1'} placeholder="OOH ID" id="ooh_id_disabled" />
+                        <input type="text" className="form-control" readOnly defaultValue={values.ooh_id} placeholder="OOH ID" />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Canvasing ID</label>
-                        <input type="text" disabled="" className="form-control" placeholder="Canvasing ID" id="no_cnv_disabled" name="no_cnv_disabled" />
+                        <input type="text" className="form-control" readOnly defaultValue={values.no_cnv} placeholder="Canvasing ID" name="no_cnv_disabled" />
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">PRISMA ID</label>
-                        <input type="text" className="form-control" placeholder="PRISMA ID" id="no_site" name="no_site" />
+                        <input type="text" className="form-control" readOnly defaultValue={values.no_site} placeholder="PRISMA ID" id="no_site" name="no_site" />
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Owner</label>
-                        <select className="form-control select" id="ownerOOH" name="ownerOOH">
+                        <select className="form-control select" id="ownerOOH" name="ownerOOH" value={values.owner}>
                             <option value="PRISMA">PRISMA</option>
                             <option value="NON-PRISMA">NON-PRISMA</option>
                         </select>
@@ -1060,7 +1060,7 @@ class Info extends React.Component {
     render(){
         console.log('STATE>>>>', this.state);
         const { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk } = this.state;
-        const values = { ooh_id, kode_produk, owner, no_site, ooh_type };
+        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk };
         console.log('VALUES', values);
 
         switch (this.state.step) {
