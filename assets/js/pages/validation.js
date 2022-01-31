@@ -492,7 +492,7 @@ class Table extends React.Component {
     }
     
     renderTable(){
-        $('#dataTable').dataTable({            
+        $('#dataTable').dataTable({
             destroy: true,
             ordering: false,
             columnDefs: [
@@ -503,12 +503,18 @@ class Table extends React.Component {
     }
 
     componentDidUpdate(){
-        this.renderTable();
+        // setTimeout(() => {
+        //     this.renderTable();
+        // }, 2000);
     }
 
-    render(){
+    renderRow(data = []){
         const Link = ReactRouterDOM.Link;
-        const rows = this.props.data.map((item, index) => {
+        if(data.length < 1){
+            return;
+        }
+
+        const rows = data.map((item, index) => {
             return (
                 <tr key={index}>
                     <td>{(parseInt(index) + 1)}</td>
@@ -530,6 +536,13 @@ class Table extends React.Component {
                 </tr>
             )
         });
+
+        return rows;
+    }
+
+    render(){
+        const { data } = this.props;
+        const rows = this.renderRow(data);
 
         return(
             <div className="tab-pane active" id="tab-cont">
@@ -622,10 +635,12 @@ class Home extends React.Component {
     }
 
     async handleClick(tab){
+        let dataTable = await this.getDataTable(tab);
+        // console.log('dataTable', dataTable);
         this.setState({
             tab: tab,
             header: this.state.header,
-            dataTable: await this.getDataTable(tab),
+            dataTable
         });
     }
 
@@ -1003,18 +1018,19 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
 class Info extends React.Component {
     constructor(props){
         super(props);
-        console.log("PROPS", props);
+        // console.log("PROPS", props);
         const { data } = props;
         this.state = {
             step: 1,
-            ooh_id: data.ooh_id,
-            kode_produk: data.kode_produk,
-            owner: data.owner,
-            no_site: data.no_site,
-            ooh_type: data.ooh_type,
-            no_cnv: data.no_cnv,
-            ooh_status: data.ooh_status,
-            type_produk: data.type_produk
+            lorem: 'ipsum',
+            // ooh_id: data.ooh_id || '',
+            // kode_produk: data.kode_produk || '',
+            // owner: data.owner || '',
+            // no_site: data.no_site || '',
+            // ooh_type: data.ooh_type || '',
+            // no_cnv: data.no_cnv || '',
+            // ooh_status: data.ooh_status || '',
+            // type_produk: data.type_produk || ''
         }
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
@@ -1042,8 +1058,11 @@ class Info extends React.Component {
     }
 
     render(){
-        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk } = this.state;
-        console.log('VALUES', values)
+        console.log('STATE>>>>', this.state);
+        const { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk } = this.state;
+        const values = { ooh_id, kode_produk, owner, no_site, ooh_type };
+        console.log('VALUES', values);
+
         switch (this.state.step) {
             case 1:
                 return (
