@@ -1023,14 +1023,14 @@ class Info extends React.Component {
         this.state = {
             step: 1,
             lorem: 'ipsum',
-            // ooh_id: data.ooh_id || '',
-            // kode_produk: data.kode_produk || '',
-            // owner: data.owner || '',
-            // no_site: data.no_site || '',
-            // ooh_type: data.ooh_type || '',
-            // no_cnv: data.no_cnv || '',
-            // ooh_status: data.ooh_status || '',
-            // type_produk: data.type_produk || ''
+            ooh_id: data.ooh_id || '',
+            kode_produk: data.kode_produk || '',
+            owner: data.owner || '',
+            no_site: data.no_site || '',
+            ooh_type: data.ooh_type || '',
+            no_cnv: data.no_cnv || '',
+            ooh_status: data.ooh_status || '',
+            type_produk: data.type_produk || ''
         }
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
