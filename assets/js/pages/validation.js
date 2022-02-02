@@ -598,32 +598,6 @@ class Home extends React.Component {
         
         console.log("DATA", {result, tab, data});
         return data;
-        var temp = [{
-            "no": "1",
-            "no_cnv": "2312312",
-            "prisma_id": "TEST AA",
-            "district": "Tokyo",
-            "address": "ASS",
-            "type": "1",
-            "size": "122",
-            "traffic": "1123",
-            "price": "$162,700",
-            "action": "",
-          },
-          {
-            "no": "1",
-            "no_cnv": "2312312",
-            "prisma_id": "TEST AA",
-            "district": "Tokyo",
-            "address": "ASS",
-            "type": "1",
-            "size": "122",
-            "traffic": "1123",
-            "price": "$162,700",
-            "action": "",
-          }];
-        
-          return temp;
     }
 
     async componentDidMount(){
@@ -735,7 +709,14 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Jumlah Sisi</label>
-                        <select className="form-control select" id="province" name="province"></select>
+                        <select className="form-control select" id="jumlah_sisi" name="jumlah_sisi">
+                            <option value="1">1 Sisi</option>
+                            <option value="2">2 Sisi</option>
+                            <option value="3">3 Sisi</option>
+                            <option value="4">4 Sisi</option>
+                            <option value="5">5 Sisi</option>
+                            <option value="6">6+ Sisi</option>
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
@@ -757,14 +738,20 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Orientasi</label>
-                        <select className="form-control select" id="province" name="province"></select>
+                        <select className="form-control select" id="orientasi" name="orientasi">
+                            <option value="1">Vertical</option>
+                            <option value="2">Horizontal</option>
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lighting</label>
-                        <select className="form-control select" id="province" name="province"></select>
+                        <select className="form-control select" id="lighting" name="lighting">
+                            <option value="1">Frontlite</option>
+                            <option value="2">Backlite</option>
+                        </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <div className="col-md-6" style={{paddingLeft: '0'}}>
@@ -784,40 +771,81 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Fixing</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="fixing" name="fixing">
+                            <option value="Uni-Pole">Uni-Pole</option>
+                            <option value="Duo-Pole">Duo-Pole</option>
+                            <option value="Three-Pole">Three-Pole</option>
+                            <option value="Wall Mounted">Wall Mounted</option>
+                            <option value="Free Standing">Free Standing</option>
+                            <option value="Hanging">Hanging</option>
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Competition</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="competition" name="competition">    
+                            <option value="None">None</option>
+                            <option value="1 Site">1 Site</option>
+                            <option value="2 Sites">2 Sites</option>
+                            <option value="3 Sites">3 Sites</option>
+                            <option value="4 Sites">4 Sites</option>
+                            <option value="5 Sites">5 Sites</option>
+                            <option value="6+ Sites">6+ Sites</option>
+                        </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Visible Distance</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="visible_distance" name="visible_distance">
+                            <option value="0-25m">0-25m</option>
+                            <option value="25-50m">25-50m</option>
+                            <option value="50-100m">50-100m</option>
+                            <option value="100-200m">100-200m</option>
+                            <option value="200m+">200m+</option>
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Angle of Vision</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="angle_of_vision" name="angle_of_vision">
+                            <option value="Head On">Head On</option>
+                            <option value="Nearside - Angled Toward">Nearside - Angled Toward</option>
+                            <option value="Offside - Angled Toward">Offside - Angled Toward</option>
+                            <option value="Nearside - Angled Away">Nearside - Angled Away</option>
+                            <option value="Offside - Angled Away">Offside - Angled Away</option>
+                            <option value="Nearside - Parallel to the Road">Nearside - Parallel to the Road</option>
+                            <option value="Offside - Parallel to the Road">Offside - Parallel to the Road</option>
+                        </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Obstruction</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="obstruction" name="obstruction">
+                            <option value="None">None (0%)</option>
+                            <option value="Slight">Slight (0-20%)</option>
+                            <option value="Moderate">Moderate (20-50%)</option>
+                            <option value="Severe">Severe ({'>'}50%)</option>
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Street Lite</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="street_lite" name="street_lite">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Road Type</label>
-                        <select className="form-control select" id="fixing" name="fixing"></select>
+                        <select className="form-control select" id="road_type" name="road_type">
+                            <option value="Single Carriage">Single Carriage</option>
+                            <option value="Dual Carriages">Dual Carriages</option>
+                            <option value="3+ Carriages">3+ Carriages</option>
+                        </select>
                     </div>
                 </div>
                 <div className="form-group">
@@ -852,6 +880,39 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
 }
 
 const Location = ({nextStep, prevStep, handleChange, values}) => {
+    const { useEffect, useState } = React;
+    console.log('VALUES LOC', values);
+
+    const [dataLocation, setDataLocation] = useState({
+        dataProv: [],
+        dataDistrict: [],
+        dataSubDistrict: [],
+    });
+
+    const [province, setProvince] = useState(values.province);
+    const [district, setDistrict] = useState(values.district);
+
+    useEffect(async () => {
+      let dataProv = await services.filterArea();
+      let dataDistrict = await services.filterArea({province: values.province});
+      let dataSubDistrict = await services.filterArea({province: values.province, district: values.district});
+
+      setDataLocation({
+        dataProv,
+        dataDistrict,
+        dataSubDistrict
+      });
+      $('.select').selectpicker('refresh');    
+
+      return () => {
+          setDataLocation({
+            dataProv: [],
+            dataDistrict: [],
+            dataSubDistrict: [],
+        });
+      }
+    }, [setDataLocation, province, district]);
+
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -859,23 +920,62 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Province</label>
-                        <select className="form-control select" id="province" name="province"></select>
+                        <select className="form-control select" name="province"  value={province} onChange={(e) => {
+                            handleChange({
+                                type: 'province',
+                                value: e.target.value
+                            });
+                            setProvince(e.target.value);
+                            }}>
+                            {dataLocation.dataProv.map((item, index) => {
+                                return (
+                                    <option key={index} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </select>
                     </div>
-
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">City / State</label>
-                        <select className="form-control select" id="city" name="city"></select>
+                        <label className="control-label bold">District</label>
+                        <select className="form-control select" name="district_" value={district} onChange={(e) => {
+                            handleChange({
+                                type: 'district',
+                                value: e.target.value
+                            });
+                            setDistrict(e.target.value);
+                            }}>
+                            {dataLocation.dataDistrict.map((item, index) => {
+                                return (
+                                    <option key={index} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">District</label>
-                        <select className="form-control select" id="city" name="city"></select>
+                        <label className="control-label bold">City / State</label>
+                        <select className="form-control select" name="city" value={values.sub_district} onChange={(e) => {
+                            handleChange({
+                                type: 'sub_district',
+                                value: e.target.value
+                            });
+                            }}>
+                            {dataLocation.dataSubDistrict.map((item, index) => {
+                                return (
+                                    <option key={index} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Address</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Address" />
+                        <input type="text" className="form-control" onChange={(e) => {
+                            handleChange({
+                                type: 'address',
+                                value: e.target.value
+                            });
+                        }} value={values.address} placeholder="Address" />
                     </div>
                 </div>
 
@@ -883,11 +983,21 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <div className="col-md-5" style={{paddingLeft: '0'}}>
                             <label className="control-label bold">Latitude</label>
-                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                            <input type="text" className="form-control" onChange={(e) => {
+                                handleChange({
+                                type: 'latitude',
+                                value: e.target.value
+                            });
+                            }} defaultValue={values.latitude} placeholder="Latitude" />
                         </div>
                         <div className="col-md-5">
                             <label className="control-label bold">Longitude</label>
-                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Longitude" />
+                            <input type="text" className="form-control" onChange={(e) => {
+                                handleChange({
+                                type: 'longitude',
+                                value: e.target.value
+                            });
+                            }} defaultValue={values.longitude} placeholder="Longitude" />
                         </div>
                         <div className="col-md-2" style={{marginTop: '25px'}}>
                             <label className="control-label bold">&nbsp;</label>
@@ -897,7 +1007,13 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                     
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">View</label>
-                        <input type="text" className="form-control" readOnly defaultValue={'1'} placeholder="View" />
+                        <input type="text" className="form-control" onChange={(e) => {
+                            handleChange({
+                                type: 'view',
+                                value: e.target.value
+                            });
+                        }}
+                            defaultValue={values.view} placeholder="View" />
                     </div>
                 </div>
 
@@ -917,6 +1033,21 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
 }
 
 const GeneralInfo = ({nextStep, handleChange, values}) => {
+    const { useEffect, useState } = React;
+    const [kodeProduk, setKodeProduk] = useState([]);
+    const [tipeProduk, setTipeProduk] = useState([]);
+
+    useEffect(async () => {
+        setKodeProduk(await services.kodeProduk());
+        setTipeProduk(await services.selboxCustom('ooh_type'));
+        $('.select').selectpicker('refresh');
+
+        return () => {
+            setKodeProduk([]);
+            setTipeProduk([]);
+        }
+    }, [setKodeProduk, setTipeProduk]);
+
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -940,7 +1071,12 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Owner</label>
-                        <select className="form-control select" id="ownerOOH" name="ownerOOH" value={values.owner}>
+                        <select className="form-control select" id="ownerOOH" name="ownerOOH" onChange={(e) => {
+                            handleChange({
+                                type: 'owner',
+                                value: e.target.value
+                            })
+                        }} value={values.owner}>
                             <option value="PRISMA">PRISMA</option>
                             <option value="NON-PRISMA">NON-PRISMA</option>
                         </select>
@@ -954,9 +1090,19 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                             className="form-control select" 
                             id="kode_produk" 
                             name="kode_produk" 
-                            onChange={() => handleChange('kode_produk')}
-                            defaultValue={values.kode_produk}
+                            onChange={(e) => {
+                                handleChange({
+                                    type: 'kode_produk',
+                                    value: e.target.value
+                                });
+                            }}
+                            value={values.kode_produk}
                         >
+                            {kodeProduk.map((item, index) => {
+                                return (
+                                    <option key={index} value={item.id}>{item.value}</option>
+                                );
+                            })}
                         </select>
                     </div>
                     
@@ -967,10 +1113,10 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                             id="type_produk" 
                             name="type_produk"
                             onChange={(e) => handleChange({
-                                type: 'kode_produk',
+                                type: 'tipe_produk',
                                 value: e.target.value
                             })}
-                            defaultValue={values.type_produk}
+                            value={values.type_produk}
                             >
                             <option value="H">Horizontal</option>
                             <option value="V">Vertical</option>
@@ -985,7 +1131,18 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Tipe OOH</label>
-                        <select className="form-control select" id="ooh_type" name="ooh_type"></select>
+                        <select className="form-control select" id="ooh_type" name="ooh_type"
+                        onChange={(e) => handleChange({
+                            type: 'ooh_type',
+                            value: e.target.value
+                        })}
+                        value={values.ooh_type}>
+                            {tipeProduk.map((item, index) => {
+                                return (
+                                    <option key={index} value={item.id}>{item.value}</option>
+                                );
+                            })}
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
@@ -1018,7 +1175,7 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
 class Info extends React.Component {
     constructor(props){
         super(props);
-        // console.log("PROPS", props);
+        console.log("PROPS", props);
         const { data } = props;
         this.state = {
             step: 1,
@@ -1030,15 +1187,29 @@ class Info extends React.Component {
             ooh_type: data.ooh_type || '',
             no_cnv: data.no_cnv || '',
             ooh_status: data.ooh_status || '',
-            type_produk: data.type_produk || ''
+            type_produk: data.type_produk || '',
+            province: data.province,
+            district: data.district,
+            sub_district: data.sub_district,
+            address: data.address,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            view: data.view
+
         }
+
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(e){
-        console.log('HANDLE', {type: e.type, value: e.value});
+        let type = e.type;
+        let value = e.value;
+        // console.log('HANDLE', {type, value});
+        this.setState({
+            [type]:value
+        });
     }
 
     prevStep() {
@@ -1046,7 +1217,6 @@ class Info extends React.Component {
         this.setState({
             step: (step - 1)
         });
-        console.log("PREV", step);
     }
 
     nextStep() {
@@ -1054,14 +1224,12 @@ class Info extends React.Component {
         this.setState({
             step: (step + 1)
         });
-        console.log("NEXT", step);
     }
 
     render(){
-        console.log('STATE>>>>', this.state);
-        const { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk } = this.state;
-        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk };
-        console.log('VALUES', values);
+        console.log('STATE INFO >>>>', this.state);
+        const { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk, province, sub_district, district, address, latitude, longitude, view } = this.state;
+        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk, province, sub_district, district, address, latitude, longitude, view };
 
         switch (this.state.step) {
             case 1:
@@ -1122,10 +1290,26 @@ class Request extends React.Component {
 
     render(){
         const Link = ReactRouterDOM.Link;
-        const { no_cnv, ooh_id, no_site, view, kode_produk, address, owner, district, ooh_type, sub_district, ooh_status, type_produk } = this.state.dataOOH;
-        var dataInfo = { no_cnv, ooh_id, kode_produk, no_site, view, address, owner, ooh_type, district, sub_district, ooh_status, type_produk };
+        const { no_cnv, ooh_id, no_site, view, kode_produk, address, owner, district, ooh_type, province, sub_district, ooh_status, type_produk, latitude, longitude } = this.state.dataOOH;
+        var dataInfo = { 
+            no_cnv, 
+            ooh_id, 
+            kode_produk, 
+            no_site, 
+            view, 
+            address, 
+            owner, 
+            ooh_type, 
+            district, 
+            sub_district, 
+            ooh_status,
+            province,
+            type_produk,
+            latitude, 
+            longitude,
+         };
         return(
-            <div>
+            <div style={{marginBottom: '10em'}}>
                 <h1>Request Validation: { type }</h1>
                 <div className='row'>
                     <div className='col-md-4'>
@@ -1162,373 +1346,6 @@ class Request extends React.Component {
                                 {typeof dataInfo.ooh_id !== 'undefined' && (
                                     <Info data={dataInfo} />
                                 )}
-                                {/* <form className="form-horizontal" id="forminfo">
-                                    <div className="wizard">
-                                        <div id="step-1">
-
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">OOH ID</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" disabled="" className="form-control"
-                                                            placeholder="OOH ID" id="ooh_id_disabled" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Canvasing ID</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" disabled="" className="form-control"
-                                                            placeholder="Canvasing ID" id="no_cnv_disabled"
-                                                            name="no_cnv_disabled" />
-                                                        <input type="hidden" id="no_cnv" name="no_cnv" />
-                                                    </div>
-                                                </div>
-
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">PRISMA ID</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="PRISMA ID"
-                                                            id="no_site" name="no_site" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Propinsi</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="provinceOOH" name="province"></select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Kota</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="district" name="district"></select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Kecamatan</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="sub_district" name="sub_district"></select>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Alamat</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Alamat" id="address" name="address" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Latitude</label>
-                                                    <div className="col-md-3">
-                                                        <input type="text" className="form-control" placeholder="Latitude" id="latitude" name="latitude" />
-                                                    </div>
-                                                    <label className="col-md-3 control-label">Longitude</label>
-                                                    <div className="col-md-3">
-                                                        <input type="text" className="form-control" placeholder="Longitude" id="longitude" name="longitude" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Kode Produk</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="kode_produk" name="kode_produk"></select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">OOH Status</label>
-                                                    <div className="col-md-9">
-                                                        <div className="col-md-4">
-                                                            <label className="check"><input type="radio" className="iradio"
-                                                                    checked="checked" value="1" id="ooh_status"
-                                                                    name="ooh_status" /> Available</label>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <label className="check">
-                                                                <input type="radio" className="iradio" value="2" id="ooh_status" name="ooh_status" />
-                                                                Tersewa
-                                                            </label>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <label className="check"><input type="radio" className="iradio" value="3" id="ooh_status" name="ooh_status" />
-                                                                Expired
-                                                            </label>
-                                                        </div>
-                                                        <br />
-                                                    </div>
-                                                </div>
-
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">OOH Tipe</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="ooh_type"
-                                                            name="ooh_type">
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Jumlah Sisi</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="jumlah_sisi"
-                                                            name="jumlah_sisi">
-                                                            <option value="1">1 Sisi</option>
-                                                            <option value="2">2 Sisi</option>
-                                                            <option value="3">3 Sisi</option>
-                                                            <option value="4">4 Sisi</option>
-                                                            <option value="5">5 Sisi</option>
-                                                            <option value="6">6+ Sisi</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="step-2">
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Jumlah Titik</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Angka" id="jumlah_set" name="jumlah_set" value="1" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Panjang</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="..M" id="panjang" name="panjang" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lebar</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="..M" id="lebar" name="lebar" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Orientasi</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="orientasi" name="orientasi">
-                                                            <option value="1">Vertical</option>
-                                                            <option value="2">Horizontal</option>
-                                                        </select>
-
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lighting</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="lighting" name="Lightning">
-                                                            <option value="1">Frontlite</option>
-                                                            <option value="2">Backlite</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">View</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="View" id="view" name="view" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Traffic</label>
-                                                    <div className="col-md-6">
-                                                        <input type="text" className="form-control" placeholder="Traffic" id="traffic" name="traffic" value="0" />
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <span className="btn btn-primary btn-small" data-toggle="tooltip" data-placement="right" title="Getting traffic data from this geo location.">Get
-                                                            Traffic Data 
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Score</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" id="vscore" name="vscore" placeholder="VAS" value="0" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    
-                                                </div>
-                                                <div className="form-group" data-lvsd="inventory-edit-price">
-                                                    <label className="col-md-3 control-label">Rate Card</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Rate Card" id="rate_card" name="rate_card" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="step-3">
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 1</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 1" id="lingkungan1" name="lingkungan1" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 2</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 2" id="lingkungan2" name="lingkungan2" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 3</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 3" id="lingkungan3" name="lingkungan3" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 4</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 4" id="lingkungan4" name="lingkungan4" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 5</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 5" id="lingkungan5" name="lingkungan5" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 6</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 6" id="lingkungan6" name="lingkungan6" />
-                                                    </div>
-                                                </div>
-
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 7</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 7" id="lingkungan7" name="lingkungan7" />
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Lingkungan 8</label>
-                                                    <div className="col-md-9">
-                                                        <input type="text" className="form-control" placeholder="Lingkungan 8" id="lingkungan8" name="lingkungan8" />
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div className="col-md-6">
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Fixing</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="fixing" name="fixing">
-                                                            <option value="Uni-Pole">Uni-Pole</option>
-                                                            <option value="Duo-Pole">Duo-Pole</option>
-                                                            <option value="Three-Pole">Three-Pole</option>
-                                                            <option value="Wall Mounted">Wall Mounted</option>
-                                                            <option value="Free Standing">Free Standing</option>
-                                                            <option value="Hanging">Hanging</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Competition</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="competition"
-                                                            name="competition">
-                                                            <option value="None">None</option>
-                                                            <option value="1 Site">1 Site</option>
-                                                            <option value="2 Sites">2 Sites</option>
-                                                            <option value="3 Sites">3 Sites</option>
-                                                            <option value="4 Sites">4 Sites</option>
-                                                            <option value="5 Sites">5 Sites</option>
-                                                            <option value="6+ Sites">6+ Sites</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Visible Distance</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="visible_distance"
-                                                            name="visible_distance">
-                                                            <option value="0-25m">0-25m</option>
-                                                            <option value="25-50m">25-50m</option>
-                                                            <option value="50-100m">50-100m</option>
-                                                            <option value="100-200m">100-200m</option>
-                                                            <option value="200m+">200m+</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Angle Of Vision</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="angle_of_vision"
-                                                            name="angle_of_vision">
-                                                            <option value="Head On">Head On</option>
-                                                            <option value="Nearside - Angled Toward">Nearside - Angled
-                                                                Toward</option>
-                                                            <option value="Offside - Angled Toward">Offside - Angled
-                                                                Toward</option>
-                                                            <option value="Nearside - Angled Away">Nearside - Angled
-                                                                Away</option>
-                                                            <option value="Offside - Angled Away">Offside - Angled Away
-                                                            </option>
-                                                            <option value="Nearside - Parallel to the Road">Nearside -
-                                                                Parallel to the Road</option>
-                                                            <option value="Offside - Parallel to the Road">Offside -
-                                                                Parallel to the Road</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Obstruction</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="obstruction"
-                                                            name="obstruction">
-                                                            <option value="None">None (0%)</option>
-                                                            <option value="Slight">Slight (0-20%)</option>
-                                                            <option value="Moderate">Moderate (20-50%)</option>
-                                                            <option value="Severe">Severe ({'>'}50%)</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Street Lite</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="street_lite"
-                                                            name="street_lite">
-                                                            <option value="Yes">Yes</option>
-                                                            <option value="No">No</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">Road Type</label>
-                                                    <div className="col-md-9">
-                                                        <select className="form-control select" id="road_type"
-                                                            name="road_type">
-                                                            <option value="Single Carriage">Single Carriage</option>
-                                                            <option value="Dual Carriages">Dual Carriages</option>
-                                                            <option value="3+ Carriages">3+ Carriages</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="col-md-3 control-label">OOH Flag</label>
-                                                    <div className="col-md-9">
-                                                        <div className="col-md-6">
-                                                            <label className="check"><input type="radio" className="iradio"
-                                                                    name="ooh_flag" value="1" checked="checked" />
-                                                                Active</label>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <label className="check"><input type="radio" className="iradio"
-                                                                    name="ooh_flag" value="0" /> Inactive</label>
-                                                        </div>
-                                                        <br />
-                                                    </div>
-                                                </div>
-                                                <input type="hidden" id="ooh_id" name="ooh_id" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form> */}
                             </div>
 
                             <div className="tab-pane" id="tab-contract">
