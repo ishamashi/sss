@@ -399,10 +399,76 @@ class Content extends React.Component {
 class ContractList extends React.Component {
     constructor(props){
         super(props);
+        const { data } = props;
+        this.state = {
+            company: [],
+            id_client: '',
+            contract_start: '',
+            contract_end: '',
+            remarks: '',
+            showAlert: false,
+            ooh_id: data.ooh_id,
+            tableContract: [],
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.changeContractStart = this.changeContractStart.bind(this);
+        this.changeContractEnd = this.changeContractEnd.bind(this);
+    }
+
+    handleChange(e){
+        const { name, value } = e.target;
+        console.log("HANDLE CHANGEE", {name, value})
+        this.setState({
+            [name]: value.trim()
+        })
+    }
+
+    async handleSubmit(e){
+        e.preventDefault();
+        const{ id_client, contract_start, contract_end, remarks, ooh_id } = this.state;
+        if(id_client === "" || contract_start === "" || contract_end === "" || remarks === ""){
+            this.setState({
+                showAlert: true,
+            });
+            return;
+        }
+
+        let saveContract = await services.postDataContract({
+            cmp_id: ooh_id,
+            contract_start,
+            contract_end,
+            contract_desc: remarks
+        });
+
+        if(saveContract){
+            this.setState({
+                showAlert: false,
+                contract_start: '',
+                contract_end: '',
+                remarks: '',
+            });
+
+            $('#modalContract').modal('hide');
+            swal({
+                title: "Success",
+                text: "Contract berhasil dibuat",
+                type: "success",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Close"
+            });
+        }
+    }
+
+    async getDataContract(){
+        let data = await services.getDataContract(this.state.ooh_id);
+        // console.log('TABLE CONTRACT', data);
+        return data;
     }
 
     renderTable(){
-        $('#dataTableContract').dataTable({            
+        $('#dataTableContract').dataTable({
             destroy: true,
             ordering: false,
             columnDefs: [
@@ -414,14 +480,62 @@ class ContractList extends React.Component {
 
     openModal(){
         $('#modalContract').modal('show');
+        $('#client').selectpicker('refresh');
+    }
+
+    changeContractStart(){
+        let _this = this;
+        $('#contract_start').on("changeDate", function (selected) {
+            var minDate = new Date(selected.date.valueOf());
+            $('#contract_end').datepicker('setStartDate', minDate);
+            _this.setState({
+                contract_start: moment(minDate).format('MM/DD/YYYY')
+            });
+        });
+    }
+
+    changeContractEnd(){
+        let _this = this;
+        $('#contract_end').on("changeDate", function (selected) {
+            var maxDate = new Date(selected.date.valueOf());
+            $('#contract_start').datepicker('setEndDate', maxDate);
+            _this.setState({
+                contract_end: moment(maxDate).format('MM/DD/YYYY')
+            });
+        });
+    }
+
+    async componentDidMount(){
+        let company = await services.getDataClient();
+        let contract = await services.getDataContract(this.state.ooh_id);
+
+        this.setState({
+            company,
+            tableContract: contract,
+        });
+
+        $('#contract_start').datepicker({
+            orientation: "top auto",
+            autoclose: true,
+        });
+
+        $('#contract_end').datepicker({
+            orientation: "top auto",
+            autoclose: true,
+        });
+
+        this.changeContractStart(this);
+        this.changeContractEnd(this);
     }
 
     componentDidUpdate(){
-        this.renderTable();
+        // this.getDataContract();
+        // this.renderTable();
     }
 
     render(){
-        const rows = [];
+        const { company, id_client, showAlert, tableContract, contract_start, contract_end, remarks } = this.state;
+
         return(
             <div className="col-md-12">
                 <h3>Contract List</h3>
@@ -439,45 +553,102 @@ class ContractList extends React.Component {
                             <th className="">Remarks</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                        {tableContract.map((item, index) => {
+                            return(
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.cmp_name}</td>
+                                    <td>{item.contract_start}</td>
+                                    <td>{item.contract_end}</td>
+                                    <td>{item.contract_desc}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
                 </table>
 
-                <div className="modal fade" tabIndex="-1" role="dialog" id="modalContract">
+                <div className="modal fade" role="dialog" id="modalContract">
                     <div className="modal-dialog">
                         <div className="modal-content">
+                        <form onSubmit={this.handleSubmit}>
                             <div className="modal-header" style={{borderBottom: '1px solid #ddd !important'}}>
                                 <button type="button" className="close" data-dismiss="modal"><span>&times;</span></button>
                                 <h3 className="modal-title" id="">Add Contract</h3>
                             </div>
                             <div className="modal-body">
-                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                                        <label className="control-label bold">Client</label>
-                                        <select className="form-control select" id="province" name="province"></select>
+                                { showAlert && (
+                                    <div className="alert alert-danger" role="alert">
+                                        Harap isi seluruh bidang !
+                                        <button type="button" className="close" aria-label="Close" onClick={() => {
+                                            this.setState({
+                                                showAlert: false
+                                            })
+                                        }}>
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
-                                </div>
-                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                                        <label className="control-label bold">Start Date</label>
-                                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                                )
+                                }
+                                    <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                            <label className="control-label bold">Client</label>
+                                            <select value={id_client} className="form-control select" id="client" name="id_client" data-live-search="true" onChange={this.handleChange}>
+                                                {company.map((item, index) => {
+                                                    return(
+                                                        <option key={index} value={item.value}>{item.text}</option>
+                                                    )
+                                                })}
+                                            </select>
+                                        </div>
                                     </div>
+                                    <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                            <label className="control-label bold">Start Date</label>
+                                            {/* <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" /> */}
+                                            <div className="input-group">
+                                                <input type="text" className="form-control date-picker"
+                                                    aria-describedby="basic-addon2"
+                                                    placeholder="From contract end" 
+                                                    name="contract_start"
+                                                    id="contract_start" 
+                                                    onChange={this.handleChange}
+                                                    autoComplete="off"
+                                                    />
+                                                <span className="input-group-addon" id="basic-addon2"><span className="menu-icon icon-calendar"></span></span>
+                                            </div>
+                                        </div>
 
-                                    <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                                        <label className="control-label bold">End Date</label>
-                                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                                        <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                            <label className="control-label bold">End Date</label>
+                                            <div className="input-group">
+                                                <input type="text" className="form-control date-picker"
+                                                    aria-describedby="basic-addon2"
+                                                    placeholder="To contract end" 
+                                                    name="contract_end"
+                                                    id="contract_end"
+                                                    onChange={this.handleChange}
+                                                    autoComplete="off"
+                                                    />
+                                                <span className="input-group-addon" id="basic-addon2"><span
+                                                        className="menu-icon icon-calendar"></span></span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                                        <label className="control-label bold">Remarks</label>
-                                        <textarea className="form-control" id="province" name="province"></textarea>
+                                    <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <div className="col-md-12" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
+                                            <label className="control-label bold">Remarks</label>
+                                            <textarea className="form-control" id="remarks" name="remarks" defaultValue={''}
+                                            onChange={this.handleChange}
+                                            ></textarea>
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                                <button type="button" className="btn btn-primary">Add Contract</button>
+                                <button type="submit" className="btn btn-primary">Add Contract</button>
                             </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -1503,7 +1674,11 @@ class Request extends React.Component {
             angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
             lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
             lingkungan6, lingkungan7, lingkungan8
-         };
+        };
+
+        var dataContractList = {
+            ooh_id,
+        }
 
         return(
             <div style={{marginBottom: '10em'}}>
@@ -1546,7 +1721,7 @@ class Request extends React.Component {
                             </div>
 
                             <div className="tab-pane" id="tab-contract">
-                                <ContractList />
+                                <ContractList data={dataContractList} />
                             </div>
                             <div className="tab-pane" id="tab-content">
                                 <Content />
