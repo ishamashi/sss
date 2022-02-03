@@ -647,46 +647,86 @@ const Environment = ({ prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 1</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 1" />
+                        <input type="text" className="form-control" value={values.lingkungan1} placeholder="Lingkungan 1" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan1',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 2</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 2" />
+                        <input type="text" className="form-control" value={values.lingkungan2} placeholder="Lingkungan 2" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan2',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
                 </div>
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 3</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 3" />
+                        <input type="text" className="form-control" value={values.lingkungan3} placeholder="Lingkungan 3" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan3',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 4</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 4" />
+                        <input type="text" className="form-control" value={values.lingkungan4} placeholder="Lingkungan 4" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan4',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
                 </div>
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 5</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 5" />
+                        <input type="text" className="form-control" value={values.lingkungan5} placeholder="Lingkungan 5" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan5',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 6</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 6" />
+                        <input type="text" className="form-control" value={values.lingkungan6} placeholder="Lingkungan 6" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan6',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 7</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 7" />
+                        <input type="text" className="form-control" value={values.lingkungan7} placeholder="Lingkungan 7" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan7',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 8</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Lingkungan 8" />
+                        <input type="text" className="form-control" value={values.lingkungan8} placeholder="Lingkungan 8" onChange={(e) => {
+                            handleChange({
+                                type: 'lingkungan8',
+                                value: e.target.value
+                            })
+                        }} />
                     </div>
                 </div>
 
@@ -702,6 +742,23 @@ const Environment = ({ prevStep, handleChange, values }) => {
 }
 
 const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
+    const { useEffect } = React;
+
+    const getTrafficData = async () => {
+        let traffic = await services.getTrafficData(values.latitude, values.longitude);
+        if(traffic.length > 0){
+            handleChange({
+                type: 'traffic',
+                value: traffic[0][1]
+            })
+        }
+    }
+
+    useEffect(() => {
+        $('.select').selectpicker('refresh');
+        return [];
+    }, []);
+
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -709,7 +766,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Jumlah Sisi</label>
-                        <select className="form-control select" id="jumlah_sisi" name="jumlah_sisi">
+                        <select className="form-control select" id="jumlah_sisi" name="jumlah_sisi" value={values.jumlah_sisi} onChange={(e) => {
+                            handleChange({
+                                type: 'jumlah_sisi',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="1">1 Sisi</option>
                             <option value="2">2 Sisi</option>
                             <option value="3">3 Sisi</option>
@@ -721,7 +783,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Jumlah Titik</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                        <input type="text" className="form-control" placeholder="Jumlah Titik" value={values.jumlah_set} onChange={(e) => {
+                            handleChange({
+                                type: 'jumlah_set',
+                                value: e.target.value
+                            });
+                        }} />
                     </div>
                 </div>
 
@@ -729,16 +796,31 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <div className="col-md-6" style={{paddingLeft: '0'}}>
                             <label className="control-label bold">Panjang</label>
-                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                            <input type="text" className="form-control" placeholder="Panjang" value={values.panjang} onChange={(e) => {
+                                handleChange({
+                                    type: 'panjang',
+                                    value: e.target.value
+                                });
+                            }} />
                         </div>
                         <div className="col-md-6">
                             <label className="control-label bold">Lebar</label>
-                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Longitude" />
+                            <input type="text" className="form-control" placeholder="Lebar" value={values.lebar} onChange={(e) => {
+                                handleChange({
+                                    type: 'lebar',
+                                    value: e.target.value
+                                });
+                            }} />
                         </div>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Orientasi</label>
-                        <select className="form-control select" id="orientasi" name="orientasi">
+                        <select className="form-control select" id="orientasi" name="orientasi" value={values.orientasi} onChange={(e) => {
+                            handleChange({
+                                type: 'orientasi',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="1">Vertical</option>
                             <option value="2">Horizontal</option>
                         </select>
@@ -748,7 +830,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lighting</label>
-                        <select className="form-control select" id="lighting" name="lighting">
+                        <select className="form-control select" id="lighting" name="lighting" value={values.lighting} onChange={(e) => {
+                            handleChange({
+                                type: 'lighting',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="1">Frontlite</option>
                             <option value="2">Backlite</option>
                         </select>
@@ -756,10 +843,17 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <div className="col-md-6" style={{paddingLeft: '0'}}>
                             <label className="control-label bold">Traffic</label>
-                            <input type="text" className="form-control" defaultValue={'1'} placeholder="Latitude" />
+                            <input type="text" className="form-control" placeholder="Traffic" value={values.traffic} onChange={(e) => {
+                                handleChange({
+                                    type: 'traffic',
+                                    value: e.target.value
+                                });
+                            }} />
                         </div>
                         <div className="col-md-6" style={{marginTop: '25px'}}>
-                            <button className="btn btn-primary">Peta</button>
+                            <button onClick={() => {
+                                getTrafficData()
+                            }} className="btn btn-primary">Get Traffic Data</button>
                         </div>
                     </div>
                 </div>
@@ -767,11 +861,21 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Score</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Score" />
+                        <input type="text" className="form-control" placeholder="Score" value={values.vscore} onChange={(e) => {
+                            handleChange({
+                                type: 'vscore',
+                                value: e.target.value
+                            });
+                        }} />
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Fixing</label>
-                        <select className="form-control select" id="fixing" name="fixing">
+                        <select className="form-control select" id="fixing" name="fixing" value={values.fixing} onChange={(e) => {
+                            handleChange({
+                                type: 'fixing',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="Uni-Pole">Uni-Pole</option>
                             <option value="Duo-Pole">Duo-Pole</option>
                             <option value="Three-Pole">Three-Pole</option>
@@ -785,7 +889,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Competition</label>
-                        <select className="form-control select" id="competition" name="competition">    
+                        <select className="form-control select" id="competition" name="competition" value={values.fixing} onChange={(e) => {
+                            handleChange({
+                                type: 'fixing',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="None">None</option>
                             <option value="1 Site">1 Site</option>
                             <option value="2 Sites">2 Sites</option>
@@ -797,7 +906,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Visible Distance</label>
-                        <select className="form-control select" id="visible_distance" name="visible_distance">
+                        <select className="form-control select" id="visible_distance" name="visible_distance" value={values.visible_distance} onChange={(e) => {
+                            handleChange({
+                                type: 'visible_distance',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="0-25m">0-25m</option>
                             <option value="25-50m">25-50m</option>
                             <option value="50-100m">50-100m</option>
@@ -810,7 +924,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Angle of Vision</label>
-                        <select className="form-control select" id="angle_of_vision" name="angle_of_vision">
+                        <select className="form-control select" id="angle_of_vision" name="angle_of_vision" value={values.angle_of_vision} onChange={(e) => {
+                            handleChange({
+                                type: 'angle_of_vision',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="Head On">Head On</option>
                             <option value="Nearside - Angled Toward">Nearside - Angled Toward</option>
                             <option value="Offside - Angled Toward">Offside - Angled Toward</option>
@@ -822,7 +941,12 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Obstruction</label>
-                        <select className="form-control select" id="obstruction" name="obstruction">
+                        <select className="form-control select" id="obstruction" name="obstruction" value={values.obstruction} onChange={(e) => {
+                            handleChange({
+                                type: 'obstruction',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="None">None (0%)</option>
                             <option value="Slight">Slight (0-20%)</option>
                             <option value="Moderate">Moderate (20-50%)</option>
@@ -834,14 +958,24 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Street Lite</label>
-                        <select className="form-control select" id="street_lite" name="street_lite">
+                        <select className="form-control select" id="street_lite" name="street_lite" value={values.street_lite} onChange={(e) => {
+                            handleChange({
+                                type: 'street_lite',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="Yes">Yes</option>
                             <option value="No">No</option>
                         </select>
                     </div>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Road Type</label>
-                        <select className="form-control select" id="road_type" name="road_type">
+                        <select className="form-control select" id="road_type" name="road_type" value={values.road_type} onChange={(e) => {
+                            handleChange({
+                                type: 'road_type',
+                                value: e.target.value
+                            });
+                        }}>
                             <option value="Single Carriage">Single Carriage</option>
                             <option value="Dual Carriages">Dual Carriages</option>
                             <option value="3+ Carriages">3+ Carriages</option>
@@ -850,14 +984,24 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
                 </div>
                 <div className="form-group">
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">OOH Status</label>
+                        <label className="control-label bold">OOH Flag</label>
                         <div style={{ display: 'grid' }}>
                             <label className="check">
-                                <input type="radio" className="iradio" checked="checked" value="1" id="ooh_status" name="ooh_status" /> 
+                                <input type="radio" className="iradio" checked={values.ooh_flag == '1'} onChange={(e) => {
+                                    handleChange({
+                                        type: 'ooh_flag',
+                                        value: e.target.value
+                                    });
+                                }} value="1" id="ooh_flag" name="ooh_flag" /> 
                                 Active
                             </label>
                             <label className="check">
-                                <input type="radio" className="iradio" value="2" id="ooh_status" name="ooh_status" />
+                                <input type="radio" className="iradio" checked={values.ooh_flag == '0'} onChange={(e) => {
+                                    handleChange({
+                                        type: 'ooh_flag',
+                                        value: e.target.value
+                                    });
+                                }} value="0" id="ooh_flag" name="ooh_flag" />
                                 Inactive
                             </label>
                         </div>
@@ -1149,14 +1293,30 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
                         <label className="control-label bold">OOH Status</label>
                         <div style={{ display: 'grid' }}>
                             <label className="check">
-                                <input type="radio" className="iradio" checked="checked" value="1" id="ooh_status" name="ooh_status" /> 
+                                <input type="radio" className="iradio" checked={values.ooh_status == '1'} value="1" name="ooh_status"  onChange={(e) => {
+                                    handleChange({
+                                        type: 'ooh_status',
+                                        value: e.target.value
+                                    })
+                                }}/> 
                                 Available
                             </label>
                             <label className="check">
-                                <input type="radio" className="iradio" value="2" id="ooh_status" name="ooh_status" />
+                                <input type="radio" className="iradio" checked={values.ooh_status == '2'} value="2" name="ooh_status" onChange={(e) => {
+                                    handleChange({
+                                        type: 'ooh_status',
+                                        value: e.target.value
+                                    })
+                                }} />
                                 Tersewa
                             </label>
-                            <label className="check"><input type="radio" className="iradio" value="3" id="ooh_status" name="ooh_status" />
+                            <label className="check">
+                                <input type="radio" className="iradio" checked={values.ooh_status == '3'} value="3" name="ooh_status" onChange={(e) => {
+                                    handleChange({
+                                        type: 'ooh_status',
+                                        value: e.target.value
+                                    })
+                                }} />
                                 Expired
                             </label>
                         </div>
@@ -1177,6 +1337,7 @@ class Info extends React.Component {
         super(props);
         console.log("PROPS", props);
         const { data } = props;
+
         this.state = {
             step: 1,
             lorem: 'ipsum',
@@ -1188,14 +1349,37 @@ class Info extends React.Component {
             no_cnv: data.no_cnv || '',
             ooh_status: data.ooh_status || '',
             type_produk: data.type_produk || '',
-            province: data.province,
-            district: data.district,
-            sub_district: data.sub_district,
-            address: data.address,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            view: data.view
-
+            province: data.province || '',
+            district: data.district || '',
+            sub_district: data.sub_district || '',
+            address: data.address || '',
+            latitude: data.latitude || '',
+            longitude: data.longitude || '',
+            view: data.view || '',
+            jumlah_sisi: data.jumlah_sisi || '',
+            jumlah_set: data.jumlah_set || '',
+            panjang: data.panjang || '',
+            lebar: data.lebar || '',
+            orientasi: data.orientasi || '',
+            lighting: data.lighting || '',
+            traffic: data.traffic || '',
+            vscore: data.vscore || '',
+            fixing: data.fixing || '',
+            competition: data.competition || '',
+            visible_distance: data.visible_distance || '',
+            angle_of_vision: data.angle_of_vision || '',
+            obstruction: data.obstruction || '',
+            street_lite: data.street_lite || '',
+            road_type: data.road_type || '',
+            ooh_flag: data.ooh_flag || '',
+            lingkungan1: data.lingkungan1 || '', 
+            lingkungan2: data.lingkungan2 || '', 
+            lingkungan3: data.lingkungan3 || '', 
+            lingkungan4: data.lingkungan4 || '', 
+            lingkungan5: data.lingkungan5 || '',
+            lingkungan6: data.lingkungan6 || '', 
+            lingkungan7: data.lingkungan7 || '', 
+            lingkungan8: data.lingkungan8 || ''
         }
 
         this.nextStep = this.nextStep.bind(this);
@@ -1228,8 +1412,15 @@ class Info extends React.Component {
 
     render(){
         console.log('STATE INFO >>>>', this.state);
-        const { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk, province, sub_district, district, address, latitude, longitude, view } = this.state;
-        const values = { ooh_id, kode_produk, owner, no_site, ooh_type, no_cnv, ooh_status, type_produk, province, sub_district, district, address, latitude, longitude, view };
+        const values = this.state;
+        // const { 
+        //     ooh_id, kode_produk, owner, no_site, ooh_type, 
+        //     no_cnv, ooh_status, type_produk, province, 
+        //     sub_district, district, address, latitude, 
+        //     longitude, view, jumlah_sisi, jumlah_set, panjang, lebar, orientasi, 
+        //     lighting, traffic, vscore, fixing, competition, visible_distance,
+        //     angle_of_vision, obstruction, street_lite, road_type, ooh_flag 
+        // } = this.state;
 
         switch (this.state.step) {
             case 1:
@@ -1290,24 +1481,30 @@ class Request extends React.Component {
 
     render(){
         const Link = ReactRouterDOM.Link;
-        const { no_cnv, ooh_id, no_site, view, kode_produk, address, owner, district, ooh_type, province, sub_district, ooh_status, type_produk, latitude, longitude } = this.state.dataOOH;
+
+        const { 
+            no_cnv, ooh_id, no_site, view, kode_produk, address, 
+            owner, district, ooh_type, province, sub_district, 
+            ooh_status, type_produk, latitude, longitude, 
+            jumlah_sisi, jumlah_set, panjang, lebar, orientasi, 
+            lighting, traffic, vscore, fixing, competition, visible_distance,
+            angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
+            lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
+            lingkungan6, lingkungan7, lingkungan8
+        } = this.state.dataOOH;
+
         var dataInfo = { 
-            no_cnv, 
-            ooh_id, 
-            kode_produk, 
-            no_site, 
-            view, 
-            address, 
-            owner, 
-            ooh_type, 
-            district, 
-            sub_district, 
-            ooh_status,
-            province,
-            type_produk,
-            latitude, 
-            longitude,
+            no_cnv, ooh_id, kode_produk, no_site, 
+            view, address, owner, ooh_type, district, 
+            sub_district, ooh_status, province, type_produk,
+            latitude, longitude, jumlah_sisi, jumlah_set,
+            panjang, lebar, orientasi, lighting,
+            traffic, vscore, fixing, competition, visible_distance,
+            angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
+            lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
+            lingkungan6, lingkungan7, lingkungan8
          };
+
         return(
             <div style={{marginBottom: '10em'}}>
                 <h1>Request Validation: { type }</h1>

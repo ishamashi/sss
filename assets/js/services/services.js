@@ -119,6 +119,21 @@ class Services {
         .catch((err) => err);
         return result;
     }
+
+    async getTrafficData(lat, lng){
+        let result = this.axiosInstance.get('/data/gettraffic', {
+            params: {
+                latitude: lat,
+                longitude: lng
+            }
+        })
+        .then(({data}) => data.data)
+        .then((response) => {
+            return response;
+        })
+        .catch((err) => err);
+        return result;
+    }
 }
 
 export default new Services;
