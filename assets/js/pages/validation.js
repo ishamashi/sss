@@ -1682,7 +1682,7 @@ class Request extends React.Component {
 
         return(
             <div style={{marginBottom: '10em'}}>
-                <h1>Request Validation: { type }</h1>
+                <h1>Request Validation: { this.props.match.params.type }</h1>
                 <div className='row'>
                     <div className='col-md-4'>
                         <div className="panel panel-default">
