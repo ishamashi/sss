@@ -328,11 +328,6 @@ class Score extends React.Component {
         }
     }
 
-    componentDidUpdate(){
-        // const { checked } = this.state;
-        // console.log("STATE CHECKED", checked);
-    }
-
     checkedSocre(name, value){
         const { checked } = this.state;
         let isChecked = false;
@@ -351,7 +346,7 @@ class Score extends React.Component {
                 <h3>Score</h3>
                 <table className="table table-bordered">
                     <thead>
-                        <tr>
+                        <tr style={{background: '#4e5e6a', color: 'white'}}>
                             <th>Point Review</th>
                             <th>1</th>
                             <th>2</th>
@@ -1351,7 +1346,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
         dataDistrict,
         dataSubDistrict
       });
-      $('.select').selectpicker('refresh');    
+    //   $('.select').selectpicker('refresh');
 
       return () => {
           setDataLocation({
@@ -1369,7 +1364,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Province</label>
-                        <select className="form-control select" name="province"  value={province} onChange={(e) => {
+                        <select className="form-control select" name="province" value={province} onChange={(e) => {
                             handleChange({
                                 type: 'province',
                                 value: e.target.value
