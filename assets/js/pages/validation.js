@@ -3,6 +3,8 @@ import services from "../services/services";
 class Score extends React.Component {
     constructor(props){
         super(props);
+        const { data } = props;
+        console.log("PROPS SCORE", props);
         this.state = {
             review: [{
                 title: 'Ukuran OOH',
@@ -258,12 +260,63 @@ class Score extends React.Component {
                     value: 5
                 }]
             }],
+            currentScore: 0,
+            newScore: 0,
+            checked: [],
+            ooh_id: data.ooh_id,
         }
     }
 
+    calculateScore(){
+        var score = 0;
+        var idx = 0;
+        $("input[type=radio][data-score]:checked").each(function (i, el) {
+            score += +$(el).data("score");
+           idx += 1;
+        });
+        var maxval = 5 * idx;
+        var vscore = parseFloat((score / maxval) * 100).toFixed(2);
+        this.setState({
+            newScore: vscore
+        });
+    }
+
+    async componentDidMount(){
+        let score = await services.getDataVasContent(2348);
+        if(typeof score.score_val !== 'undefined'){
+            this.setState({
+                currentScore: score.score_val,
+                checked: Object.entries(score).map((item) => {
+                    return {
+                        name: item[0],
+                        value: item[1]
+                    }
+                }),
+            });
+        }
+    }
+
+    componentDidUpdate(){
+        // const { checked } = this.state;
+        // console.log("STATE CHECKED", checked);
+    }
+
+    checkedSocre(name, value){
+        const { checked } = this.state;
+        let isChecked = false;
+        checked.forEach((itemChecked) => {
+            if(itemChecked.name == name && parseInt(value) === parseInt(itemChecked.value)){ 
+                isChecked = true;
+            }
+        });
+        return isChecked;
+    }
+
     render(){
+        const { checked, currentScore, newScore } = this.state;
         return(
             <div>
+                <h3>Score</h3>
                 <table className="table table-bordered">
                     <thead>
                         <tr>
@@ -285,7 +338,32 @@ class Score extends React.Component {
                                              return (
                                                  <td key={subIndex}>
                                                      <label className="check">
-                                                         <input type="radio" className="iradio" value={subItem.value} name={subItem.name} /> 
+                                                         <input 
+                                                            type="radio" 
+                                                            className="iradio" 
+                                                            value={subItem.value} 
+                                                            name={subItem.name} 
+                                                            checked={this.checkedSocre(subItem.name, subItem.value)} 
+                                                            data-score={subItem.value}
+                                                            onChange={(e) => {
+                                                                this.setState({
+                                                                    checked: checked.map((itemChecked) => {
+                                                                        if(itemChecked.name === subItem.name){
+                                                                            return {
+                                                                                name: itemChecked.name,
+                                                                                value: e.target.value
+                                                                            }
+                                                                        }else{
+                                                                            return {
+                                                                                name: itemChecked.name,
+                                                                                value: itemChecked.value
+                                                                            }
+                                                                        }
+                                                                    }),
+                                                                });
+                                                                this.calculateScore();
+                                                            }}
+                                                        /> 
                                                          {subItem.text}
                                                      </label>
                                                  </td>
@@ -297,6 +375,30 @@ class Score extends React.Component {
                         }
                     </tbody>
                 </table>
+
+                <div className="row" style={{ display: 'flex', justifyContent: 'right' }}>
+                    <div className="col-md-2" style={{marginLeft: '.5em', marginRight: '.5em'}}>
+                        <div className="panel panel-primary">
+                            <div className="panel-heading">
+                                Current Score
+                            </div>
+                            <div className="panel-body">
+                                <span className="h1" id="vscore_current">{currentScore}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-2" style={{marginLeft: '.5em', marginRight: '.5em'}}>
+                        <div className="panel panel-primary">
+                            <div className="panel-heading">
+                                New Score
+                            </div>
+                            <div className="panel-body">
+                                <span className="h1" id="score">{newScore}</span>
+                                <input type="hidden" id="vasscore" name="vasscore" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -797,8 +899,8 @@ class Home extends React.Component {
                     <div className="panel panel-default tabs">
                         <ul className="nav nav-tabs" role="tablist">
                             <li className="active"><a onClick={() => this.handleClick('Add')} href="#tab-add" role="tab" data-toggle="tab">Add</a></li>
-                            <li><a onClick={() => this.handleClick('Updated')} href="#tab-updated" role="tab" data-toggle="tab">Update</a></li>
-                            <li><a onClick={() => this.handleClick('Rejected')} href="#tab-rejected" role="tab" data-toggle="tab">Rejected</a></li>
+                            <li><a onClick={() => this.handleClick('Update')} href="#tab-updated" role="tab" data-toggle="tab">Update</a></li>
+                            <li><a onClick={() => this.handleClick('Reject')} href="#tab-rejected" role="tab" data-toggle="tab">Reject</a></li>
                         </ul>
                         <div className="panel-body tab-content">
                             <Table data={this.state.dataTable} type={this.state.tab} {...this.props}/>
@@ -1680,6 +1782,10 @@ class Request extends React.Component {
             ooh_id,
         }
 
+        var dataScore = {
+            ooh_id,
+        }
+
         return(
             <div style={{marginBottom: '10em'}}>
                 <h1>Request Validation: { this.props.match.params.type }</h1>
@@ -1721,13 +1827,17 @@ class Request extends React.Component {
                             </div>
 
                             <div className="tab-pane" id="tab-contract">
-                                <ContractList data={dataContractList} />
+                                {typeof dataContractList.ooh_id !== 'undefined' && (
+                                    <ContractList data={dataContractList} />
+                                )}
                             </div>
                             <div className="tab-pane" id="tab-content">
                                 <Content />
                             </div>
                             <div className="tab-pane" id="tab-score">
-                                <Score />
+                                {typeof dataScore.ooh_id !== 'undefined' && (
+                                    <Score data={dataScore} />
+                                )}
                             </div>
                         </div>
                     </div>

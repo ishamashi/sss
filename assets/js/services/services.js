@@ -193,6 +193,36 @@ class Services {
         return result;
     }
 
+    async getDataVasContent(ooh_id){
+        let result = this.axiosInstance.get('/data/vascontent', {
+            params: {
+                ooh_id
+            }
+        })
+        .then(({data}) => data.data)
+        .then((response) => {
+            return response;
+            // let temp = [];
+            // if(response.length > 0){
+            //     $.each(response, function (k, v) {
+            //         temp.push({
+            //             "contract_id": v[0],
+            //             "cmp_id": v[1],
+            //             "cmp_name": v[2],
+            //             "contract_start": v[3],
+            //             "contract_end": v[4],
+            //             "contract_desc": v[5],
+            //             "ooh_id": v[6],
+            //             "no_site": v[7],
+            //         });
+            //     })
+            // }
+            // return temp;
+        })
+        .catch((err) => err);
+        return result;
+    }
+
 }
 
 export default new Services;
