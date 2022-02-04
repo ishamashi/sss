@@ -4,7 +4,6 @@ class Score extends React.Component {
     constructor(props){
         super(props);
         const { data } = props;
-        console.log("PROPS SCORE", props);
         this.state = {
             review: [{
                 title: 'Ukuran OOH',
@@ -262,7 +261,40 @@ class Score extends React.Component {
             }],
             currentScore: 0,
             newScore: 0,
-            checked: [],
+            checked: [{
+                name: 'quest001',
+                value: 0
+            },{
+                name: 'quest002',
+                value: 0
+            },{
+                name: 'quest003',
+                value: 0
+            },{
+                name: 'quest004',
+                value: 0
+            },{
+                name: 'quest005',
+                value: 0
+            },{
+                name: 'quest006',
+                value: 0
+            },{
+                name: 'quest007',
+                value: 0
+            },{
+                name: 'quest008',
+                value: 0
+            },{
+                name: 'quest009',
+                value: 0
+            },{
+                name: 'quest010',
+                value: 0
+            },{
+                name: 'quest011',
+                value: 0
+            }],
             ooh_id: data.ooh_id,
         }
     }
@@ -282,7 +314,7 @@ class Score extends React.Component {
     }
 
     async componentDidMount(){
-        let score = await services.getDataVasContent(2348);
+        let score = await services.getDataVasContent(this.state.ooh_id);
         if(typeof score.score_val !== 'undefined'){
             this.setState({
                 currentScore: score.score_val,
