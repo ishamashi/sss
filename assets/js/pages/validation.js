@@ -900,7 +900,6 @@ class ContractList extends React.Component {
 
     handleChange(e){
         const { name, value } = e.target;
-        console.log("HANDLE CHANGEE", {name, value})
         this.setState({
             [name]: value.trim()
         })
@@ -1141,10 +1140,7 @@ class ContractList extends React.Component {
 class Table extends React.Component {
     constructor(props){
         super(props);
-        console.log("PROPS", props);
-        this.state = {
-            type: props.type
-        }
+        this.revertRejection = this.revertRejection.bind(this);
     }
     
     renderTable(){
@@ -1158,8 +1154,12 @@ class Table extends React.Component {
         });
     }
 
+    revertRejection(item){
+        console.log("REVERT REJECT", item);
+    }
+
     renderRow(data = []){
-        // const {  } = this.state;
+        const { type } = this.props;
         const Link = ReactRouterDOM.Link;
         if(data.length < 1){
             return;
@@ -1177,19 +1177,57 @@ class Table extends React.Component {
                     <td>{item.panjang + 'x' + item.lebar + 'm'}</td>
                     <td>{item.traffic}</td>
                     <td>{numberToMoney(item.pricelist_12bulan)}</td>
+                    {
+                        (type === 'Update' && (
+                            <td>{moment(new Date(item.updated_at)).format('DD MMM YYYY HH:mm:ss') }</td>
+                        ))
+                    }
                     <td>
                         <Link 
                             to={{
                                 pathname: `/request/${this.props.type}/${item.ooh_id}`,
-                                state: {
-                                    oohData: item
-                                }
                             }}
                         >
-                            <button className='btn btn-primary'>
-                                <span className="menu-icon icon-pencil" title="Edit"></span>
-                            </button>
+                                {
+                                    (type === 'Reject' && (
+                                        <button className='btn'>
+                                            <span className="menu-icon icon-eye" title="View"></span>
+                                        </button>
+                                    ))
+                                }
+                                {
+                                    (type !== 'Reject' && (
+                                        <button className='btn btn-primary'>
+                                            <span className="menu-icon icon-pencil" title="Edit"></span>
+                                        </button>
+                                    ))
+                                }
                         </Link>
+                        {
+                            (type === 'Reject' && (
+                                <button 
+                                    className='btn btn-primary' 
+                                    style={{marginLeft: '.5em', marginRight: '.5em'}}
+                                    onClick={() => {
+                                        let _this = this;
+                                        swal({
+                                            title: "Would you like to Revert this rejection?",
+                                            html: "The Canvassing Data will return to their original list.",
+                                            type: "warning",
+                                            showCancelButton: true,
+                                            confirmButtonText: "Yes",
+                                            confirmButtonColor: "#ec6c62"
+                                        }).then(function(isConfirm) {
+                                            if (isConfirm.value) {
+                                                _this.revertRejection(item);
+                                            }
+                                        });
+                                    }}
+                                >
+                                    <span className="menu-icon icon-arrow-left" title="Revert"></span>
+                                </button>
+                            ))
+                        }
                     </td>
                 </tr>
             )
@@ -1199,7 +1237,7 @@ class Table extends React.Component {
     }
 
     render(){
-        const { data } = this.props;
+        const { data, type } = this.props;
         const rows = this.renderRow(data);
 
         return(
@@ -1219,6 +1257,11 @@ class Table extends React.Component {
                                         <th className="">Size</th>
                                         <th className="">Traffic</th>
                                         <th className="">Price</th>
+                                        {
+                                            (type === 'Update' && (
+                                                <th className="">Last Update</th>
+                                            ))
+                                        }
                                         <th className="">Action</th>
                                     </tr>
                                 </thead>
@@ -1244,6 +1287,7 @@ class Home extends React.Component {
             tab: 'Add',
             dataTable: [],
         }
+        this.handleClick = this.handleClick.bind(this);
     }
 
     async getDataTable(tab){
@@ -1253,8 +1297,7 @@ class Home extends React.Component {
         $.each(result.data, function(index, value){
             data.push(value);
         });
-        
-        // console.log("DATA", {result, tab, data});
+
         return data;
     }
 
@@ -1268,15 +1311,17 @@ class Home extends React.Component {
 
     async handleClick(tab){
         let dataTable = await this.getDataTable(tab);
-        // console.log('dataTable', dataTable);
+        console.log("TABS", tab);
         this.setState({
-            tab: tab,
+            tab,
             header: this.state.header,
             dataTable
         });
     }
 
     render(){
+        const { tab, dataTable } = this.state;
+        console.log("TYPEE", tab);
         return (
             <div>
                 <h1>{this.state.header.title}</h1>
@@ -1288,7 +1333,9 @@ class Home extends React.Component {
                             <li><a onClick={() => this.handleClick('Reject')} href="#tab-rejected" role="tab" data-toggle="tab">Reject</a></li>
                         </ul>
                         <div className="panel-body tab-content">
-                            <Table data={this.state.dataTable} type={this.state.tab} {...this.props}/>
+                            {
+                                <Table data={dataTable} type={tab} {...this.props}/>
+                            }
                         </div>
                     </div>
                 </div>
