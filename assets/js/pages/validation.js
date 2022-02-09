@@ -1,4 +1,6 @@
 import services from "../services/services";
+import common from "../helpers/common";
+
 
 class Score extends React.Component {
     constructor(props){
@@ -437,14 +439,19 @@ class Content extends React.Component {
         const { conthis, ooh_id } = props.data;
         this.state = {
             periode: [],
-            conthis,
+            conthis: conthis || [],
             selectedYear: '',
             selectedMonth: '',
             months: [],
             contents: [],
             slots: [],
             selectedSlot: '',
-            selectedContent: {}
+            selectedContent: {},
+            industry: [],
+            sub_industry: [],
+            advertiser: [],
+            ooh_id: ooh_id || '',
+            dataContract: [],
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -505,21 +512,60 @@ class Content extends React.Component {
 
     handleChange(e){
         const { selectedContent } = this.state;
+        var tempChange = selectedContent;
+        tempChange[e.key] = e.value;
 
-        console.log("CHANGE", {
-            selectedContent,
-            e
-        });
-    }
-
-    componentDidMount(){
         this.setState({
-            periode: this.filterContent()
+            selectedContent: tempChange
         })
     }
 
+    assignContentToState(){
+        const { selectedContent, conthis } = this.state;
+        var tempConthis = conthis;
+        tempConthis = tempConthis.map((item) => {
+            if(item.content_id == selectedContent.content_id){
+                return selectedContent;
+            }else{
+                return item;
+            }
+        });
+
+        this.setState({
+            conthis: tempConthis,
+        });
+
+        this.refreshPeriode();
+    }
+
+    async componentDidMount(){
+        const { ooh_id } = this.state;
+        this.refreshPeriode();
+        let getIndustry = await services.filterIndustry('ind');
+        let getSubIndustry = await services.filterIndustry('subind');
+        let getAdvertiser = await services.filterIndustry('adv');
+        let getContract = await services.getDataContract(ooh_id);
+
+        this.setState({
+            industry: getIndustry,
+            sub_industry: getSubIndustry,
+            advertiser: getAdvertiser,
+            dataContract: getContract
+        });
+    }
+
+    refreshPeriode(){
+        this.setState({
+            periode: this.filterContent()
+        });
+    }
+
+    componentDidUpdate(){
+        $('#contentIndustry, #contentSubIndustry, #contentAdvertiser, #dataContract').selectpicker('refresh');
+    }
+
     render(){
-        const { periode, selectedYear, selectedMonth, months, contents, selectedSlot, selectedContent } = this.state;
+        const { periode, selectedYear, selectedMonth, months, contents, selectedSlot, dataContract, selectedContent, industry, sub_industry, advertiser } = this.state;
         console.log("SELECTED CONTENT", selectedContent);
         return(
             <div>
@@ -549,13 +595,17 @@ class Content extends React.Component {
                         <label className="control-label bold">Month</label>
                             <select className="form-control" value={selectedMonth} onChange={(e) => {
                                     var contents = periode.find((item) => item.year == selectedYear).months.find((item) => item.month == e.target.value).data;
-                                    console.log("CONTENTS", contents);
                                     this.setState({
                                         selectedMonth: e.target.value,
                                         contents: contents,
                                         selectedSlot: contents[0].content_id,
                                         selectedContent: contents[0]
                                     });
+                                    console.log("IMAGE>>>>", {
+                                        image_day: common.checkErrorImg(contents[0].image_day),
+                                        image_night: common.checkErrorImg(contents[0].image_night),
+                                    });
+                                    this.assignContentToState();
                                 }}>
                                 <option value={''}>Pilih</option>
                                 {
@@ -580,13 +630,13 @@ class Content extends React.Component {
                                 content_id: '',
                             }
                             if(contents.length > 0){    
-                                if(key === 0 && typeof contents[key] !== 'undefined'){
+                                if(key === 0 && typeof contents[key] !== 'undefined' && !contents[key].validated){
                                     btnProp = {
                                         disabled: false,
                                         className: 'btn-primary',
                                         content_id: contents[key].content_id
                                     }
-                                }else if(key !== 0 && typeof contents[key] !== 'undefined'){
+                                }else if(key !== 0 && typeof contents[key] !== 'undefined' && !contents[key].validated){
                                     btnProp = {
                                         disabled: false,
                                         className: 'btn-outline-primary',
@@ -601,11 +651,12 @@ class Content extends React.Component {
                                         className={`btn ${this.checkActive(key, btnProp.content_id)}`} 
                                         style={{marginLeft: '.5em', marginRight: '.5em'}}
                                         onClick={() => {
-                                            if(typeof contents[key] !== 'undefined'){
+                                            if(typeof contents[key] !== 'undefined' && !contents[key].validated){
+                                                this.assignContentToState();
                                                 this.setState({
                                                     selectedSlot: contents[key].content_id,
                                                     selectedContent: contents[key]
-                                                })
+                                                });
                                             }
                                         }}
                                     >
@@ -624,7 +675,27 @@ class Content extends React.Component {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'start' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Contract</label>
-                        <select className="form-control select" id="contract" name="contract"></select>
+                        <select 
+                            className="form-control select" 
+                            id="dataContract" 
+                            name="contract" 
+                            value={selectedContent.contract_id}
+                            onChange={(e) => {
+                                var value = e.target.value;
+                                this.handleChange({
+                                    key: 'contract_id',
+                                    value,
+                                });
+                            }}
+                        >
+                            {
+                                dataContract.map((item, index) => {
+                                    return(
+                                        <option key={index} value={item.contract_id}>{item.cmp_name}</option>
+                                    )
+                                })
+                            }
+                        </select>
                     </div>
 
                     <div className="col-md-3" style={{ paddingLeft: '1em', paddingRight: '1em', display: 'grid' }}>
@@ -636,19 +707,110 @@ class Content extends React.Component {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Industry</label>
-                        <select className="form-control select" id="contract" name="contract"></select>
+                        <select 
+                            className="form-control select" 
+                            id="contentIndustry" 
+                            name="industry" 
+                            value={selectedContent.industry}
+                            data-live-search="true"
+                            onChange={(e) => {
+                                var value = e.target.value;
+                                this.handleChange({
+                                    key: 'industry',
+                                    value,
+                                });
+
+                                var filterSubInd = sub_industry.filter((item) => item.ind_id == value);
+                                if(filterSubInd.length > 0){
+                                    var filterAdv = advertiser.filter((item) => item.subind_id == filterSubInd[0].id);                                    
+                                    if(filterAdv.length > 0){
+                                        this.handleChange({
+                                            key: 'advertiser',
+                                            value: filterAdv[0].id,
+                                        });
+                                    }
+
+                                    this.handleChange({
+                                        key: 'sub_industry',
+                                        value: filterSubInd[0].id,
+                                    });
+                                }
+                            }}
+                        >
+                            {
+                                industry.map((item, index) => {
+                                    return (
+                                        <option key={index} value={item.id}>{item.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Sub-Industry</label>
-                        <select className="form-control select" id="contract" name="contract"></select>
+                        <select 
+                            className="form-control select" 
+                            id="contentSubIndustry" 
+                            name="sub_industry"
+                            data-live-search="true"
+                            value={selectedContent.sub_industry}
+                            onChange={(e) => {
+                                var value = e.target.value;
+                                this.handleChange({
+                                    key: 'sub_industry',
+                                    value,
+                                });
+
+                                var filterAdv = advertiser.filter((item) => item.subind_id == value);                                    
+                                if(filterAdv.length > 0){
+                                    this.handleChange({
+                                        key: 'advertiser',
+                                        value: filterAdv[0].id,
+                                    });
+                                }
+                            }}
+                        >
+                            {
+                                (sub_industry.map((item, index) => {
+                                    if(item.ind_id == selectedContent.industry){
+                                        return (
+                                            <option key={index} value={item.id}>{item.name}</option>
+                                        )
+                                    }
+                                }))
+                            }
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Advertiser</label>
-                        <select className="form-control select" id="contract" name="contract"></select>
+                        <select 
+                            className="form-control select" 
+                            id="contentAdvertiser" 
+                            name="advertiser"
+                            data-live-search="true"
+                            value={selectedContent.advertiser}
+                            onChange={(e) => {
+                                this.handleChange({
+                                    key: 'advertiser',
+                                    value: e.target.value
+                                });
+                                console.log("CHANGE ADV", e.target.value);
+                            }}
+                        >
+                            {
+                                (advertiser.map((item, index) => {
+                                    if(item.subind_id == selectedContent.sub_industry){
+                                        return (
+                                            <option key={index} value={item.id}>{item.name}</option>
+                                        )
+                                    }
+                                }))
+                            }
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
@@ -686,7 +848,7 @@ class Content extends React.Component {
                         <input 
                             type="text" 
                             className="form-control" 
-                            value={selectedContent.content_id || ''} 
+                            value={selectedContent.link_video || ''} 
                             placeholder="Link Video"
                             onChange={(e) => this.handleChange({
                                 key: 'link_video',
@@ -1969,11 +2131,11 @@ class Request extends React.Component {
 
     async componentDidMount(){
         const { ooh_id, type } = this.props.match.params;
-        // let data = await services.getDataOOHID(ooh_id);
-        let reqData = await services.getTempOOHId(ooh_id, type);
-        // console.log('DATA REQUEST', reqData);
+        let data = await services.getDataOOHID(ooh_id, type);
+        // let data = await services.getTempOOHId(ooh_id, type);
+        // console.log('DATA REQUEST', data);
         this.setState({
-            dataOOH: reqData
+            dataOOH: data
         });
     }
 

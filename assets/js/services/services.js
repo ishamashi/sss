@@ -13,7 +13,7 @@ class Services {
         let result = await this.axiosInstance.get('/data/oohlib', {
             params: {
                 flag: type,
-                validating: true
+                validating: true,
             }
         })
         .then(({data}) => {
@@ -24,10 +24,12 @@ class Services {
         return result;
     }
 
-    async getDataOOHID(ooh_id){
+    async getDataOOHID(ooh_id, type = ''){
         let result = this.axiosInstance.get('/data/oohlib', {
             params: {
-                ooh_id
+                flag: type,
+                validating: true,
+                ooh_id,
             }
         })
         .then(({data}) => {
@@ -128,6 +130,87 @@ class Services {
                 });
             }
 
+            return temp;
+        })
+        .catch((err) => err);
+        return result;
+    }
+
+    async filterIndustry(lvl = ''){
+         // if (lvl == 'subind') {
+        //     arrTemp = {
+        //         "id": v[0],
+        //         "name": v[1],
+        //         "desc": v[2],
+        //         "ind_id": v[3],
+        //         "ind_name": v[4],
+        //     };
+
+        //     arrsub_industry.push(arrTemp);
+        // }
+
+        // if (lvl == 'adv') {
+        //     arrTemp = {
+        //         "id": v[0],
+        //         "name": v[1],
+        //         "desc": v[2],
+        //         "color": v[3],
+        //         "subind_id": v[4],
+        //         "subind_name": v[5],
+        //     };
+
+        //     arradvertiser.push(arrTemp);
+        // }
+
+        // if (lvl == 'ind') {
+        //     arrTemp = {
+        //         "id": v[0],
+        //         "name": v[1],
+        //         "desc": v[2],
+        //     };
+
+        //     arrindustry.push(arrTemp);
+        // }
+        let result = this.axiosInstance.get('/data/filterindustry', {
+            params: {
+                lvl
+            }
+        })
+        .then(({data}) => data.data)
+        .then((response) => {
+            var temp = [];
+            if(response.length < 1) return temp;
+
+            if(lvl === 'ind'){
+                response.forEach((item) => {
+                    temp.push({
+                        id: item[0],
+                        name: item[1],
+                        desc: item[2],
+                    });
+                });
+            }else if(lvl === 'subind'){
+                response.forEach((item) => {
+                    temp.push({
+                        id: item[0],
+                        name: item[1],
+                        desc: item[2],
+                        ind_id: item[3],
+                        ind_name: item[4],
+                    });
+                });
+            }else if(lvl === 'adv'){
+                response.forEach((item) => {
+                    temp.push({
+                        id: item[0],
+                        name: item[1],
+                        desc: item[2],
+                        color: item[3],
+                        subind_id: item[4],
+                        subind_name: item[5],
+                    });
+                });
+            }
             return temp;
         })
         .catch((err) => err);
