@@ -1141,6 +1141,10 @@ class ContractList extends React.Component {
 class Table extends React.Component {
     constructor(props){
         super(props);
+        console.log("PROPS", props);
+        this.state = {
+            type: props.type
+        }
     }
     
     renderTable(){
@@ -1154,13 +1158,8 @@ class Table extends React.Component {
         });
     }
 
-    componentDidUpdate(){
-        // setTimeout(() => {
-        //     this.renderTable();
-        // }, 2000);
-    }
-
     renderRow(data = []){
+        // const {  } = this.state;
         const Link = ReactRouterDOM.Link;
         if(data.length < 1){
             return;
