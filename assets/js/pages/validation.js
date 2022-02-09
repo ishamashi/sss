@@ -433,29 +433,192 @@ class Score extends React.Component {
 class Content extends React.Component {
     constructor(props){
         super(props);
+        console.log("CONTENT", props);
+        const { conthis, ooh_id } = props.data;
+        this.state = {
+            periode: [],
+            conthis,
+            selectedYear: '',
+            selectedMonth: '',
+            months: [],
+            contents: [],
+            slots: [],
+            selectedSlot: '',
+            selectedContent: {}
+        }
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    filterContent(){
+        const { conthis } = this.state;
+        const getUniqueYear = [...new Set(conthis.map(item => item.year))]; // [ 'A', 'B']
+        return getUniqueYear.map((item) => {
+
+            var getMonths = [...new Set(conthis.map((subItem) => {
+                if(subItem.year === item){
+                    return subItem.month
+                }
+            }))];
+
+            return {
+                year: item,
+                months: getMonths.map((month) => {
+                    return {
+                        month,
+                        name: this.getMonthName(month),
+                        data: conthis.filter((filter) => filter.year === item && filter.month === month)
+                    }
+                })
+            }
+        })
+    }
+
+    getMonthName(value){
+        var names = {
+            '1': 'January',
+            '2': 'February',
+            '3': 'March',
+            '4': 'April',
+            '5': 'May',
+            '6': 'June',
+            '7': 'July',
+            '8': 'August',
+            '9': 'September',
+            '10': 'October',
+            '11': 'November',
+            '12': 'December',
+        }
+
+        return names[value];
+    }
+
+    checkActive(key, content_id){
+        const { selectedSlot } = this.state;
+        var selected = "";
+        if(content_id === selectedSlot){
+            selected = "btn-primary";
+        }else if(content_id !== ""){
+            selected = "btn-outline-primary";
+        }
+        return selected;
+    }
+
+    handleChange(e){
+        const { selectedContent } = this.state;
+
+        console.log("CHANGE", {
+            selectedContent,
+            e
+        });
+    }
+
+    componentDidMount(){
+        this.setState({
+            periode: this.filterContent()
+        })
     }
 
     render(){
+        const { periode, selectedYear, selectedMonth, months, contents, selectedSlot, selectedContent } = this.state;
+        console.log("SELECTED CONTENT", selectedContent);
         return(
             <div>
                 <h3>Content</h3>
                 <div className="form-group">
                     <div className="col-md-4" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
-                        <label className="control-label bold">Period</label>
-                        <input type="text" className="form-control" id="province" name="" />
+                        <div className="col-md-6">
+                            <label className="control-label bold">Year</label>
+                            <select className="form-control" value={selectedYear} onChange={(e) => {
+                                this.setState({
+                                    selectedYear: e.target.value,
+                                    months: periode.find((filter) => filter.year == e.target.value).months,
+                                    selectedMonth: '',
+                                });
+                            }}>
+                                <option value={''}>Pilih</option>
+                                {
+                                    periode.map((item, index) => {
+                                        return (
+                                            <option key={index} value={item.year}>{item.year}</option>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </div>
+                        <div className="col-md-6">
+                        <label className="control-label bold">Month</label>
+                            <select className="form-control" value={selectedMonth} onChange={(e) => {
+                                    var contents = periode.find((item) => item.year == selectedYear).months.find((item) => item.month == e.target.value).data;
+                                    console.log("CONTENTS", contents);
+                                    this.setState({
+                                        selectedMonth: e.target.value,
+                                        contents: contents,
+                                        selectedSlot: contents[0].content_id,
+                                        selectedContent: contents[0]
+                                    });
+                                }}>
+                                <option value={''}>Pilih</option>
+                                {
+                                    months.sort((a, b) => a.month - b.month).map((item, index) => {
+                                        return (
+                                            <option key={index} value={item.month}>{item.name}</option>
+                                        )
+                                    })
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <h4>Slot</h4>
                 <div>
-                    <button className="btn btn-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>1</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>2</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>3</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>4</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>5</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>6</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>7</button>
-                    <button className="btn btn-outline-primary" style={{marginLeft: '.5em', marginRight: '.5em'}}>8</button>
+                    {
+                        [...Array(8).keys()].map((item, key) => {
+                            let btnProp = {
+                                disabled: false,
+                                className: '',
+                                content_id: '',
+                            }
+                            if(contents.length > 0){    
+                                if(key === 0 && typeof contents[key] !== 'undefined'){
+                                    btnProp = {
+                                        disabled: false,
+                                        className: 'btn-primary',
+                                        content_id: contents[key].content_id
+                                    }
+                                }else if(key !== 0 && typeof contents[key] !== 'undefined'){
+                                    btnProp = {
+                                        disabled: false,
+                                        className: 'btn-outline-primary',
+                                        content_id: contents[key].content_id
+                                    }
+                                }
+
+                                return(
+                                    <button 
+                                        key={key} 
+                                        disabled={btnProp.disabled} 
+                                        className={`btn ${this.checkActive(key, btnProp.content_id)}`} 
+                                        style={{marginLeft: '.5em', marginRight: '.5em'}}
+                                        onClick={() => {
+                                            if(typeof contents[key] !== 'undefined'){
+                                                this.setState({
+                                                    selectedSlot: contents[key].content_id,
+                                                    selectedContent: contents[key]
+                                                })
+                                            }
+                                        }}
+                                    >
+                                        {(key + 1)}
+                                    </button>
+                                )
+                            }else{
+                                return(
+                                    <button key={key} disabled={true} className="btn" style={{marginLeft: '.5em', marginRight: '.5em', background: 'white'}}>{(item + 1)}</button>
+                                )
+                            }
+                        })
+                    }
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'start' }}>
@@ -490,19 +653,46 @@ class Content extends React.Component {
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Brand</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            value={selectedContent.brand || ''} 
+                            placeholder="Brand"
+                            onChange={(e) => this.handleChange({
+                                key: 'brand',
+                                value: e.target.value
+                            })}
+                        />
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Campaign Title</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            value={selectedContent.campaign_title || ''} 
+                            placeholder="Campaign Title"
+                            onChange={(e) => this.handleChange({
+                                key: 'campaign_title',
+                                value: e.target.value
+                            })}
+                        />
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Link Video</label>
-                        <input type="text" className="form-control" defaultValue={'1'} placeholder="Jumlah Titik" />
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            value={selectedContent.content_id || ''} 
+                            placeholder="Link Video"
+                            onChange={(e) => this.handleChange({
+                                key: 'link_video',
+                                value: e.target.value
+                            })}
+                        />
                     </div>
                 </div>
 
@@ -827,7 +1017,14 @@ class Table extends React.Component {
                     <td>{item.traffic}</td>
                     <td>{numberToMoney(item.pricelist_12bulan)}</td>
                     <td>
-                        <Link to={`/request/${this.props.type}/${item.ooh_id}`}>
+                        <Link 
+                            to={{
+                                pathname: `/request/${this.props.type}/${item.ooh_id}`,
+                                state: {
+                                    oohData: item
+                                }
+                            }}
+                        >
                             <button className='btn btn-primary'>
                                 <span className="menu-icon icon-pencil" title="Edit"></span>
                             </button>
@@ -896,7 +1093,7 @@ class Home extends React.Component {
             data.push(value);
         });
         
-        console.log("DATA", {result, tab, data});
+        // console.log("DATA", {result, tab, data});
         return data;
     }
 
@@ -1325,7 +1522,7 @@ const Spesification = ({ nextStep, prevStep, handleChange, values }) => {
 
 const Location = ({nextStep, prevStep, handleChange, values}) => {
     const { useEffect, useState } = React;
-    console.log('VALUES LOC', values);
+    // console.log('VALUES LOC', values);
 
     const [dataLocation, setDataLocation] = useState({
         dataProv: [],
@@ -1635,7 +1832,7 @@ const GeneralInfo = ({nextStep, handleChange, values}) => {
 class Info extends React.Component {
     constructor(props){
         super(props);
-        console.log("PROPS", props);
+        // console.log("PROPS", props);
         const { data } = props;
 
         this.state = {
@@ -1711,7 +1908,7 @@ class Info extends React.Component {
     }
 
     render(){
-        console.log('STATE INFO >>>>', this.state);
+        // console.log('STATE INFO >>>>', this.state);
         const values = this.state;
         // const { 
         //     ooh_id, kode_produk, owner, no_site, ooh_type, 
@@ -1764,18 +1961,19 @@ class Info extends React.Component {
 }
 class Request extends React.Component {
     constructor(props){
-        super(props)
+        super(props);
         this.state = {
             dataOOH: {}
         }
     }
 
     async componentDidMount(){
-        const { ooh_id } = this.props.match.params;
-        let data = await services.getDataOOHID(ooh_id);
-        console.log('DATA OOH ID', data);
+        const { ooh_id, type } = this.props.match.params;
+        // let data = await services.getDataOOHID(ooh_id);
+        let reqData = await services.getTempOOHId(ooh_id, type);
+        // console.log('DATA REQUEST', reqData);
         this.setState({
-            dataOOH: data
+            dataOOH: reqData
         });
     }
 
@@ -1790,7 +1988,7 @@ class Request extends React.Component {
             lighting, traffic, vscore, fixing, competition, visible_distance,
             angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
             lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
-            lingkungan6, lingkungan7, lingkungan8
+            lingkungan6, lingkungan7, lingkungan8, conthis
         } = this.state.dataOOH;
 
         var dataInfo = { 
@@ -1811,6 +2009,10 @@ class Request extends React.Component {
 
         var dataScore = {
             ooh_id,
+        }
+
+        var dataContent = {
+            ooh_id, conthis
         }
 
         return(
@@ -1859,7 +2061,10 @@ class Request extends React.Component {
                                 )}
                             </div>
                             <div className="tab-pane" id="tab-content">
-                                <Content />
+                                {typeof dataScore.ooh_id !== 'undefined' && (
+                                    // <Score data={dataScore} />
+                                    <Content data={dataContent} />
+                                )}
                             </div>
                             <div className="tab-pane" id="tab-score">
                                 {typeof dataScore.ooh_id !== 'undefined' && (

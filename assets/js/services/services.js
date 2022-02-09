@@ -41,6 +41,20 @@ class Services {
         return result;
     }
 
+    async getTempOOHId(ooh_id, type){
+        let reqData = await this.getDataRequestValidation(type);
+        let filter = {};
+        if(reqData.data.length > 0){
+            reqData.data.forEach((item) => {
+                if(parseInt(item.ooh_id) === parseInt(ooh_id)){
+                    filter = item;
+                }
+            });
+        }
+
+        return filter;
+    }
+
     async filterArea(params = {}){
         let result = this.axiosInstance.get('/data/filterarea', {
             params: params
