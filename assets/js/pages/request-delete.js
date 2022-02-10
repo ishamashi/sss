@@ -45,7 +45,7 @@ function getRequestDelete(is_search) {
 						nomor_id: v[0],
 						canvas: v[1]
 					});
-					console.log('data baru');
+					console.log('data baru', v);
 					// const result = simpan.find( ({nomor_id}) => nomor_id === v[0]);
 					// perdata2 = {
 					// 	"nomor_id" : v[0]
@@ -61,8 +61,8 @@ function getRequestDelete(is_search) {
 						"6": v[4] == highlight ? '<font color="red">' + v[7] + '</font>' : v[7],
 						"7": v[4] == highlight ? '<font color="red">' + v[6] + '</font>' : v[6],
 						"8": v[4] == highlight ? '<font color="red">' + v[8] + '</font>' : v[8],
-						"9": '<button class="btn btn-success btn-rounded" title="Approve" onclick="approval(\'' + v[0] + '\', \'a\', \'' + v[6] + '\')"><span class="fa fa-check" ></span></button>' +
-							'&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval(\'' + v[0] + '\', \'r\', \'' + v[6] + '\')"><span class="fa fa-times"></span></button>'
+						"9": `<button class="btn btn-success btn-rounded" title="Approve" onclick="approval('${v[0]}', 'a', '${v[6]}', '${v[1]}')"><span class="fa fa-check" ></span></button>
+							&nbsp;&nbsp;<button class="btn btn-danger btn-rounded" title="Reject" onclick="approval('${v[0]}', 'r', '${v[6]}', '${v[1]}')"><span class="fa fa-times"></span></button>`
 					};
 					dattab.push(perdata);
 					no++;
@@ -130,7 +130,7 @@ function getArchieveDelete() {
 	});
 }
 
-function approval(oid, type, createat) {
+function approval(oid, type, createat, no_cnv) {
 	if (type == 'r') {
 		var teks = 'Menolak';
 	} else {
@@ -145,7 +145,7 @@ function approval(oid, type, createat) {
 		confirmButtonColor: "#ec6c62"
 	}).then(function (isConfirm) {
 		if (isConfirm.value) {
-			confirmed(oid, type, createat)
+			confirmed(oid, type, createat, no_cnv)
 		}
 	});
 }
@@ -165,10 +165,10 @@ function rollback(oid, type, createat) {
 	});
 }
 
-function confirmed(oid, type, createat) {
+function confirmed(oid, type, createat, no_cnv) {
 	var created_at = createat.replace(" ", "+");
 	$.ajax({
-		url: APIURL + "data/reqtodel?action=" + type + "&oid=" + oid + "&createdat=" + created_at,
+		url: APIURL + "data/reqtodel?action=" + type + "&oid=" + oid + "&createdat=" + created_at + "&no_cnv=" + no_cnv,
 		headers: { "Ip-Addr": IP, "token": "Bearer " + token },
 		data: { 'action': type, 'oid': oid },
 		type: "POST",
