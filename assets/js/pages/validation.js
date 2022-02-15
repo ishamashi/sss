@@ -302,8 +302,11 @@ class Score extends React.Component {
     }
 
     handleCallback(){
-        console.log('UPDATE SCORE');
-        this.props.callBack(this.state.checked);
+        const { newScore, checked, ooh_id } = this.state;
+        var temp = checked;
+        temp.vas_score = newScore,
+        temp.ooh_id = ooh_id;
+        this.props.callBack(temp);
     }
 
     calculateScore(){
@@ -322,9 +325,10 @@ class Score extends React.Component {
 
     async componentDidMount(){
         let score = await services.getDataVasContent(this.state.ooh_id);
-        if(typeof score.score_val !== 'undefined'){
+        if(typeof score.vas_score !== 'undefined'){
             this.setState({
-                currentScore: score.score_val,
+                currentScore: score.vas_score,
+                newScore: score.vas_score,
                 checked: Object.entries(score).map((item) => {
                     return {
                         name: item[0],
@@ -2124,7 +2128,6 @@ class Info extends React.Component {
     }
 
     handleCallback(){
-        console.log("UPDATE INFO", this.state);
         this.props.callBack(this.state);
     }
 
@@ -2136,16 +2139,7 @@ class Info extends React.Component {
     }
 
     render(){
-        // console.log('STATE INFO >>>>', this.state);
         const values = this.state;
-        // const { 
-        //     ooh_id, kode_produk, owner, no_site, ooh_type, 
-        //     no_cnv, ooh_status, type_produk, province, 
-        //     sub_district, district, address, latitude, 
-        //     longitude, view, jumlah_sisi, jumlah_set, panjang, lebar, orientasi, 
-        //     lighting, traffic, vscore, fixing, competition, visible_distance,
-        //     angle_of_vision, obstruction, street_lite, road_type, ooh_flag 
-        // } = this.state;
 
         switch (this.state.step) {
             case 1:

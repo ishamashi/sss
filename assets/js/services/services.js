@@ -265,9 +265,12 @@ class Services {
         .then(({data}) => data.data)
         .then((response) => {
             if(typeof response.quest001 !== 'undefined'){
+                response.ooh_id = response.ooh_id;
+                response.vas_score = response.score_val;
                 return response;
             }else{
                 return {
+                    ooh_id: ooh_id,
                     quest001: 0,
                     quest002: 0,
                     quest003: 0,
@@ -279,6 +282,7 @@ class Services {
                     quest009: 0,
                     quest010: 0,
                     quest011: 0,
+                    vas_score: 0,
                 }
             }
         })
