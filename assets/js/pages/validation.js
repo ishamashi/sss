@@ -301,6 +301,11 @@ class Score extends React.Component {
         }
     }
 
+    handleCallback(){
+        console.log('UPDATE SCORE');
+        this.props.callBack(this.state.checked);
+    }
+
     calculateScore(){
         var score = 0;
         var idx = 0;
@@ -389,6 +394,8 @@ class Score extends React.Component {
                                                                             }
                                                                         }
                                                                     }),
+                                                                }, () => {
+                                                                    this.handleCallback();
                                                                 });
                                                                 this.calculateScore();
                                                             }}
@@ -435,7 +442,6 @@ class Score extends React.Component {
 class Content extends React.Component {
     constructor(props){
         super(props);
-        console.log("CONTENT", props);
         const { conthis, ooh_id } = props.data;
         this.state = {
             periode: [],
@@ -517,6 +523,8 @@ class Content extends React.Component {
 
         this.setState({
             selectedContent: tempChange
+        }, () => {
+            this.assignContentToState();
         })
     }
 
@@ -533,6 +541,8 @@ class Content extends React.Component {
 
         this.setState({
             conthis: tempConthis,
+        }, () => {
+            this.handleCallback();
         });
 
         this.refreshPeriode();
@@ -564,9 +574,12 @@ class Content extends React.Component {
         $('#contentIndustry, #contentSubIndustry, #contentAdvertiser, #dataContract').selectpicker('refresh');
     }
 
+    handleCallback(){
+        this.props.callBack(this.state.conthis);
+    }
+
     render(){
         const { periode, selectedYear, selectedMonth, months, contents, selectedSlot, dataContract, selectedContent, industry, sub_industry, advertiser } = this.state;
-        console.log("SELECTED CONTENT", selectedContent);
         return(
             <div>
                 <h3>Content</h3>
@@ -601,10 +614,10 @@ class Content extends React.Component {
                                         selectedSlot: contents[0].content_id,
                                         selectedContent: contents[0]
                                     });
-                                    console.log("IMAGE>>>>", {
-                                        image_day: common.checkErrorImg(contents[0].image_day),
-                                        image_night: common.checkErrorImg(contents[0].image_night),
-                                    });
+                                    // console.log("IMAGE>>>>", {
+                                    //     image_day: common.checkErrorImg(contents[0].image_day),
+                                    //     image_night: common.checkErrorImg(contents[0].image_night),
+                                    // });
                                     this.assignContentToState();
                                 }}>
                                 <option value={''}>Pilih</option>
@@ -798,7 +811,6 @@ class Content extends React.Component {
                                     key: 'advertiser',
                                     value: e.target.value
                                 });
-                                console.log("CHANGE ADV", e.target.value);
                             }}
                         >
                             {
@@ -1006,6 +1018,10 @@ class ContractList extends React.Component {
 
         this.changeContractStart(this);
         this.changeContractEnd(this);
+    }
+
+    handleCallback(){
+        this.props.callBack(this.state);        
     }
 
     componentDidUpdate(){
@@ -1311,7 +1327,6 @@ class Home extends React.Component {
 
     async handleClick(tab){
         let dataTable = await this.getDataTable(tab);
-        console.log("TABS", tab);
         this.setState({
             tab,
             header: this.state.header,
@@ -1321,7 +1336,6 @@ class Home extends React.Component {
 
     render(){
         const { tab, dataTable } = this.state;
-        console.log("TYPEE", tab);
         return (
             <div>
                 <h1>{this.state.header.title}</h1>
@@ -2045,7 +2059,6 @@ class Info extends React.Component {
 
         this.state = {
             step: 1,
-            lorem: 'ipsum',
             ooh_id: data.ooh_id || '',
             kode_produk: data.kode_produk || '',
             owner: data.owner || '',
@@ -2098,6 +2111,8 @@ class Info extends React.Component {
         // console.log('HANDLE', {type, value});
         this.setState({
             [type]:value
+        }, () => {
+            this.handleCallback();
         });
     }
 
@@ -2106,6 +2121,11 @@ class Info extends React.Component {
         this.setState({
             step: (step - 1)
         });
+    }
+
+    handleCallback(){
+        console.log("UPDATE INFO", this.state);
+        this.props.callBack(this.state);
     }
 
     nextStep() {
@@ -2171,18 +2191,57 @@ class Request extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            dataOOH: {}
+            dataOOH: {},
+            info: {},
+            content: [],
+            score: {},
         }
+
+        this.handleApprove = this.handleApprove.bind(this);
     }
 
     async componentDidMount(){
         const { ooh_id, type } = this.props.match.params;
         let data = await services.getDataOOHID(ooh_id, type);
+        let score = await services.getDataVasContent(ooh_id);
         // let data = await services.getTempOOHId(ooh_id, type);
         // console.log('DATA REQUEST', data);
+
+        var { 
+            no_cnv, kode_produk, no_site, 
+            view, address, owner, ooh_type, district, 
+            sub_district, ooh_status, province, type_produk,
+            latitude, longitude, jumlah_sisi, jumlah_set,
+            panjang, lebar, orientasi, lighting,
+            traffic, vscore, fixing, competition, visible_distance,
+            angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
+            lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
+            lingkungan6, lingkungan7, lingkungan8
+        } = data;
+
         this.setState({
-            dataOOH: data
+            dataOOH: data,
+            score: score,
+            content: data.conthis,
+            info: { 
+                no_cnv, kode_produk, no_site, 
+                view, address, owner, ooh_type, district, 
+                sub_district, ooh_status, province, type_produk,
+                latitude, longitude, jumlah_sisi, jumlah_set,
+                panjang, lebar, orientasi, lighting,
+                traffic, vscore, fixing, competition, visible_distance,
+                angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
+                lingkungan1, lingkungan2, lingkungan3, lingkungan4, lingkungan5,
+                lingkungan6, lingkungan7, lingkungan8
+            },
+        }, () => {
+            console.log(this.state)
         });
+    }
+
+    handleApprove(){
+        const { info, content, score } = this.state;
+        console.log('HANDLE APPROVE', {info, content, score});
     }
 
     render(){
@@ -2259,24 +2318,50 @@ class Request extends React.Component {
                         <div className="panel-body tab-content">
                             <div className="tab-pane active" id="tab-info">
                                 {typeof dataInfo.ooh_id !== 'undefined' && (
-                                    <Info data={dataInfo} />
+                                    <Info 
+                                        data={dataInfo} 
+                                        callBack={(value) => {
+                                            this.setState({
+                                                info: value,
+                                            });
+                                        }}
+                                    />
                                 )}
                             </div>
 
                             <div className="tab-pane" id="tab-contract">
                                 {typeof dataContractList.ooh_id !== 'undefined' && (
-                                    <ContractList data={dataContractList} />
+                                    <ContractList 
+                                        data={dataContractList}
+                                        callBack={(value) => {
+                                        }}
+                                    />
                                 )}
                             </div>
                             <div className="tab-pane" id="tab-content">
                                 {typeof dataScore.ooh_id !== 'undefined' && (
-                                    // <Score data={dataScore} />
-                                    <Content data={dataContent} />
+                                    <Content 
+                                        data={dataContent} 
+                                        callBack={(value) => {
+                                            this.setState({
+                                                content: value,
+                                            });
+                                        }} 
+                                    />
                                 )}
                             </div>
                             <div className="tab-pane" id="tab-score">
                                 {typeof dataScore.ooh_id !== 'undefined' && (
-                                    <Score data={dataScore} />
+                                    <Score 
+                                        data={dataScore} 
+                                        callBack={(value) => {
+                                            let temp = {};
+                                            value.forEach((item) => temp[item.name] = item.value);
+                                            this.setState({
+                                                score: temp,
+                                            });
+                                        }} 
+                                    />
                                 )}
                             </div>
                         </div>
@@ -2284,7 +2369,9 @@ class Request extends React.Component {
                     <div style={{display: 'flex', justifyContent: 'end'}}>
                         <Link to="/" className='btn btn-outline-primary' style={{ marginLeft: '.5em', marginRight: '.5em' }}>Back</Link>
                         <button className='btn btn-danger' style={{ marginLeft: '.5em', marginRight: '.5em' }}>Reject</button>
-                        <button className='btn btn-primary' style={{ marginLeft: '.5em', marginRight: '.5em' }}>Approve</button>
+                        <button onClick={() => {
+                            this.handleApprove();
+                        }} className='btn btn-primary' style={{ marginLeft: '.5em', marginRight: '.5em' }}>Approve</button>
                     </div>
                 </div>
             </div>

@@ -137,40 +137,6 @@ class Services {
     }
 
     async filterIndustry(lvl = ''){
-         // if (lvl == 'subind') {
-        //     arrTemp = {
-        //         "id": v[0],
-        //         "name": v[1],
-        //         "desc": v[2],
-        //         "ind_id": v[3],
-        //         "ind_name": v[4],
-        //     };
-
-        //     arrsub_industry.push(arrTemp);
-        // }
-
-        // if (lvl == 'adv') {
-        //     arrTemp = {
-        //         "id": v[0],
-        //         "name": v[1],
-        //         "desc": v[2],
-        //         "color": v[3],
-        //         "subind_id": v[4],
-        //         "subind_name": v[5],
-        //     };
-
-        //     arradvertiser.push(arrTemp);
-        // }
-
-        // if (lvl == 'ind') {
-        //     arrTemp = {
-        //         "id": v[0],
-        //         "name": v[1],
-        //         "desc": v[2],
-        //     };
-
-        //     arrindustry.push(arrTemp);
-        // }
         let result = this.axiosInstance.get('/data/filterindustry', {
             params: {
                 lvl
@@ -298,23 +264,23 @@ class Services {
         })
         .then(({data}) => data.data)
         .then((response) => {
-            return response;
-            // let temp = [];
-            // if(response.length > 0){
-            //     $.each(response, function (k, v) {
-            //         temp.push({
-            //             "contract_id": v[0],
-            //             "cmp_id": v[1],
-            //             "cmp_name": v[2],
-            //             "contract_start": v[3],
-            //             "contract_end": v[4],
-            //             "contract_desc": v[5],
-            //             "ooh_id": v[6],
-            //             "no_site": v[7],
-            //         });
-            //     })
-            // }
-            // return temp;
+            if(typeof response.quest001 !== 'undefined'){
+                return response;
+            }else{
+                return {
+                    quest001: 0,
+                    quest002: 0,
+                    quest003: 0,
+                    quest004: 0,
+                    quest005: 0,
+                    quest006: 0,
+                    quest007: 0,
+                    quest008: 0,
+                    quest009: 0,
+                    quest010: 0,
+                    quest011: 0,
+                }
+            }
         })
         .catch((err) => err);
         return result;
