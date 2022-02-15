@@ -1843,6 +1843,47 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
       }
     }, [setDataLocation, province, district]);
 
+    const initMap = () => {
+        let map;
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { 
+                lat: values.latitude || -6.200000, 
+                lng: values.longitude || 106.816666,
+            },
+            zoom: 15,
+        });
+
+        const marker = new google.maps.Marker({
+            position: { 
+                lat: values.latitude || -6.200000, 
+                lng: values.longitude || 106.816666,
+            },
+            draggable:true,
+            map: map,
+          });  
+        console.log('INITIALIZE MAP', map);
+
+        google.maps.event.addListener(marker, 'dragend', (marker) => {
+            let latLng = marker.latLng; 
+            handleChange({
+                type: 'longitude',
+                value: latLng.lng(),
+            });
+
+            handleChange({
+                type: 'latitude',
+                value: latLng.lat(),
+            });
+        });
+    }
+
+    const openModal = () => {
+        $('#modalMaps').modal({
+            show: true,
+        });
+        initMap();
+    }
+
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -1918,7 +1959,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                                 type: 'latitude',
                                 value: e.target.value
                             });
-                            }} defaultValue={values.latitude} placeholder="Latitude" />
+                            }} value={values.latitude || '-6.200000'} placeholder="Latitude" />
                         </div>
                         <div className="col-md-5">
                             <label className="control-label bold">Longitude</label>
@@ -1927,11 +1968,15 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                                 type: 'longitude',
                                 value: e.target.value
                             });
-                            }} defaultValue={values.longitude} placeholder="Longitude" />
+                            }} value={values.longitude || '106.816666'} placeholder="Longitude" />
                         </div>
                         <div className="col-md-2" style={{marginTop: '25px'}}>
                             <label className="control-label bold">&nbsp;</label>
-                            <button className="btn btn-primary">Peta</button>
+                            <button className="btn btn-primary" onClick={() => {
+                                openModal();
+                            }}>
+                                <span className="menu-icon icon-map"></span>
+                            </button>
                         </div>
                     </div>
                     
@@ -1956,6 +2001,25 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                         e.preventDefault();
                         nextStep();
                     }} className="btn btn-primary">Next</button>
+                </div>
+            </div>
+
+            <div className="modal fade" role="dialog" id="modalMaps">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header" style={{borderBottom: '1px solid #ddd !important'}}>
+                            <button type="button" className="close" data-dismiss="modal"><span>&times;</span></button>
+                            <h3 className="modal-title" id="">View Map</h3>
+                        </div>
+                        <div className="modal-body">
+                            <div id="map" style={{
+                                height: '500px',
+                            }}></div>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
