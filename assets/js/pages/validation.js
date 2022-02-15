@@ -1861,7 +1861,6 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
             draggable:true,
             map: map,
           });  
-        console.log('INITIALIZE MAP', map);
 
         google.maps.event.addListener(marker, 'dragend', (marker) => {
             let latLng = marker.latLng; 
