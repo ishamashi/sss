@@ -290,6 +290,41 @@ class Services {
         return result;
     }
 
+    async getDataEnvironment(){
+        var data = [{
+            value: '', text: ''
+        },{
+            value: 'Building-Shopping Mall', text: 'Building-Shopping Mall'
+        },{
+            value: 'Expressway', text: 'Expressway'
+        },{
+            value: 'City Highway', text: 'City Highway'
+        },{
+            value: 'Bus Shelter', text: 'Bus Shelter'
+        },{
+            value: 'Secondary Road', text: 'Secondary Road'
+        },{
+            value: 'Main Road', text: 'Main Road'
+        },{
+            value: 'Securities', text: 'Securities'
+        },{
+            value: 'Post Office', text: 'Post Office'
+        },{
+            value: 'Food Court', text: 'Food Court'
+        },{
+            value: 'Complex', text: 'Complex'
+        },{
+            value: 'Building - Building', text: 'Building - Building'
+        },{
+            value: 'Apartement', text: 'Apartement'
+        },{
+            value: 'Departure', text: 'Departure'
+        },{
+            value: 'Arrival', text: 'Arrival'
+        }];
+        return data;
+    }
+
 }
 
 export default new Services;

@@ -1363,6 +1363,22 @@ class Home extends React.Component {
 }
 
 const Environment = ({ prevStep, handleChange, values }) => {
+    const { useState, useEffect } = React;
+    const [env, setEnv] = useState([]);
+
+    useEffect(async () => {
+        let dataEnv = await services.getDataEnvironment();
+        setEnv(dataEnv);
+        $('.select').selectpicker('refresh');
+        return () => {
+            setEnv([]);
+        }
+      }, [setEnv]);
+
+    // useEffect(() => {
+    //     $('.select').selectpicker('refresh');
+    //     return [];
+    // }, []);
     return(
         <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div className="col-md-10">
@@ -1370,86 +1386,134 @@ const Environment = ({ prevStep, handleChange, values }) => {
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 1</label>
-                        <input type="text" className="form-control" value={values.lingkungan1} placeholder="Lingkungan 1" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan1" value={values.lingkungan1} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan1',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 2</label>
-                        <input type="text" className="form-control" value={values.lingkungan2} placeholder="Lingkungan 2" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan2" value={values.lingkungan2} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan2',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
                 </div>
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 3</label>
-                        <input type="text" className="form-control" value={values.lingkungan3} placeholder="Lingkungan 3" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan3" value={values.lingkungan3} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan3',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 4</label>
-                        <input type="text" className="form-control" value={values.lingkungan4} placeholder="Lingkungan 4" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan4" value={values.lingkungan4} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan4',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
                 </div>
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 5</label>
-                        <input type="text" className="form-control" value={values.lingkungan5} placeholder="Lingkungan 5" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan5" value={values.lingkungan5} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan5',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 6</label>
-                        <input type="text" className="form-control" value={values.lingkungan6} placeholder="Lingkungan 6" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan6" value={values.lingkungan6} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan6',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
                 </div>
 
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'center' }}>
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 7</label>
-                        <input type="text" className="form-control" value={values.lingkungan7} placeholder="Lingkungan 7" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan7" value={values.lingkungan7} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan7',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
 
                     <div className="col-md-6" style={{ paddingLeft: '1em', paddingRight: '1em' }}>
                         <label className="control-label bold">Lingkungan 8</label>
-                        <input type="text" className="form-control" value={values.lingkungan8} placeholder="Lingkungan 8" onChange={(e) => {
+                        <select className="form-control select" data-live-search="true" name="lingkungan8" value={values.lingkungan8} onChange={(e) => {
                             handleChange({
                                 type: 'lingkungan8',
                                 value: e.target.value
-                            })
-                        }} />
+                            });
+                        }}>
+                        {env.map((item, index) => {
+                            return (
+                                <option key={index} value={item.value}>{item.text}</option>
+                            );
+                        })}
+                        </select>
                     </div>
                 </div>
 
@@ -1769,7 +1833,6 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
         dataDistrict,
         dataSubDistrict
       });
-    //   $('.select').selectpicker('refresh');
 
       return () => {
           setDataLocation({
