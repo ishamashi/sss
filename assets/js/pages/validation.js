@@ -1847,7 +1847,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
         let map;
         map = new google.maps.Map(document.getElementById("map"), {
             center: { 
-                lat: values.latitude || -6.200000, 
+                lat: values.latitude || -6.200001, 
                 lng: values.longitude || 106.816666,
             },
             zoom: 15,
@@ -1855,7 +1855,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
 
         const marker = new google.maps.Marker({
             position: { 
-                lat: values.latitude || -6.200000, 
+                lat: values.latitude || -6.200001, 
                 lng: values.longitude || 106.816666,
             },
             draggable:true,
@@ -1958,7 +1958,7 @@ const Location = ({nextStep, prevStep, handleChange, values}) => {
                                 type: 'latitude',
                                 value: e.target.value
                             });
-                            }} value={values.latitude || '-6.200000'} placeholder="Latitude" />
+                            }} value={values.latitude || '-6.200001'} placeholder="Latitude" />
                         </div>
                         <div className="col-md-5">
                             <label className="control-label bold">Longitude</label>
@@ -2201,8 +2201,8 @@ class Info extends React.Component {
             district: data.district || '',
             sub_district: data.sub_district || '',
             address: data.address || '',
-            latitude: data.latitude || '',
-            longitude: data.longitude || '',
+            latitude: data.latitude || -6.200001,
+            longitude: data.longitude || 106.816666,
             view: data.view || '',
             jumlah_sisi: data.jumlah_sisi || '',
             jumlah_set: data.jumlah_set || '',
@@ -2347,7 +2347,7 @@ class Request extends React.Component {
                 no_cnv, kode_produk, no_site, 
                 view, address, owner, ooh_type, district, 
                 sub_district, ooh_status, province, type_produk,
-                latitude, longitude, jumlah_sisi, jumlah_set,
+                latitude: latitude || -6.200001, longitude: longitude || 106.816666, jumlah_sisi, jumlah_set,
                 panjang, lebar, orientasi, lighting,
                 traffic, vscore, fixing, competition, visible_distance,
                 angle_of_vision, obstruction, street_lite, road_type, ooh_flag,
